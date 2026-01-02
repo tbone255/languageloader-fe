@@ -63,6 +63,9 @@
   min-width: 140px;
   animation: tooltipFadeIn 0.15s ease;
   display: flex;
+  max-width: 900px;
+  flex-wrap: wrap;
+  width: max-content;
 }
 
 @keyframes tooltipFadeIn {

@@ -215,8 +215,9 @@ export const WordRecallText: React.FC<WordRecallTextProps> = ({ items, className
     if (highlightState.rects.length === 0) return { left: 0, top: 0 };
     const firstRect = highlightState.rects[0];
     const lastRect = highlightState.rects[highlightState.rects.length-1];
+    console.log(firstRect.x, lastRect.x, lastRect.width)
     return {
-      left: firstRect.x + (lastRect.x + lastRect.width - firstRect.x) / 2,
+      left: firstRect.x + firstRect.width / 2,
       top: firstRect.y - 8  // Position above with some spacing
     };
   };
