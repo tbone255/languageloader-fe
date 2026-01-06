@@ -78,6 +78,73 @@ export const SRS = () => {
     }
   };
 
+  // Helper function to get card state name
+  const getStateName = (state: number): string => {
+    switch (state) {
+      case 0: return 'New';
+      case 1: return 'Learning';
+      case 2: return 'Review';
+      case 3: return 'Relearning';
+      default: return 'Unknown';
+    }
+  };
+
+  // Render debug table showing all cards
+  const renderDebugTable = () => {
+    const allCards = srsService.current.getAllCards();
+
+    // Sort by due date (soonest first)
+    const sortedCards = [...allCards].sort((a, b) =>
+      a.card.due.getTime() - b.card.due.getTime()
+    );
+
+    return (
+      <div style={{ marginTop: '30px' }}>
+        <h3 style={{ marginBottom: '10px' }}>SRS Queue (debug):</h3>
+        <div style={{ overflowX: 'auto' }}>
+          <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '14px' }}>
+            <thead>
+              <tr style={{ borderBottom: '2px solid #ccc' }}>
+                <th style={{ padding: '8px', textAlign: 'left' }}>ID</th>
+                <th style={{ padding: '8px', textAlign: 'left' }}>Card Text</th>
+                <th style={{ padding: '8px', textAlign: 'left' }}>State</th>
+                <th style={{ padding: '8px', textAlign: 'left' }}>Reps</th>
+                <th style={{ padding: '8px', textAlign: 'left' }}>Next Scheduled</th>
+              </tr>
+            </thead>
+            <tbody>
+              {sortedCards.map((srsCard) => {
+                const wordPhrase = wordPhraseMapRef.current.get(srsCard.wordPhraseId);
+                const now = new Date();
+                const isDue = srsCard.card.state === 0 || srsCard.card.due <= now;
+
+                return (
+                  <tr
+                    key={srsCard.wordPhraseId}
+                    style={{
+                      borderBottom: '1px solid #eee',
+                      backgroundColor: isDue ? '#fff3cd' : 'transparent'
+                    }}
+                  >
+                    <td style={{ padding: '8px' }}>{srsCard.wordPhraseId}</td>
+                    <td style={{ padding: '8px' }}>{wordPhrase?.wordphrase || 'Unknown'}</td>
+                    <td style={{ padding: '8px' }}>{getStateName(srsCard.card.state)}</td>
+                    <td style={{ padding: '8px' }}>{srsCard.card.reps}</td>
+                    <td style={{ padding: '8px' }}>
+                      {srsCard.card.state === 0
+                        ? 'Now (new card)'
+                        : srsCard.card.due.toLocaleString()}
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    );
+  };
+
   if (!isLoaded) {
     return <div>Loading cards...</div>;
   }
@@ -91,6 +158,9 @@ export const SRS = () => {
           <h2 className="d-card-title">All Done!</h2>
           <p>No cards are due for review right now. Come back later!</p>
           <p>Total cards: {stats.total}</p>
+
+          {/* Debug table */}
+          {renderDebugTable()}
         </div>
       </div>
     );
@@ -155,6 +225,9 @@ export const SRS = () => {
             </button>
           </div>
         )}
+
+        {/* Debug table */}
+        {renderDebugTable()}
       </div>
     </div>
   );
