@@ -1,0 +1,106 @@
+[
+  {
+    "id": 0,
+    "wordphrase": "دا",
+    "ipa": "daː",
+    "pronunciation": "da",
+    "translations": { "en": "this" },
+    "target_language": "ps",
+    "lesson_introduced": 1,
+    "lesson_page": 1
+  },
+  {
+    "id": 1,
+    "wordphrase": "هغه",
+    "ipa": "haːɣa",
+    "pronunciation": "hagha",
+    "translations": { "en": "that" },
+    "target_language": "ps",
+    "lesson_introduced": 1,
+    "lesson_page": 1
+  },
+
+  {
+    "id": 2,
+    "wordphrase": "کور",
+    "ipa": "koːr",
+    "pronunciation": "kor",
+    "translations": { "en": "house" },
+    "target_language": "ps",
+    "lesson_introduced": 1,
+    "lesson_page": 1
+  },
+  {
+    "id": 3,
+    "wordphrase": "کتاب",
+    "ipa": "kɪˈtɑːb",
+    "pronunciation": "kitāb",
+    "translations": { "en": "book" },
+    "target_language": "ps",
+    "lesson_introduced": 1,
+    "lesson_page": 1
+  },
+
+  {
+    "id": 4,
+    "wordphrase": "دا کور دی",
+    "ipa": "daː koːr diː",
+    "pronunciation": "da kor de",
+    "translations": { "en": "this is a house" },
+    "target_language": "ps",
+    "lesson_introduced": 1,
+    "lesson_page": 1
+  },
+  {
+    "id": 5,
+    "wordphrase": "هغه کتاب دی",
+    "ipa": "haːɣa kɪˈtɑːb diː",
+    "pronunciation": "hagha kitāb de",
+    "translations": { "en": "that is a book" },
+    "target_language": "ps",
+    "lesson_introduced": 1,
+    "lesson_page": 1
+  },
+
+  {
+    "id": 6,
+    "wordphrase": "موټر",
+    "ipa": "ˈmoːʈaɾ",
+    "pronunciation": "motor",
+    "translations": { "en": "car" },
+    "target_language": "ps",
+    "lesson_introduced": 1,
+    "lesson_page": 2
+  },
+  {
+    "id": 7,
+    "wordphrase": "دروازه",
+    "ipa": "daɾˈwɑːza",
+    "pronunciation": "darwāza",
+    "translations": { "en": "door" },
+    "target_language": "ps",
+    "lesson_introduced": 1,
+    "lesson_page": 2
+  },
+
+  {
+    "id": 8,
+    "wordphrase": "دا موټر دی",
+    "ipa": "daː ˈmoːʈaɾ diː",
+    "pronunciation": "da motor de",
+    "translations": { "en": "this is a car" },
+    "target_language": "ps",
+    "lesson_introduced": 1,
+    "lesson_page": 2
+  },
+  {
+    "id": 9,
+    "wordphrase": "هغه دروازه ده",
+    "ipa": "haːɣa daɾˈwɑːza da",
+    "pronunciation": "hagha darwāza da",
+    "translations": { "en": "that is a door" },
+    "target_language": "ps",
+    "lesson_introduced": 1,
+    "lesson_page": 2
+  }
+]

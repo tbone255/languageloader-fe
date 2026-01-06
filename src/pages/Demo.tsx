@@ -46,11 +46,8 @@ const sampleWords: WordItem[] = [
 
 function Demo() {
   return (
-    <div>
-      <h1>WordRecallText</h1>
-      <main>
-        <WordRecallText items={sampleWords} />
-      </main>
+    <div className='w-screen h-screen p-4'>
+      <WordRecallText items={sampleWords} />
     </div>
   );
 }

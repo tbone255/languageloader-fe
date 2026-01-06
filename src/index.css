@@ -1,9 +1,10 @@
 @import "tailwindcss";
 @plugin "daisyui";
+
+
 @plugin "daisyui/theme" {
-  prefix: "d-";
   name: "garden";
-  default: false;
+  default: true;
   prefersdark: false;
   color-scheme: "light";
   --color-base-100: oklch(92.951% 0.002 17.197);
@@ -34,6 +35,35 @@
   --border: 1px;
   --depth: 0;
   --noise: 0;
+}
+
+
+@layer utilities {
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translate(-50%, calc(-100% - 8px));
+    }
+    to {
+      opacity: 1;
+      transform: translate(-50%, calc(-100% - 12px));
+    }
+  }
+
+  .animate-fadeIn {
+    animation: fadeIn 0.15s ease;
+  }
+
+  /* Hide default browser selection styling */
+  .hide-selection ::selection {
+    background: transparent;
+    color: inherit;
+  }
+
+  .hide-selection ::-moz-selection {
+    background: transparent;
+    color: inherit;
+  }
 }
 /* 
 :root {

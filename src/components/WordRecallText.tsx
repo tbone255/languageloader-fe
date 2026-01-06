@@ -214,8 +214,6 @@ export const WordRecallText: React.FC<WordRecallTextProps> = ({ items, className
   const getTooltipPosition = () => {
     if (highlightState.rects.length === 0) return { left: 0, top: 0 };
     const firstRect = highlightState.rects[0];
-    const lastRect = highlightState.rects[highlightState.rects.length-1];
-    console.log(firstRect.x, lastRect.x, lastRect.width)
     return {
       left: firstRect.x + firstRect.width / 2,
       top: firstRect.y - 8  // Position above with some spacing
@@ -223,56 +221,59 @@ export const WordRecallText: React.FC<WordRecallTextProps> = ({ items, className
   };
 
   return (
-    <div
-      ref={containerRef}
-      className={`word-recall-container ${className}`}
-      onMouseUp={handleMouseUp}
-    >
-      {/* Continuous highlight background - multiple rects for multi-line */}
-      {highlightState.rects.map((rect, idx) => (
-        <div
-          key={idx}
-          className="continuous-highlight"
-          style={{
-            left: `${rect.x}px`,
-            top: `${rect.y}px`,
-            width: `${rect.width}px`,
-            height: `${rect.height}px`,
-          }}
-        />
-      ))}
+    <div className='place-self-center'>
+      <div className={`card card-border bg-base-100 w-250 shadow-xl place-self-center`}>
+        <div className="card-body">
+          <div
+            ref={containerRef}
+            className="word-recall-container"
+            onMouseUp={handleMouseUp}
+          >
+            <div className={"tooltip tooltip-top tooltip-primary" + showTooltip ? "tooltip-open" : ""}>
+              <div className="tooltip-content">
+                {renderTooltipContent()}
+              </div>
+              {/* Continuous highlight background - multiple rects for multi-line */}
+              {highlightState.rects.map((rect, idx) => (
+                <div
+                  key={idx}
+                  className="continuous-highlight"
+                  style={{
+                    left: `${rect.x}px`,
+                    top: `${rect.y}px`,
+                    width: `${rect.width}px`,
+                    height: `${rect.height}px`,
+                  }}
+                />
+              ))}
+            </div>
 
-      {/* Words */}
-      <div className="words-content">
-        {items.map((item, idx) => (
-          <React.Fragment key={idx}>
-            <span
-              ref={el => { wordRefs.current[idx] = el; }}
-              className={`word ${highlightState.indices.includes(idx) ? 'highlighted' : ''}`}
-              onMouseEnter={() => handleWordMouseEnter(idx)}
-              onMouseLeave={handleWordMouseLeave}
-              onClick={(e) => handleWordClick(idx, e)}
-            >
-              {item.word}
-            </span>
-            {idx < items.length - 1 && ' '}
-          </React.Fragment>
-        ))}
-      </div>
-
-      {/* Tooltip */}
-      {showTooltip && (
-        <div
-          className="tooltip"
-          role="tooltip"
-          style={{
-            left: `${getTooltipPosition().left}px`,
-            top: `${getTooltipPosition().top}px`,
-          }}
-        >
-          {renderTooltipContent()}
+            {/* Words */}
+            <div className="words-content">
+              {items.map((item, idx) => (
+                <React.Fragment key={idx}>
+                  <span
+                    ref={el => { wordRefs.current[idx] = el; }}
+                    className={`word ${highlightState.indices.includes(idx) ? 'highlighted' : ''}`}
+                    onMouseEnter={() => handleWordMouseEnter(idx)}
+                    onMouseLeave={handleWordMouseLeave}
+                    onClick={(e) => handleWordClick(idx, e)}
+                  >
+                    {item.word}
+                  </span>
+                  {idx < items.length - 1 && ' '}
+                </React.Fragment>
+              ))}
+            </div>
+          </div>
         </div>
-      )}
+      </div>
+      <div className='card card-border card-md bg-base-100 w-96 shadow-2xl place-self-center'>
+        <div className='card-body'>
+          <h2 className='card-title'>Practice Reading</h2>
+          Woooooooow
+        </div>
+      </div>
     </div>
   );
 };
