@@ -12,7 +12,7 @@ import Demo from './pages/Demo';
 
 function App() {
   return (
-    <BrowserRouter>
+    <BrowserRouter basename="/languageloader-fe">
       <div className="app">
         <Routes>
           <Route path="/" element={<RedirectPage />} />
