@@ -1,4 +1,5 @@
 import { createEmptyCard, fsrs, generatorParameters, Rating, type Card } from 'ts-fsrs';
+import { saveSRSCards, loadSRSCards } from './srsStorage';
 
 export interface SRSCard {
   card: Card;
@@ -9,12 +10,29 @@ export class SRSService {
   private fsrs = fsrs(generatorParameters());
   private cards: SRSCard[] = [];
 
-  // Initialize cards from word phrase IDs
+  // Initialize cards from word phrase IDs (used for first-time setup)
   initializeCards(wordPhraseIds: number[]): void {
     this.cards = wordPhraseIds.map(id => ({
       card: createEmptyCard(),
       wordPhraseId: id,
     }));
+    // Save initial state to localStorage
+    this.saveToStorage();
+  }
+
+  // Load cards from localStorage
+  loadFromStorage(): boolean {
+    const loadedCards = loadSRSCards();
+    if (loadedCards && loadedCards.length > 0) {
+      this.cards = loadedCards;
+      return true;
+    }
+    return false;
+  }
+
+  // Save cards to localStorage
+  saveToStorage(): void {
+    saveSRSCards(this.cards);
   }
 
   // Get all cards
@@ -65,6 +83,9 @@ export class SRSService {
       ...currentCard,
       card: updatedCard,
     };
+
+    // Persist to localStorage after grading
+    this.saveToStorage();
 
     return updatedCard;
   }
