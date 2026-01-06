@@ -35,9 +35,14 @@ export const SRS = () => {
       });
       wordPhraseMapRef.current = map;
 
-      // Initialize SRS service with word phrase IDs
-      const wordPhraseIds = wordPhrasesData.map(wp => wp.id);
-      srsService.current.initializeCards(wordPhraseIds);
+      // Try to load from localStorage first
+      const loadedFromStorage = srsService.current.loadFromStorage();
+
+      // If no data in localStorage, initialize from JSON
+      if (!loadedFromStorage) {
+        const wordPhraseIds = wordPhrasesData.map(wp => wp.id);
+        srsService.current.initializeCards(wordPhraseIds);
+      }
 
       // Get cards that are due now
       const due = srsService.current.getDueCards();
