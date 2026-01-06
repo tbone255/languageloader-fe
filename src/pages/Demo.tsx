@@ -1,4 +1,3 @@
-import React from 'react';
 import { WordRecallText, type WordItem } from '../components/WordRecallText';
 
 const sampleWords: WordItem[] = [

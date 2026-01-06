@@ -9,7 +9,6 @@ export type WordItem = {
 
 interface WordRecallTextProps {
   items: WordItem[];
-  className?: string;
 }
 
 interface HighlightState {
@@ -17,11 +16,10 @@ interface HighlightState {
   rects: DOMRect[];
 }
 
-export const WordRecallText: React.FC<WordRecallTextProps> = ({ items, className = '' }) => {
+export const WordRecallText: React.FC<WordRecallTextProps> = ({ items }) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const wordRefs = useRef<(HTMLSpanElement | null)[]>([]);
   const [highlightState, setHighlightState] = useState<HighlightState>({ indices: [], rects: [] });
-  const [hoveredIndices, setHoveredIndices] = useState<number[]>([]);
   const [isClickActive, setIsClickActive] = useState(false);
 
   // Compute continuous highlight boxes from highlighted word indices
@@ -124,7 +122,6 @@ export const WordRecallText: React.FC<WordRecallTextProps> = ({ items, className
       const rects = computeHighlightRects(indices);
       setHighlightState({ indices, rects });
       setIsClickActive(true);
-      setHoveredIndices([]);
     }
   }, [getSelectedWordIndices, computeHighlightRects]);
 
@@ -132,14 +129,12 @@ export const WordRecallText: React.FC<WordRecallTextProps> = ({ items, className
   const handleWordMouseEnter = useCallback((index: number) => {
     if (!isClickActive) {
       const rects = computeSingleWordRects(index);
-      setHoveredIndices([index]);
       setHighlightState({ indices: [index], rects });
     }
   }, [isClickActive, computeSingleWordRects]);
 
   const handleWordMouseLeave = useCallback(() => {
     if (!isClickActive) {
-      setHoveredIndices([]);
       setHighlightState({ indices: [], rects: [] });
     }
   }, [isClickActive]);
@@ -150,7 +145,6 @@ export const WordRecallText: React.FC<WordRecallTextProps> = ({ items, className
     const rects = computeSingleWordRects(index);
     setHighlightState({ indices: [index], rects });
     setIsClickActive(true);
-    setHoveredIndices([]);
   }, [computeSingleWordRects]);
 
   // Handle click outside
@@ -158,7 +152,6 @@ export const WordRecallText: React.FC<WordRecallTextProps> = ({ items, className
     if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
       setHighlightState({ indices: [], rects: [] });
       setIsClickActive(false);
-      setHoveredIndices([]);
       window.getSelection()?.removeAllRanges();
     }
   }, []);
@@ -209,16 +202,6 @@ export const WordRecallText: React.FC<WordRecallTextProps> = ({ items, className
   };
 
   const showTooltip = highlightState.indices.length > 0 && highlightState.rects.length > 0;
-
-  // Calculate tooltip position - centered above the first rect
-  const getTooltipPosition = () => {
-    if (highlightState.rects.length === 0) return { left: 0, top: 0 };
-    const firstRect = highlightState.rects[0];
-    return {
-      left: firstRect.x + firstRect.width / 2,
-      top: firstRect.y - 8  // Position above with some spacing
-    };
-  };
 
   return (
     <div className='place-self-center'>
