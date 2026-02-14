@@ -1,15 +1,19 @@
-// ReviewPage
-// Purpose: Single route handling hub view and active SRS session
+/**
+ * ReviewPage
+ *
+ * SRS review session using the new lesson schema.
+ */
 
-import { SRS } from '../components/SRS';
+import SRSReview from '../components/SRSReview';
 
-const ReviewPage = () => {
+export default function ReviewPage() {
   return (
     <div>
-      <h1>Review</h1>
-      <SRS />
+      <div className="mb-6">
+        <h1 className="text-4xl font-bold">Review</h1>
+        <p className="text-base-content/70">Strengthen your memory with spaced repetition</p>
+      </div>
+      <SRSReview />
     </div>
   );
-};
-
-export default ReviewPage;
+}
