@@ -6,6 +6,7 @@
  */
 
 import { NavLink } from 'react-router-dom';
+import ThemeSwitcher from './ThemeSwitcher';
 
 interface AppLayoutProps {
   children: React.ReactNode;
@@ -82,7 +83,7 @@ export default function AppLayout({ children }: AppLayoutProps) {
           </ul>
         </div>
         <div className="navbar-end">
-          {/* Reserved for future user menu or stats */}
+          <ThemeSwitcher />
         </div>
       </div>
 
