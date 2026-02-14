@@ -156,8 +156,10 @@ export default function LessonPage() {
           <progress className="progress progress-primary w-full" value={progress} max="100"></progress>
         </div>
 
-        {/* Render appropriate exercise component */}
-        {renderExercise(currentExercise, lesson, handleExerciseComplete)}
+        {/* Render appropriate exercise component with fade-in animation */}
+        <div key={currentExerciseIndex} className="animate-fadeIn">
+          {renderExercise(currentExercise, lesson, handleExerciseComplete)}
+        </div>
       </div>
     );
   }
