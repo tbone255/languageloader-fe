@@ -1,0 +1,550 @@
+{
+  "schema_version": "1.0.0",
+  "lesson_id": "a1b2c3d4-e5f6-4a7b-8c9d-0e1f2a3b4c5d",
+  "lesson_meta": {
+    "title": "Deixis and Singular Nouns",
+    "order": 1,
+    "description": "Learn to identify objects using 'this' and 'that' with singular nouns",
+    "objectives": [
+      "Use demonstratives دا (dā) and هغه (haǧë) correctly",
+      "Identify 6-8 concrete nouns in Pashto",
+      "Form basic 'This is X' and 'That is X' sentences"
+    ]
+  },
+  "target_language": {
+    "iso_639_1": "ps",
+    "name": "Pashto",
+    "script": "Arabic",
+    "direction": "rtl"
+  },
+  "sentences": [
+    {
+      "sentence_id": "s1-001",
+      "tokens": [
+        {
+          "id": "t1",
+          "text": "دا",
+          "transliteration": "dā",
+          "ipa": "dɑː"
+        },
+        {
+          "id": "t2",
+          "text": "کتاب",
+          "transliteration": "kitāb",
+          "ipa": "kɪtɑːb"
+        },
+        {
+          "id": "t3",
+          "text": "دی",
+          "transliteration": "day",
+          "ipa": "daj"
+        }
+      ],
+      "text": "دا کتاب دی",
+      "gloss_word_by_word": {
+        "t1": "this",
+        "t2": "book",
+        "t3": "is"
+      },
+      "meaning_en": "This is a book.",
+      "image_refs": [
+        {
+          "image_id": "img-book",
+          "alt": "A book"
+        }
+      ],
+      "cloze_spans": [
+        {
+          "blank_index": 0,
+          "token_ids": ["t1"]
+        }
+      ],
+      "srs_uuids": ["srs-001", "srs-002"]
+    },
+    {
+      "sentence_id": "s1-002",
+      "tokens": [
+        {
+          "id": "t1",
+          "text": "هغه",
+          "transliteration": "haǧë",
+          "ipa": "haʁə"
+        },
+        {
+          "id": "t2",
+          "text": "قلم",
+          "transliteration": "qalam",
+          "ipa": "qalam"
+        },
+        {
+          "id": "t3",
+          "text": "دی",
+          "transliteration": "day",
+          "ipa": "daj"
+        }
+      ],
+      "text": "هغه قلم دی",
+      "gloss_word_by_word": {
+        "t1": "that",
+        "t2": "pen",
+        "t3": "is"
+      },
+      "meaning_en": "That is a pen.",
+      "image_refs": [
+        {
+          "image_id": "img-pen",
+          "alt": "A pen"
+        }
+      ],
+      "cloze_spans": [
+        {
+          "blank_index": 0,
+          "token_ids": ["t1"]
+        }
+      ],
+      "srs_uuids": ["srs-003", "srs-004"]
+    },
+    {
+      "sentence_id": "s1-003",
+      "tokens": [
+        {
+          "id": "t1",
+          "text": "دا",
+          "transliteration": "dā",
+          "ipa": "dɑː"
+        },
+        {
+          "id": "t2",
+          "text": "میز",
+          "transliteration": "mez",
+          "ipa": "meːz"
+        },
+        {
+          "id": "t3",
+          "text": "دی",
+          "transliteration": "day",
+          "ipa": "daj"
+        }
+      ],
+      "text": "دا میز دی",
+      "gloss_word_by_word": {
+        "t1": "this",
+        "t2": "table",
+        "t3": "is"
+      },
+      "meaning_en": "This is a table.",
+      "image_refs": [
+        {
+          "image_id": "img-table",
+          "alt": "A table"
+        }
+      ],
+      "cloze_spans": [
+        {
+          "blank_index": 0,
+          "token_ids": ["t2"]
+        }
+      ],
+      "srs_uuids": ["srs-005", "srs-006"]
+    },
+    {
+      "sentence_id": "s1-004",
+      "tokens": [
+        {
+          "id": "t1",
+          "text": "هغه",
+          "transliteration": "haǧë",
+          "ipa": "haʁə"
+        },
+        {
+          "id": "t2",
+          "text": "چوکۍ",
+          "transliteration": "čokəy",
+          "ipa": "t͡ʃoːkəj"
+        },
+        {
+          "id": "t3",
+          "text": "ده",
+          "transliteration": "da",
+          "ipa": "da"
+        }
+      ],
+      "text": "هغه چوکۍ ده",
+      "gloss_word_by_word": {
+        "t1": "that",
+        "t2": "chair",
+        "t3": "is"
+      },
+      "meaning_en": "That is a chair.",
+      "image_refs": [
+        {
+          "image_id": "img-chair",
+          "alt": "A chair"
+        }
+      ],
+      "cloze_spans": [
+        {
+          "blank_index": 0,
+          "token_ids": ["t2"]
+        }
+      ],
+      "srs_uuids": ["srs-007", "srs-008"]
+    },
+    {
+      "sentence_id": "s1-005",
+      "tokens": [
+        {
+          "id": "t1",
+          "text": "دا",
+          "transliteration": "dā",
+          "ipa": "dɑː"
+        },
+        {
+          "id": "t2",
+          "text": "دروازه",
+          "transliteration": "darwāza",
+          "ipa": "darwɑːza"
+        },
+        {
+          "id": "t3",
+          "text": "ده",
+          "transliteration": "da",
+          "ipa": "da"
+        }
+      ],
+      "text": "دا دروازه ده",
+      "gloss_word_by_word": {
+        "t1": "this",
+        "t2": "door",
+        "t3": "is"
+      },
+      "meaning_en": "This is a door.",
+      "image_refs": [
+        {
+          "image_id": "img-door",
+          "alt": "A door"
+        }
+      ],
+      "cloze_spans": [
+        {
+          "blank_index": 0,
+          "token_ids": ["t2"]
+        }
+      ],
+      "srs_uuids": ["srs-009", "srs-010"]
+    },
+    {
+      "sentence_id": "s1-006",
+      "tokens": [
+        {
+          "id": "t1",
+          "text": "هغه",
+          "transliteration": "haǧë",
+          "ipa": "haʁə"
+        },
+        {
+          "id": "t2",
+          "text": "کړکۍ",
+          "transliteration": "kṛakəy",
+          "ipa": "kɽakəj"
+        },
+        {
+          "id": "t3",
+          "text": "ده",
+          "transliteration": "da",
+          "ipa": "da"
+        }
+      ],
+      "text": "هغه کړکۍ ده",
+      "gloss_word_by_word": {
+        "t1": "that",
+        "t2": "window",
+        "t3": "is"
+      },
+      "meaning_en": "That is a window.",
+      "image_refs": [
+        {
+          "image_id": "img-window",
+          "alt": "A window"
+        }
+      ],
+      "cloze_spans": [
+        {
+          "blank_index": 0,
+          "token_ids": ["t2"]
+        }
+      ],
+      "srs_uuids": ["srs-011", "srs-012"]
+    }
+  ],
+  "exercises": [
+    {
+      "exercise_id": "ex-001",
+      "type": "sentence_to_image_match",
+      "correct_sentence_id": "s1-001",
+      "image_options": ["img-book", "img-pen", "img-table"],
+      "correct_image_id": "img-book"
+    },
+    {
+      "exercise_id": "ex-002",
+      "type": "word_bank_build",
+      "sentence_ids": ["s1-002"],
+      "word_bank": [
+        {
+          "id": "wb1",
+          "text": "هغه",
+          "token_id": "t1"
+        },
+        {
+          "id": "wb2",
+          "text": "قلم",
+          "token_id": "t2"
+        },
+        {
+          "id": "wb3",
+          "text": "دی",
+          "token_id": "t3"
+        },
+        {
+          "id": "wb4",
+          "text": "کتاب"
+        }
+      ]
+    },
+    {
+      "exercise_id": "ex-003",
+      "type": "gap_fill_single",
+      "sentence_ids": ["s1-003"],
+      "gap": {
+        "blank_index": 0,
+        "choices": ["میز", "قلم", "کتاب"],
+        "correct": "میز"
+      }
+    },
+    {
+      "exercise_id": "ex-004",
+      "type": "sentence_to_image_match",
+      "correct_sentence_id": "s1-004",
+      "image_options": ["img-chair", "img-door", "img-window"],
+      "correct_image_id": "img-chair"
+    },
+    {
+      "exercise_id": "ex-005",
+      "type": "word_bank_build",
+      "sentence_ids": ["s1-005"],
+      "word_bank": [
+        {
+          "id": "wb1",
+          "text": "دا",
+          "token_id": "t1"
+        },
+        {
+          "id": "wb2",
+          "text": "دروازه",
+          "token_id": "t2"
+        },
+        {
+          "id": "wb3",
+          "text": "ده",
+          "token_id": "t3"
+        },
+        {
+          "id": "wb4",
+          "text": "چوکۍ"
+        }
+      ]
+    },
+    {
+      "exercise_id": "ex-006",
+      "type": "gap_fill_single",
+      "sentence_ids": ["s1-006"],
+      "gap": {
+        "blank_index": 0,
+        "choices": ["کړکۍ", "میز", "دروازه"],
+        "correct": "کړکۍ"
+      }
+    }
+  ],
+  "srs": [
+    {
+      "srs_id": "srs-001",
+      "srs_type": "flip",
+      "tags": ["vocab", "noun"],
+      "source_sentence_id": "s1-001",
+      "flip": {
+        "front": "کتاب",
+        "back": {
+          "meaning_en": "book",
+          "transliteration": "kitāb",
+          "ipa": "kɪtɑːb"
+        }
+      }
+    },
+    {
+      "srs_id": "srs-002",
+      "srs_type": "cloze",
+      "tags": ["grammar", "demonstrative"],
+      "source_sentence_id": "s1-001",
+      "cloze": {
+        "template": "{{0}} کتاب دی",
+        "blanks": [
+          {
+            "blank_index": 0,
+            "fill": "دا"
+          }
+        ],
+        "meaning_en": "This is a book."
+      }
+    },
+    {
+      "srs_id": "srs-003",
+      "srs_type": "flip",
+      "tags": ["vocab", "noun"],
+      "source_sentence_id": "s1-002",
+      "flip": {
+        "front": "قلم",
+        "back": {
+          "meaning_en": "pen",
+          "transliteration": "qalam",
+          "ipa": "qalam"
+        }
+      }
+    },
+    {
+      "srs_id": "srs-004",
+      "srs_type": "cloze",
+      "tags": ["grammar", "demonstrative"],
+      "source_sentence_id": "s1-002",
+      "cloze": {
+        "template": "{{0}} قلم دی",
+        "blanks": [
+          {
+            "blank_index": 0,
+            "fill": "هغه"
+          }
+        ],
+        "meaning_en": "That is a pen."
+      }
+    },
+    {
+      "srs_id": "srs-005",
+      "srs_type": "flip",
+      "tags": ["vocab", "noun"],
+      "source_sentence_id": "s1-003",
+      "flip": {
+        "front": "میز",
+        "back": {
+          "meaning_en": "table",
+          "transliteration": "mez",
+          "ipa": "meːz"
+        }
+      }
+    },
+    {
+      "srs_id": "srs-006",
+      "srs_type": "cloze",
+      "tags": ["vocab", "noun"],
+      "source_sentence_id": "s1-003",
+      "cloze": {
+        "template": "دا {{0}} دی",
+        "blanks": [
+          {
+            "blank_index": 0,
+            "fill": "میز"
+          }
+        ],
+        "meaning_en": "This is a table."
+      }
+    },
+    {
+      "srs_id": "srs-007",
+      "srs_type": "flip",
+      "tags": ["vocab", "noun"],
+      "source_sentence_id": "s1-004",
+      "flip": {
+        "front": "چوکۍ",
+        "back": {
+          "meaning_en": "chair",
+          "transliteration": "čokəy",
+          "ipa": "t͡ʃoːkəj"
+        }
+      }
+    },
+    {
+      "srs_id": "srs-008",
+      "srs_type": "cloze",
+      "tags": ["vocab", "noun"],
+      "source_sentence_id": "s1-004",
+      "cloze": {
+        "template": "هغه {{0}} ده",
+        "blanks": [
+          {
+            "blank_index": 0,
+            "fill": "چوکۍ"
+          }
+        ],
+        "meaning_en": "That is a chair."
+      }
+    },
+    {
+      "srs_id": "srs-009",
+      "srs_type": "flip",
+      "tags": ["vocab", "noun"],
+      "source_sentence_id": "s1-005",
+      "flip": {
+        "front": "دروازه",
+        "back": {
+          "meaning_en": "door",
+          "transliteration": "darwāza",
+          "ipa": "darwɑːza"
+        }
+      }
+    },
+    {
+      "srs_id": "srs-010",
+      "srs_type": "cloze",
+      "tags": ["vocab", "noun"],
+      "source_sentence_id": "s1-005",
+      "cloze": {
+        "template": "دا {{0}} ده",
+        "blanks": [
+          {
+            "blank_index": 0,
+            "fill": "دروازه"
+          }
+        ],
+        "meaning_en": "This is a door."
+      }
+    },
+    {
+      "srs_id": "srs-011",
+      "srs_type": "flip",
+      "tags": ["vocab", "noun"],
+      "source_sentence_id": "s1-006",
+      "flip": {
+        "front": "کړکۍ",
+        "back": {
+          "meaning_en": "window",
+          "transliteration": "kṛakəy",
+          "ipa": "kɽakəj"
+        }
+      }
+    },
+    {
+      "srs_id": "srs-012",
+      "srs_type": "cloze",
+      "tags": ["vocab", "noun"],
+      "source_sentence_id": "s1-006",
+      "cloze": {
+        "template": "هغه {{0}} ده",
+        "blanks": [
+          {
+            "blank_index": 0,
+            "fill": "کړکۍ"
+          }
+        ],
+        "meaning_en": "That is a window."
+      }
+    }
+  ]
+}

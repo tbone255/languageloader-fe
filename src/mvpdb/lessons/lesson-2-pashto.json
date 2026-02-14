@@ -1,0 +1,550 @@
+{
+  "schema_version": "1.0.0",
+  "lesson_id": "b2c3d4e5-f6a7-4b8c-9d0e-1f2a3b4c5d6e",
+  "lesson_meta": {
+    "title": "Pluralization and These/Those",
+    "order": 2,
+    "description": "Learn plural forms and use 'these' and 'those' with plural nouns",
+    "objectives": [
+      "Form plural nouns in Pashto",
+      "Use demonstratives دا (dā) and هغه (haǧë) with plural contexts",
+      "Distinguish singular vs plural noun forms"
+    ]
+  },
+  "target_language": {
+    "iso_639_1": "ps",
+    "name": "Pashto",
+    "script": "Arabic",
+    "direction": "rtl"
+  },
+  "sentences": [
+    {
+      "sentence_id": "s2-001",
+      "tokens": [
+        {
+          "id": "t1",
+          "text": "دا",
+          "transliteration": "dā",
+          "ipa": "dɑː"
+        },
+        {
+          "id": "t2",
+          "text": "کتابونه",
+          "transliteration": "kitābuna",
+          "ipa": "kɪtɑːbʊna"
+        },
+        {
+          "id": "t3",
+          "text": "دي",
+          "transliteration": "dee",
+          "ipa": "diː"
+        }
+      ],
+      "text": "دا کتابونه دي",
+      "gloss_word_by_word": {
+        "t1": "these",
+        "t2": "books",
+        "t3": "are"
+      },
+      "meaning_en": "These are books.",
+      "image_refs": [
+        {
+          "image_id": "img-books-plural",
+          "alt": "Multiple books"
+        }
+      ],
+      "cloze_spans": [
+        {
+          "blank_index": 0,
+          "token_ids": ["t2"]
+        }
+      ],
+      "srs_uuids": ["srs-101", "srs-102"]
+    },
+    {
+      "sentence_id": "s2-002",
+      "tokens": [
+        {
+          "id": "t1",
+          "text": "هغه",
+          "transliteration": "haǧë",
+          "ipa": "haʁə"
+        },
+        {
+          "id": "t2",
+          "text": "قلمونه",
+          "transliteration": "qalamuna",
+          "ipa": "qalamʊna"
+        },
+        {
+          "id": "t3",
+          "text": "دي",
+          "transliteration": "dee",
+          "ipa": "diː"
+        }
+      ],
+      "text": "هغه قلمونه دي",
+      "gloss_word_by_word": {
+        "t1": "those",
+        "t2": "pens",
+        "t3": "are"
+      },
+      "meaning_en": "Those are pens.",
+      "image_refs": [
+        {
+          "image_id": "img-pens-plural",
+          "alt": "Multiple pens"
+        }
+      ],
+      "cloze_spans": [
+        {
+          "blank_index": 0,
+          "token_ids": ["t2"]
+        }
+      ],
+      "srs_uuids": ["srs-103", "srs-104"]
+    },
+    {
+      "sentence_id": "s2-003",
+      "tokens": [
+        {
+          "id": "t1",
+          "text": "دا",
+          "transliteration": "dā",
+          "ipa": "dɑː"
+        },
+        {
+          "id": "t2",
+          "text": "میزونه",
+          "transliteration": "mezuna",
+          "ipa": "meːzʊna"
+        },
+        {
+          "id": "t3",
+          "text": "دي",
+          "transliteration": "dee",
+          "ipa": "diː"
+        }
+      ],
+      "text": "دا میزونه دي",
+      "gloss_word_by_word": {
+        "t1": "these",
+        "t2": "tables",
+        "t3": "are"
+      },
+      "meaning_en": "These are tables.",
+      "image_refs": [
+        {
+          "image_id": "img-tables-plural",
+          "alt": "Multiple tables"
+        }
+      ],
+      "cloze_spans": [
+        {
+          "blank_index": 0,
+          "token_ids": ["t3"]
+        }
+      ],
+      "srs_uuids": ["srs-105", "srs-106"]
+    },
+    {
+      "sentence_id": "s2-004",
+      "tokens": [
+        {
+          "id": "t1",
+          "text": "هغه",
+          "transliteration": "haǧë",
+          "ipa": "haʁə"
+        },
+        {
+          "id": "t2",
+          "text": "چوکۍ",
+          "transliteration": "čokəy",
+          "ipa": "t͡ʃoːkəj"
+        },
+        {
+          "id": "t3",
+          "text": "دي",
+          "transliteration": "dee",
+          "ipa": "diː"
+        }
+      ],
+      "text": "هغه چوکۍ دي",
+      "gloss_word_by_word": {
+        "t1": "those",
+        "t2": "chairs",
+        "t3": "are"
+      },
+      "meaning_en": "Those are chairs.",
+      "image_refs": [
+        {
+          "image_id": "img-chairs-plural",
+          "alt": "Multiple chairs"
+        }
+      ],
+      "cloze_spans": [
+        {
+          "blank_index": 0,
+          "token_ids": ["t3"]
+        }
+      ],
+      "srs_uuids": ["srs-107", "srs-108"]
+    },
+    {
+      "sentence_id": "s2-005",
+      "tokens": [
+        {
+          "id": "t1",
+          "text": "دا",
+          "transliteration": "dā",
+          "ipa": "dɑː"
+        },
+        {
+          "id": "t2",
+          "text": "دروازې",
+          "transliteration": "darwāze",
+          "ipa": "darwɑːze"
+        },
+        {
+          "id": "t3",
+          "text": "دي",
+          "transliteration": "dee",
+          "ipa": "diː"
+        }
+      ],
+      "text": "دا دروازې دي",
+      "gloss_word_by_word": {
+        "t1": "these",
+        "t2": "doors",
+        "t3": "are"
+      },
+      "meaning_en": "These are doors.",
+      "image_refs": [
+        {
+          "image_id": "img-doors-plural",
+          "alt": "Multiple doors"
+        }
+      ],
+      "cloze_spans": [
+        {
+          "blank_index": 0,
+          "token_ids": ["t2"]
+        }
+      ],
+      "srs_uuids": ["srs-109", "srs-110"]
+    },
+    {
+      "sentence_id": "s2-006",
+      "tokens": [
+        {
+          "id": "t1",
+          "text": "هغه",
+          "transliteration": "haǧë",
+          "ipa": "haʁə"
+        },
+        {
+          "id": "t2",
+          "text": "کړکۍ",
+          "transliteration": "kṛakəy",
+          "ipa": "kɽakəj"
+        },
+        {
+          "id": "t3",
+          "text": "دي",
+          "transliteration": "dee",
+          "ipa": "diː"
+        }
+      ],
+      "text": "هغه کړکۍ دي",
+      "gloss_word_by_word": {
+        "t1": "those",
+        "t2": "windows",
+        "t3": "are"
+      },
+      "meaning_en": "Those are windows.",
+      "image_refs": [
+        {
+          "image_id": "img-windows-plural",
+          "alt": "Multiple windows"
+        }
+      ],
+      "cloze_spans": [
+        {
+          "blank_index": 0,
+          "token_ids": ["t2"]
+        }
+      ],
+      "srs_uuids": ["srs-111", "srs-112"]
+    }
+  ],
+  "exercises": [
+    {
+      "exercise_id": "ex-101",
+      "type": "sentence_to_image_match",
+      "correct_sentence_id": "s2-001",
+      "image_options": ["img-books-plural", "img-pens-plural", "img-tables-plural"],
+      "correct_image_id": "img-books-plural"
+    },
+    {
+      "exercise_id": "ex-102",
+      "type": "word_bank_build",
+      "sentence_ids": ["s2-002"],
+      "word_bank": [
+        {
+          "id": "wb1",
+          "text": "هغه",
+          "token_id": "t1"
+        },
+        {
+          "id": "wb2",
+          "text": "قلمونه",
+          "token_id": "t2"
+        },
+        {
+          "id": "wb3",
+          "text": "دي",
+          "token_id": "t3"
+        },
+        {
+          "id": "wb4",
+          "text": "کتابونه"
+        }
+      ]
+    },
+    {
+      "exercise_id": "ex-103",
+      "type": "gap_fill_single",
+      "sentence_ids": ["s2-003"],
+      "gap": {
+        "blank_index": 0,
+        "choices": ["دي", "دی", "ده"],
+        "correct": "دي"
+      }
+    },
+    {
+      "exercise_id": "ex-104",
+      "type": "sentence_to_image_match",
+      "correct_sentence_id": "s2-004",
+      "image_options": ["img-chairs-plural", "img-doors-plural", "img-windows-plural"],
+      "correct_image_id": "img-chairs-plural"
+    },
+    {
+      "exercise_id": "ex-105",
+      "type": "word_bank_build",
+      "sentence_ids": ["s2-005"],
+      "word_bank": [
+        {
+          "id": "wb1",
+          "text": "دا",
+          "token_id": "t1"
+        },
+        {
+          "id": "wb2",
+          "text": "دروازې",
+          "token_id": "t2"
+        },
+        {
+          "id": "wb3",
+          "text": "دي",
+          "token_id": "t3"
+        },
+        {
+          "id": "wb4",
+          "text": "میزونه"
+        }
+      ]
+    },
+    {
+      "exercise_id": "ex-106",
+      "type": "gap_fill_single",
+      "sentence_ids": ["s2-006"],
+      "gap": {
+        "blank_index": 0,
+        "choices": ["کړکۍ", "دروازې", "چوکۍ"],
+        "correct": "کړکۍ"
+      }
+    }
+  ],
+  "srs": [
+    {
+      "srs_id": "srs-101",
+      "srs_type": "flip",
+      "tags": ["vocab", "noun", "plural"],
+      "source_sentence_id": "s2-001",
+      "flip": {
+        "front": "کتابونه",
+        "back": {
+          "meaning_en": "books (plural)",
+          "transliteration": "kitābuna",
+          "ipa": "kɪtɑːbʊna"
+        }
+      }
+    },
+    {
+      "srs_id": "srs-102",
+      "srs_type": "cloze",
+      "tags": ["grammar", "plural"],
+      "source_sentence_id": "s2-001",
+      "cloze": {
+        "template": "دا {{0}} دي",
+        "blanks": [
+          {
+            "blank_index": 0,
+            "fill": "کتابونه"
+          }
+        ],
+        "meaning_en": "These are books."
+      }
+    },
+    {
+      "srs_id": "srs-103",
+      "srs_type": "flip",
+      "tags": ["vocab", "noun", "plural"],
+      "source_sentence_id": "s2-002",
+      "flip": {
+        "front": "قلمونه",
+        "back": {
+          "meaning_en": "pens (plural)",
+          "transliteration": "qalamuna",
+          "ipa": "qalamʊna"
+        }
+      }
+    },
+    {
+      "srs_id": "srs-104",
+      "srs_type": "cloze",
+      "tags": ["grammar", "plural"],
+      "source_sentence_id": "s2-002",
+      "cloze": {
+        "template": "هغه {{0}} دي",
+        "blanks": [
+          {
+            "blank_index": 0,
+            "fill": "قلمونه"
+          }
+        ],
+        "meaning_en": "Those are pens."
+      }
+    },
+    {
+      "srs_id": "srs-105",
+      "srs_type": "flip",
+      "tags": ["vocab", "noun", "plural"],
+      "source_sentence_id": "s2-003",
+      "flip": {
+        "front": "میزونه",
+        "back": {
+          "meaning_en": "tables (plural)",
+          "transliteration": "mezuna",
+          "ipa": "meːzʊna"
+        }
+      }
+    },
+    {
+      "srs_id": "srs-106",
+      "srs_type": "cloze",
+      "tags": ["grammar", "copula", "plural"],
+      "source_sentence_id": "s2-003",
+      "cloze": {
+        "template": "دا میزونه {{0}}",
+        "blanks": [
+          {
+            "blank_index": 0,
+            "fill": "دي"
+          }
+        ],
+        "meaning_en": "These are tables."
+      }
+    },
+    {
+      "srs_id": "srs-107",
+      "srs_type": "flip",
+      "tags": ["vocab", "noun", "plural"],
+      "source_sentence_id": "s2-004",
+      "flip": {
+        "front": "چوکۍ",
+        "back": {
+          "meaning_en": "chairs (plural)",
+          "transliteration": "čokəy",
+          "ipa": "t͡ʃoːkəj"
+        }
+      }
+    },
+    {
+      "srs_id": "srs-108",
+      "srs_type": "cloze",
+      "tags": ["grammar", "copula", "plural"],
+      "source_sentence_id": "s2-004",
+      "cloze": {
+        "template": "هغه چوکۍ {{0}}",
+        "blanks": [
+          {
+            "blank_index": 0,
+            "fill": "دي"
+          }
+        ],
+        "meaning_en": "Those are chairs."
+      }
+    },
+    {
+      "srs_id": "srs-109",
+      "srs_type": "flip",
+      "tags": ["vocab", "noun", "plural"],
+      "source_sentence_id": "s2-005",
+      "flip": {
+        "front": "دروازې",
+        "back": {
+          "meaning_en": "doors (plural)",
+          "transliteration": "darwāze",
+          "ipa": "darwɑːze"
+        }
+      }
+    },
+    {
+      "srs_id": "srs-110",
+      "srs_type": "cloze",
+      "tags": ["grammar", "plural"],
+      "source_sentence_id": "s2-005",
+      "cloze": {
+        "template": "دا {{0}} دي",
+        "blanks": [
+          {
+            "blank_index": 0,
+            "fill": "دروازې"
+          }
+        ],
+        "meaning_en": "These are doors."
+      }
+    },
+    {
+      "srs_id": "srs-111",
+      "srs_type": "flip",
+      "tags": ["vocab", "noun", "plural"],
+      "source_sentence_id": "s2-006",
+      "flip": {
+        "front": "کړکۍ",
+        "back": {
+          "meaning_en": "windows (plural)",
+          "transliteration": "kṛakəy",
+          "ipa": "kɽakəj"
+        }
+      }
+    },
+    {
+      "srs_id": "srs-112",
+      "srs_type": "cloze",
+      "tags": ["grammar", "plural"],
+      "source_sentence_id": "s2-006",
+      "cloze": {
+        "template": "هغه {{0}} دي",
+        "blanks": [
+          {
+            "blank_index": 0,
+            "fill": "کړکۍ"
+          }
+        ],
+        "meaning_en": "Those are windows."
+      }
+    }
+  ]
+}

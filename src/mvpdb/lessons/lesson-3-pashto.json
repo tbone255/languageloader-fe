@@ -1,0 +1,602 @@
+{
+  "schema_version": "1.0.0",
+  "lesson_id": "c3d4e5f6-a7b8-4c9d-0e1f-2a3b4c5d6e7f",
+  "lesson_meta": {
+    "title": "Possession and 'To Be'",
+    "order": 3,
+    "description": "Express ownership using possessives and form complete declarative sentences",
+    "objectives": [
+      "Use possessives زما (zmā) 'my' and ستا (stā) 'your'",
+      "Form complete sentences with possessive noun phrases",
+      "Understand subject-verb agreement with 'to be'"
+    ]
+  },
+  "target_language": {
+    "iso_639_1": "ps",
+    "name": "Pashto",
+    "script": "Arabic",
+    "direction": "rtl"
+  },
+  "sentences": [
+    {
+      "sentence_id": "s3-001",
+      "tokens": [
+        {
+          "id": "t1",
+          "text": "دا",
+          "transliteration": "dā",
+          "ipa": "dɑː"
+        },
+        {
+          "id": "t2",
+          "text": "زما",
+          "transliteration": "zmā",
+          "ipa": "zmɑː"
+        },
+        {
+          "id": "t3",
+          "text": "کتاب",
+          "transliteration": "kitāb",
+          "ipa": "kɪtɑːb"
+        },
+        {
+          "id": "t4",
+          "text": "دی",
+          "transliteration": "day",
+          "ipa": "daj"
+        }
+      ],
+      "text": "دا زما کتاب دی",
+      "gloss_word_by_word": {
+        "t1": "this",
+        "t2": "my",
+        "t3": "book",
+        "t4": "is"
+      },
+      "meaning_en": "This is my book.",
+      "image_refs": [
+        {
+          "image_id": "img-my-book",
+          "alt": "My book"
+        }
+      ],
+      "cloze_spans": [
+        {
+          "blank_index": 0,
+          "token_ids": ["t2"]
+        }
+      ],
+      "srs_uuids": ["srs-201", "srs-202"]
+    },
+    {
+      "sentence_id": "s3-002",
+      "tokens": [
+        {
+          "id": "t1",
+          "text": "هغه",
+          "transliteration": "haǧë",
+          "ipa": "haʁə"
+        },
+        {
+          "id": "t2",
+          "text": "ستا",
+          "transliteration": "stā",
+          "ipa": "stɑː"
+        },
+        {
+          "id": "t3",
+          "text": "قلم",
+          "transliteration": "qalam",
+          "ipa": "qalam"
+        },
+        {
+          "id": "t4",
+          "text": "دی",
+          "transliteration": "day",
+          "ipa": "daj"
+        }
+      ],
+      "text": "هغه ستا قلم دی",
+      "gloss_word_by_word": {
+        "t1": "that",
+        "t2": "your",
+        "t3": "pen",
+        "t4": "is"
+      },
+      "meaning_en": "That is your pen.",
+      "image_refs": [
+        {
+          "image_id": "img-your-pen",
+          "alt": "Your pen"
+        }
+      ],
+      "cloze_spans": [
+        {
+          "blank_index": 0,
+          "token_ids": ["t2"]
+        }
+      ],
+      "srs_uuids": ["srs-203", "srs-204"]
+    },
+    {
+      "sentence_id": "s3-003",
+      "tokens": [
+        {
+          "id": "t1",
+          "text": "دا",
+          "transliteration": "dā",
+          "ipa": "dɑː"
+        },
+        {
+          "id": "t2",
+          "text": "زما",
+          "transliteration": "zmā",
+          "ipa": "zmɑː"
+        },
+        {
+          "id": "t3",
+          "text": "کتابونه",
+          "transliteration": "kitābuna",
+          "ipa": "kɪtɑːbʊna"
+        },
+        {
+          "id": "t4",
+          "text": "دي",
+          "transliteration": "dee",
+          "ipa": "diː"
+        }
+      ],
+      "text": "دا زما کتابونه دي",
+      "gloss_word_by_word": {
+        "t1": "these",
+        "t2": "my",
+        "t3": "books",
+        "t4": "are"
+      },
+      "meaning_en": "These are my books.",
+      "image_refs": [
+        {
+          "image_id": "img-my-books",
+          "alt": "My books"
+        }
+      ],
+      "cloze_spans": [
+        {
+          "blank_index": 0,
+          "token_ids": ["t4"]
+        }
+      ],
+      "srs_uuids": ["srs-205", "srs-206"]
+    },
+    {
+      "sentence_id": "s3-004",
+      "tokens": [
+        {
+          "id": "t1",
+          "text": "هغه",
+          "transliteration": "haǧë",
+          "ipa": "haʁə"
+        },
+        {
+          "id": "t2",
+          "text": "ستا",
+          "transliteration": "stā",
+          "ipa": "stɑː"
+        },
+        {
+          "id": "t3",
+          "text": "میزونه",
+          "transliteration": "mezuna",
+          "ipa": "meːzʊna"
+        },
+        {
+          "id": "t4",
+          "text": "دي",
+          "transliteration": "dee",
+          "ipa": "diː"
+        }
+      ],
+      "text": "هغه ستا میزونه دي",
+      "gloss_word_by_word": {
+        "t1": "those",
+        "t2": "your",
+        "t3": "tables",
+        "t4": "are"
+      },
+      "meaning_en": "Those are your tables.",
+      "image_refs": [
+        {
+          "image_id": "img-your-tables",
+          "alt": "Your tables"
+        }
+      ],
+      "cloze_spans": [
+        {
+          "blank_index": 0,
+          "token_ids": ["t4"]
+        }
+      ],
+      "srs_uuids": ["srs-207", "srs-208"]
+    },
+    {
+      "sentence_id": "s3-005",
+      "tokens": [
+        {
+          "id": "t1",
+          "text": "دا",
+          "transliteration": "dā",
+          "ipa": "dɑː"
+        },
+        {
+          "id": "t2",
+          "text": "زما",
+          "transliteration": "zmā",
+          "ipa": "zmɑː"
+        },
+        {
+          "id": "t3",
+          "text": "دروازه",
+          "transliteration": "darwāza",
+          "ipa": "darwɑːza"
+        },
+        {
+          "id": "t4",
+          "text": "ده",
+          "transliteration": "da",
+          "ipa": "da"
+        }
+      ],
+      "text": "دا زما دروازه ده",
+      "gloss_word_by_word": {
+        "t1": "this",
+        "t2": "my",
+        "t3": "door",
+        "t4": "is"
+      },
+      "meaning_en": "This is my door.",
+      "image_refs": [
+        {
+          "image_id": "img-my-door",
+          "alt": "My door"
+        }
+      ],
+      "cloze_spans": [
+        {
+          "blank_index": 0,
+          "token_ids": ["t2"]
+        }
+      ],
+      "srs_uuids": ["srs-209", "srs-210"]
+    },
+    {
+      "sentence_id": "s3-006",
+      "tokens": [
+        {
+          "id": "t1",
+          "text": "هغه",
+          "transliteration": "haǧë",
+          "ipa": "haʁə"
+        },
+        {
+          "id": "t2",
+          "text": "ستا",
+          "transliteration": "stā",
+          "ipa": "stɑː"
+        },
+        {
+          "id": "t3",
+          "text": "چوکۍ",
+          "transliteration": "čokəy",
+          "ipa": "t͡ʃoːkəj"
+        },
+        {
+          "id": "t4",
+          "text": "دي",
+          "transliteration": "dee",
+          "ipa": "diː"
+        }
+      ],
+      "text": "هغه ستا چوکۍ دي",
+      "gloss_word_by_word": {
+        "t1": "those",
+        "t2": "your",
+        "t3": "chairs",
+        "t4": "are"
+      },
+      "meaning_en": "Those are your chairs.",
+      "image_refs": [
+        {
+          "image_id": "img-your-chairs",
+          "alt": "Your chairs"
+        }
+      ],
+      "cloze_spans": [
+        {
+          "blank_index": 0,
+          "token_ids": ["t2"]
+        }
+      ],
+      "srs_uuids": ["srs-211", "srs-212"]
+    }
+  ],
+  "exercises": [
+    {
+      "exercise_id": "ex-201",
+      "type": "sentence_to_image_match",
+      "correct_sentence_id": "s3-001",
+      "image_options": ["img-my-book", "img-your-pen", "img-my-books"],
+      "correct_image_id": "img-my-book"
+    },
+    {
+      "exercise_id": "ex-202",
+      "type": "word_bank_build",
+      "sentence_ids": ["s3-002"],
+      "word_bank": [
+        {
+          "id": "wb1",
+          "text": "هغه",
+          "token_id": "t1"
+        },
+        {
+          "id": "wb2",
+          "text": "ستا",
+          "token_id": "t2"
+        },
+        {
+          "id": "wb3",
+          "text": "قلم",
+          "token_id": "t3"
+        },
+        {
+          "id": "wb4",
+          "text": "دی",
+          "token_id": "t4"
+        },
+        {
+          "id": "wb5",
+          "text": "زما"
+        }
+      ]
+    },
+    {
+      "exercise_id": "ex-203",
+      "type": "gap_fill_single",
+      "sentence_ids": ["s3-003"],
+      "gap": {
+        "blank_index": 0,
+        "choices": ["دي", "دی", "ده"],
+        "correct": "دي"
+      }
+    },
+    {
+      "exercise_id": "ex-204",
+      "type": "sentence_to_image_match",
+      "correct_sentence_id": "s3-004",
+      "image_options": ["img-your-tables", "img-my-door", "img-your-chairs"],
+      "correct_image_id": "img-your-tables"
+    },
+    {
+      "exercise_id": "ex-205",
+      "type": "word_bank_build",
+      "sentence_ids": ["s3-005"],
+      "word_bank": [
+        {
+          "id": "wb1",
+          "text": "دا",
+          "token_id": "t1"
+        },
+        {
+          "id": "wb2",
+          "text": "زما",
+          "token_id": "t2"
+        },
+        {
+          "id": "wb3",
+          "text": "دروازه",
+          "token_id": "t3"
+        },
+        {
+          "id": "wb4",
+          "text": "ده",
+          "token_id": "t4"
+        },
+        {
+          "id": "wb5",
+          "text": "ستا"
+        }
+      ]
+    },
+    {
+      "exercise_id": "ex-206",
+      "type": "gap_fill_single",
+      "sentence_ids": ["s3-006"],
+      "gap": {
+        "blank_index": 0,
+        "choices": ["ستا", "زما", "دا"],
+        "correct": "ستا"
+      }
+    }
+  ],
+  "srs": [
+    {
+      "srs_id": "srs-201",
+      "srs_type": "flip",
+      "tags": ["vocab", "possessive"],
+      "source_sentence_id": "s3-001",
+      "flip": {
+        "front": "زما",
+        "back": {
+          "meaning_en": "my",
+          "transliteration": "zmā",
+          "ipa": "zmɑː"
+        }
+      }
+    },
+    {
+      "srs_id": "srs-202",
+      "srs_type": "cloze",
+      "tags": ["grammar", "possessive"],
+      "source_sentence_id": "s3-001",
+      "cloze": {
+        "template": "دا {{0}} کتاب دی",
+        "blanks": [
+          {
+            "blank_index": 0,
+            "fill": "زما"
+          }
+        ],
+        "meaning_en": "This is my book."
+      }
+    },
+    {
+      "srs_id": "srs-203",
+      "srs_type": "flip",
+      "tags": ["vocab", "possessive"],
+      "source_sentence_id": "s3-002",
+      "flip": {
+        "front": "ستا",
+        "back": {
+          "meaning_en": "your",
+          "transliteration": "stā",
+          "ipa": "stɑː"
+        }
+      }
+    },
+    {
+      "srs_id": "srs-204",
+      "srs_type": "cloze",
+      "tags": ["grammar", "possessive"],
+      "source_sentence_id": "s3-002",
+      "cloze": {
+        "template": "هغه {{0}} قلم دی",
+        "blanks": [
+          {
+            "blank_index": 0,
+            "fill": "ستا"
+          }
+        ],
+        "meaning_en": "That is your pen."
+      }
+    },
+    {
+      "srs_id": "srs-205",
+      "srs_type": "flip",
+      "tags": ["grammar", "possessive", "plural"],
+      "source_sentence_id": "s3-003",
+      "flip": {
+        "front": "زما کتابونه",
+        "back": {
+          "meaning_en": "my books",
+          "transliteration": "zmā kitābuna",
+          "ipa": "zmɑː kɪtɑːbʊna"
+        }
+      }
+    },
+    {
+      "srs_id": "srs-206",
+      "srs_type": "cloze",
+      "tags": ["grammar", "copula", "plural"],
+      "source_sentence_id": "s3-003",
+      "cloze": {
+        "template": "دا زما کتابونه {{0}}",
+        "blanks": [
+          {
+            "blank_index": 0,
+            "fill": "دي"
+          }
+        ],
+        "meaning_en": "These are my books."
+      }
+    },
+    {
+      "srs_id": "srs-207",
+      "srs_type": "flip",
+      "tags": ["grammar", "possessive", "plural"],
+      "source_sentence_id": "s3-004",
+      "flip": {
+        "front": "ستا میزونه",
+        "back": {
+          "meaning_en": "your tables",
+          "transliteration": "stā mezuna",
+          "ipa": "stɑː meːzʊna"
+        }
+      }
+    },
+    {
+      "srs_id": "srs-208",
+      "srs_type": "cloze",
+      "tags": ["grammar", "copula", "plural"],
+      "source_sentence_id": "s3-004",
+      "cloze": {
+        "template": "هغه ستا میزونه {{0}}",
+        "blanks": [
+          {
+            "blank_index": 0,
+            "fill": "دي"
+          }
+        ],
+        "meaning_en": "Those are your tables."
+      }
+    },
+    {
+      "srs_id": "srs-209",
+      "srs_type": "flip",
+      "tags": ["grammar", "possessive"],
+      "source_sentence_id": "s3-005",
+      "flip": {
+        "front": "زما دروازه",
+        "back": {
+          "meaning_en": "my door",
+          "transliteration": "zmā darwāza",
+          "ipa": "zmɑː darwɑːza"
+        }
+      }
+    },
+    {
+      "srs_id": "srs-210",
+      "srs_type": "cloze",
+      "tags": ["grammar", "possessive"],
+      "source_sentence_id": "s3-005",
+      "cloze": {
+        "template": "دا {{0}} دروازه ده",
+        "blanks": [
+          {
+            "blank_index": 0,
+            "fill": "زما"
+          }
+        ],
+        "meaning_en": "This is my door."
+      }
+    },
+    {
+      "srs_id": "srs-211",
+      "srs_type": "flip",
+      "tags": ["grammar", "possessive", "plural"],
+      "source_sentence_id": "s3-006",
+      "flip": {
+        "front": "ستا چوکۍ",
+        "back": {
+          "meaning_en": "your chairs",
+          "transliteration": "stā čokəy",
+          "ipa": "stɑː t͡ʃoːkəj"
+        }
+      }
+    },
+    {
+      "srs_id": "srs-212",
+      "srs_type": "cloze",
+      "tags": ["grammar", "possessive"],
+      "source_sentence_id": "s3-006",
+      "cloze": {
+        "template": "هغه {{0}} چوکۍ دي",
+        "blanks": [
+          {
+            "blank_index": 0,
+            "fill": "ستا"
+          }
+        ],
+        "meaning_en": "Those are your chairs."
+      }
+    }
+  ]
+}
