@@ -1,6 +1,7 @@
 import './App.css';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 
+import AppLayout from './components/AppLayout';
 import RedirectPage from './pages/RedirectPage';
 import LearnHomePage from './pages/LearnHomePage';
 import LessonPage from './pages/LessonPage';
@@ -13,7 +14,7 @@ import Demo from './pages/Demo';
 function App() {
   return (
     <BrowserRouter basename="/languageloader-fe">
-      <div className="app">
+      <AppLayout>
         <Routes>
           <Route path="/" element={<RedirectPage />} />
           <Route path="/learn" element={<LearnHomePage />} />
@@ -24,7 +25,7 @@ function App() {
           <Route path="/debug" element={<DebugPage />} />
           <Route path="/demo" element={<Demo />} />
         </Routes>
-      </div>
+      </AppLayout>
     </BrowserRouter>
   );
 }
