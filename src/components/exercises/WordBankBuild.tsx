@@ -23,6 +23,7 @@ export default function WordBankBuild({
   const [availableWords, setAvailableWords] = useState<string[]>([]);
   const [showFeedback, setShowFeedback] = useState(false);
   const [isCorrect, setIsCorrect] = useState(false);
+  const [fadeOut, setFadeOut] = useState(false);
 
   // Shuffle word bank on mount
   useEffect(() => {
@@ -69,11 +70,13 @@ export default function WordBankBuild({
 
     setIsCorrect(correct);
     setShowFeedback(true);
+  };
 
-    // Auto-advance after delay
+  const handleContinue = () => {
+    setFadeOut(true);
     setTimeout(() => {
-      onComplete(correct);
-    }, 2000);
+      onComplete(isCorrect);
+    }, 300);
   };
 
   const getWordText = (wordId: string): string => {
@@ -81,7 +84,7 @@ export default function WordBankBuild({
   };
 
   return (
-    <div className="max-w-4xl mx-auto">
+    <div className={`max-w-4xl mx-auto transition-opacity duration-300 ${fadeOut ? 'opacity-0' : 'opacity-100'}`}>
       <div className="mb-8">
         <h2 className="text-xl font-semibold mb-4">Build the sentence</h2>
         {sentence.meaning_en && (
@@ -153,37 +156,42 @@ export default function WordBankBuild({
 
       {/* Feedback */}
       {showFeedback && (
-        <div className={`alert ${isCorrect ? 'alert-success' : 'alert-error'}`}>
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            className="stroke-current shrink-0 h-6 w-6"
-            fill="none"
-            viewBox="0 0 24 24"
-          >
-            {isCorrect ? (
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth="2"
-                d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
-              />
-            ) : (
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth="2"
-                d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"
-              />
-            )}
-          </svg>
-          <div>
-            <div className="font-bold">{isCorrect ? 'Correct!' : 'Not quite right'}</div>
-            {!isCorrect && (
-              <div className="text-sm" dir="rtl" lang="ps">
-                Correct answer: {sentence.tokens.map((t) => t.text).join(' ')}
-              </div>
-            )}
+        <div className="space-y-4">
+          <div className={`alert ${isCorrect ? 'alert-success' : 'alert-error'}`}>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="stroke-current shrink-0 h-6 w-6"
+              fill="none"
+              viewBox="0 0 24 24"
+            >
+              {isCorrect ? (
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+                />
+              ) : (
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"
+                />
+              )}
+            </svg>
+            <div>
+              <div className="font-bold">{isCorrect ? 'Correct!' : 'Not quite right'}</div>
+              {!isCorrect && (
+                <div className="text-sm" dir="rtl" lang="ps">
+                  Correct answer: {sentence.tokens.map((t) => t.text).join(' ')}
+                </div>
+              )}
+            </div>
           </div>
+          <button onClick={handleContinue} className="btn btn-primary btn-wide">
+            Continue
+          </button>
         </div>
       )}
     </div>

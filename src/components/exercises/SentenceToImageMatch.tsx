@@ -22,6 +22,7 @@ export default function SentenceToImageMatch({
   const [selectedImageId, setSelectedImageId] = useState<string | null>(null);
   const [showFeedback, setShowFeedback] = useState(false);
   const [isCorrect, setIsCorrect] = useState(false);
+  const [fadeOut, setFadeOut] = useState(false);
 
   const handleImageClick = (imageId: string) => {
     if (showFeedback) return; // Disable clicks after answer
@@ -30,11 +31,13 @@ export default function SentenceToImageMatch({
     const correct = imageId === exercise.correct_image_id;
     setIsCorrect(correct);
     setShowFeedback(true);
+  };
 
-    // Auto-advance after delay
+  const handleContinue = () => {
+    setFadeOut(true);
     setTimeout(() => {
-      onComplete(correct);
-    }, 1500);
+      onComplete(isCorrect);
+    }, 300);
   };
 
   // Render sentence with interactive tokens
@@ -50,7 +53,7 @@ export default function SentenceToImageMatch({
   };
 
   return (
-    <div className="max-w-4xl mx-auto">
+    <div className={`max-w-4xl mx-auto transition-opacity duration-300 ${fadeOut ? 'opacity-0' : 'opacity-100'}`}>
       <div className="mb-8">
         <h2 className="text-xl font-semibold mb-4">Select the matching image</h2>
         {renderSentence()}
@@ -91,30 +94,35 @@ export default function SentenceToImageMatch({
 
       {/* Feedback */}
       {showFeedback && (
-        <div className={`alert mt-6 ${isCorrect ? 'alert-success' : 'alert-error'}`}>
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            className="stroke-current shrink-0 h-6 w-6"
-            fill="none"
-            viewBox="0 0 24 24"
-          >
-            {isCorrect ? (
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth="2"
-                d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
-              />
-            ) : (
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth="2"
-                d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"
-              />
-            )}
-          </svg>
-          <span>{isCorrect ? 'Correct!' : 'Try again next time'}</span>
+        <div className="mt-6 space-y-4">
+          <div className={`alert ${isCorrect ? 'alert-success' : 'alert-error'}`}>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="stroke-current shrink-0 h-6 w-6"
+              fill="none"
+              viewBox="0 0 24 24"
+            >
+              {isCorrect ? (
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+                />
+              ) : (
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"
+                />
+              )}
+            </svg>
+            <span>{isCorrect ? 'Correct!' : 'Try again next time'}</span>
+          </div>
+          <button onClick={handleContinue} className="btn btn-primary btn-wide">
+            Continue
+          </button>
         </div>
       )}
     </div>

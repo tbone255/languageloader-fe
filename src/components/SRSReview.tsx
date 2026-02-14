@@ -214,14 +214,9 @@ function renderFlipCard(card: SRSItemCard, showAnswer: boolean, sentences: Map<s
   );
 }
 
-function renderClozeCard(card: SRSItemCard, showAnswer: boolean, sentences: Map<string, Sentence>) {
+function renderClozeCard(card: SRSItemCard, showAnswer: boolean, _sentences: Map<string, Sentence>) {
   const cloze = card.item.cloze;
   if (!cloze) return null;
-
-  // Try to find the source sentence for interactive display
-  const sourceSentence = card.item.source_sentence_id
-    ? sentences.get(card.item.source_sentence_id)
-    : null;
 
   // Replace {{0}}, {{1}}, etc. with blanks or fills
   const renderTemplate = () => {
@@ -246,20 +241,9 @@ function renderClozeCard(card: SRSItemCard, showAnswer: boolean, sentences: Map<
     <div className="w-full">
       <div className="mb-6">
         <p className="text-sm uppercase opacity-60 mb-2">Complete the sentence</p>
-        {!showAnswer && sourceSentence ? (
-          <div>
-            <p className="text-4xl leading-relaxed" dir="rtl" lang="ps">
-              {renderTemplate()}
-            </p>
-            <p className="text-sm text-base-content/50 mt-2 italic">
-              Hover over words for help
-            </p>
-          </div>
-        ) : (
-          <p className="text-4xl leading-relaxed" dir="rtl" lang="ps">
-            {renderTemplate()}
-          </p>
-        )}
+        <p className="text-4xl leading-relaxed" dir="rtl" lang="ps">
+          {renderTemplate()}
+        </p>
       </div>
 
       {showAnswer && (
