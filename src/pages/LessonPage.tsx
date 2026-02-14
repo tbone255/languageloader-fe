@@ -16,6 +16,7 @@ import type { Lesson, Exercise } from '../types/lesson';
 import SentenceToImageMatch from '../components/exercises/SentenceToImageMatch';
 import WordBankBuild from '../components/exercises/WordBankBuild';
 import GapFill from '../components/exercises/GapFill';
+import TokenizedText from '../components/TokenizedText';
 
 type LessonState = 'loading' | 'intro' | 'exercise' | 'completion';
 
@@ -118,6 +119,14 @@ export default function LessonPage() {
                 <div className="stat-value text-2xl">{lesson.srs.length}</div>
               </div>
             </div>
+
+            {/* Preview sentence with interactive tokens */}
+            {lesson.sentences.length > 0 && (
+              <div className="bg-base-200 rounded-lg p-6 mb-6">
+                <p className="text-sm uppercase opacity-60 mb-3">Example Sentence</p>
+                <TokenizedText sentence={lesson.sentences[0]} size="xl" />
+              </div>
+            )}
 
             <div className="card-actions justify-end">
               <button onClick={handleStartLesson} className="btn btn-primary btn-lg btn-wide">

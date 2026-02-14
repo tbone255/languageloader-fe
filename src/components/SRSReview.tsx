@@ -10,12 +10,15 @@ import { Rating } from 'ts-fsrs';
 import { srsItemService } from '../services/srsItemService';
 import type { SRSItemCard } from '../services/srsItemService';
 import { getAllLessons } from '../services/lessonService';
+import type { Sentence } from '../types/lesson';
+import TokenizedText from './TokenizedText';
 
 export default function SRSReview() {
   const [dueCards, setDueCards] = useState<SRSItemCard[]>([]);
   const [currentCardIndex, setCurrentCardIndex] = useState(0);
   const [showAnswer, setShowAnswer] = useState(false);
   const [isLoaded, setIsLoaded] = useState(false);
+  const [sentences, setSentences] = useState<Map<string, Sentence>>(new Map());
 
   useEffect(() => {
     loadCardsAndData();
@@ -28,9 +31,15 @@ export default function SRSReview() {
     // Load all lessons to get SRS item definitions (content)
     // This only registers item data, doesn't create new cards
     const lessons = await getAllLessons();
+    const sentenceMap = new Map<string, Sentence>();
+
     for (const lesson of lessons) {
       srsItemService.registerItemData(lesson.srs);
+      // Build sentence lookup map
+      lesson.sentences.forEach((s) => sentenceMap.set(s.sentence_id, s));
     }
+
+    setSentences(sentenceMap);
 
     // Get due cards (only includes cards created when lessons were completed)
     const due = srsItemService.getDueCards();
@@ -103,8 +112,8 @@ export default function SRSReview() {
       {/* Card */}
       <div className="card bg-base-100 shadow-lg min-h-[400px]">
         <div className="card-body flex flex-col justify-center items-center text-center">
-          {currentCard.item.srs_type === 'flip' && renderFlipCard(currentCard, showAnswer)}
-          {currentCard.item.srs_type === 'cloze' && renderClozeCard(currentCard, showAnswer)}
+          {currentCard.item.srs_type === 'flip' && renderFlipCard(currentCard, showAnswer, sentences)}
+          {currentCard.item.srs_type === 'cloze' && renderClozeCard(currentCard, showAnswer, sentences)}
 
           {/* Show Answer button */}
           {!showAnswer && (
@@ -155,18 +164,34 @@ export default function SRSReview() {
   );
 }
 
-function renderFlipCard(card: SRSItemCard, showAnswer: boolean) {
+function renderFlipCard(card: SRSItemCard, showAnswer: boolean, sentences: Map<string, Sentence>) {
   const flip = card.item.flip;
   if (!flip) return null;
+
+  // Try to find the source sentence for interactive display
+  const sourceSentence = card.item.source_sentence_id
+    ? sentences.get(card.item.source_sentence_id)
+    : null;
+
+  // Check if the front is a single word (vocab card) vs full sentence
+  const isSingleWord = !flip.front.includes(' ');
 
   return (
     <div className="w-full">
       {/* Front */}
       <div className="mb-6">
         <p className="text-sm uppercase opacity-60 mb-2">Front</p>
-        <p className="text-5xl" dir="rtl" lang="ps">
-          {flip.front}
-        </p>
+        {isSingleWord ? (
+          <p className="text-5xl" dir="rtl" lang="ps">
+            {flip.front}
+          </p>
+        ) : sourceSentence ? (
+          <TokenizedText sentence={sourceSentence} size="4xl" />
+        ) : (
+          <p className="text-4xl" dir="rtl" lang="ps">
+            {flip.front}
+          </p>
+        )}
       </div>
 
       {/* Back */}
@@ -189,9 +214,14 @@ function renderFlipCard(card: SRSItemCard, showAnswer: boolean) {
   );
 }
 
-function renderClozeCard(card: SRSItemCard, showAnswer: boolean) {
+function renderClozeCard(card: SRSItemCard, showAnswer: boolean, sentences: Map<string, Sentence>) {
   const cloze = card.item.cloze;
   if (!cloze) return null;
+
+  // Try to find the source sentence for interactive display
+  const sourceSentence = card.item.source_sentence_id
+    ? sentences.get(card.item.source_sentence_id)
+    : null;
 
   // Replace {{0}}, {{1}}, etc. with blanks or fills
   const renderTemplate = () => {
@@ -216,9 +246,20 @@ function renderClozeCard(card: SRSItemCard, showAnswer: boolean) {
     <div className="w-full">
       <div className="mb-6">
         <p className="text-sm uppercase opacity-60 mb-2">Complete the sentence</p>
-        <p className="text-4xl leading-relaxed" dir="rtl" lang="ps">
-          {renderTemplate()}
-        </p>
+        {!showAnswer && sourceSentence ? (
+          <div>
+            <p className="text-4xl leading-relaxed" dir="rtl" lang="ps">
+              {renderTemplate()}
+            </p>
+            <p className="text-sm text-base-content/50 mt-2 italic">
+              Hover over words for help
+            </p>
+          </div>
+        ) : (
+          <p className="text-4xl leading-relaxed" dir="rtl" lang="ps">
+            {renderTemplate()}
+          </p>
+        )}
       </div>
 
       {showAnswer && (

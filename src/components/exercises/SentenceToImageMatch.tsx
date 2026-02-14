@@ -6,6 +6,7 @@
 
 import { useState } from 'react';
 import type { Exercise, Sentence } from '../../types/lesson';
+import TokenizedText from '../TokenizedText';
 
 interface SentenceToImageMatchProps {
   exercise: Exercise;
@@ -36,15 +37,14 @@ export default function SentenceToImageMatch({
     }, 1500);
   };
 
-  // Render sentence with RTL support
+  // Render sentence with interactive tokens
   const renderSentence = () => {
-    const text = sentence.text || sentence.tokens.map((t) => t.text).join(' ');
     return (
       <div className="text-center mb-6">
-        <p className="text-3xl mb-2" dir="rtl" lang="ps">
-          {text}
+        <TokenizedText sentence={sentence} size="3xl" />
+        <p className="text-sm text-base-content/50 mt-2 italic">
+          Hover over words for translations
         </p>
-        <p className="text-lg text-base-content/70">{sentence.meaning_en}</p>
       </div>
     );
   };
