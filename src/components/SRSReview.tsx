@@ -22,16 +22,17 @@ export default function SRSReview() {
   }, []);
 
   const loadCardsAndData = async () => {
-    // Load all lessons to register their SRS items
-    const lessons = await getAllLessons();
-    for (const lesson of lessons) {
-      srsItemService.registerSRSItems(lesson.srs);
-    }
-
-    // Load card states from localStorage
+    // Load card states from localStorage first
     srsItemService.loadFromStorage();
 
-    // Get due cards
+    // Load all lessons to get SRS item definitions (content)
+    // This only registers item data, doesn't create new cards
+    const lessons = await getAllLessons();
+    for (const lesson of lessons) {
+      srsItemService.registerItemData(lesson.srs);
+    }
+
+    // Get due cards (only includes cards created when lessons were completed)
     const due = srsItemService.getDueCards();
     setDueCards(due);
     setIsLoaded(true);

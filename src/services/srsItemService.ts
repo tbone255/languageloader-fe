@@ -41,15 +41,31 @@ export class SRSItemService {
   private itemData: Map<string, SRSItem> = new Map(); // srs_id -> SRSItem
 
   /**
-   * Register SRS items from a lesson.
-   * Creates cards for new items, preserves existing card state.
+   * Register item data (content) without creating cards.
+   * Use this to load item definitions for display.
    */
-  registerSRSItems(items: SRSItem[]): void {
+  registerItemData(items: SRSItem[]): void {
+    for (const item of items) {
+      this.itemData.set(item.srs_id, item);
+
+      // If card already exists, update its item reference
+      if (this.cards.has(item.srs_id)) {
+        const existing = this.cards.get(item.srs_id)!;
+        existing.item = item;
+      }
+    }
+  }
+
+  /**
+   * Create cards for SRS items (called when lesson is completed).
+   * Only creates new cards if they don't already exist.
+   */
+  createCardsForItems(items: SRSItem[]): void {
     for (const item of items) {
       // Store item data
       this.itemData.set(item.srs_id, item);
 
-      // If card doesn't exist, create it
+      // Create card if it doesn't exist
       if (!this.cards.has(item.srs_id)) {
         this.cards.set(item.srs_id, {
           srs_id: item.srs_id,

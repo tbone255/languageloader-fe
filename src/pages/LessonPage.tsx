@@ -73,8 +73,8 @@ export default function LessonPage() {
     // Mark lesson as completed
     markLessonCompleted(lesson.lesson_id);
 
-    // Register SRS items
-    srsItemService.registerSRSItems(lesson.srs);
+    // Create SRS cards for this lesson
+    srsItemService.createCardsForItems(lesson.srs);
   };
 
   if (state === 'loading' || !lesson) {
