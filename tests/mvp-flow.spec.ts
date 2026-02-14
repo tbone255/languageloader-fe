@@ -25,10 +25,11 @@ test.describe('LanguageLoader MVP', () => {
     // Check navbar exists
     await expect(page.locator('nav, .navbar')).toBeVisible();
 
-    // Check navigation links
-    await expect(page.getByText('Learn')).toBeVisible();
-    await expect(page.getByText('Review')).toBeVisible();
-    await expect(page.getByText('Settings')).toBeVisible();
+    // Check navigation links in navbar
+    const navbar = page.locator('.navbar');
+    await expect(navbar.getByRole('link', { name: 'Learn' })).toBeVisible();
+    await expect(navbar.getByRole('link', { name: 'Review' })).toBeVisible();
+    await expect(navbar.getByRole('link', { name: 'Settings' })).toBeVisible();
   });
 
   test('should redirect root to /learn', async ({ page }) => {
@@ -50,10 +51,10 @@ test.describe('LanguageLoader MVP', () => {
 
     // Lessons 2 and 3 should be locked
     const lesson2Card = page.locator('.card').filter({ hasText: 'Lesson 2' });
-    await expect(lesson2Card.getByText('Locked')).toBeVisible();
+    await expect(lesson2Card.getByRole('button', { name: 'Locked' })).toBeVisible();
 
     const lesson3Card = page.locator('.card').filter({ hasText: 'Lesson 3' });
-    await expect(lesson3Card.getByText('Locked')).toBeVisible();
+    await expect(lesson3Card.getByRole('button', { name: 'Locked' })).toBeVisible();
   });
 
   test('should show no SRS review CTA initially', async ({ page }) => {
@@ -74,10 +75,11 @@ test.describe('LanguageLoader MVP', () => {
     await expect(page.getByText('Learning Objectives:')).toBeVisible();
 
     // Check stats
-    await expect(page.getByText('Exercises')).toBeVisible();
-    await expect(page.getByText('6')).toBeVisible(); // 6 exercises
-    await expect(page.getByText('New Cards')).toBeVisible();
-    await expect(page.getByText('12')).toBeVisible(); // 12 SRS cards
+    const stats = page.locator('.stats');
+    await expect(stats.getByText('Exercises')).toBeVisible();
+    await expect(stats.getByText('6', { exact: true })).toBeVisible(); // 6 exercises
+    await expect(stats.getByText('New Cards')).toBeVisible();
+    await expect(stats.getByText('12', { exact: true })).toBeVisible(); // 12 SRS cards
 
     // Click Start Lesson
     await page.getByText('Start Lesson').click();
@@ -88,41 +90,33 @@ test.describe('LanguageLoader MVP', () => {
     // Complete all 6 exercises
     for (let i = 0; i < 6; i++) {
       // Wait for exercise to load
-      await page.waitForTimeout(500);
+      await page.waitForTimeout(1000);
 
-      // Try to find and click an answer
-      // For sentence-to-image: click an image/button
-      // For word bank: click words then submit
-      // For gap fill: click a choice
+      const submitButton = page.getByRole('button', { name: 'Check Answer' });
+      const isWordBank = await submitButton.isVisible({ timeout: 500 }).catch(() => false);
 
-      const submitButton = page.getByText('Check Answer');
-      if (await submitButton.isVisible()) {
-        // Word bank exercise - click some words then submit
-        const wordButtons = page.locator('.btn-outline').filter({ hasText: /\p{Script=Arabic}/u });
+      if (isWordBank) {
+        // Word bank exercise - click words in construction zone
+        const wordButtons = page.locator('.btn-outline[lang="ps"]');
         const count = await wordButtons.count();
-        for (let j = 0; j < Math.min(3, count); j++) {
-          await wordButtons.nth(j).click();
-          await page.waitForTimeout(200);
+        // Click all words in order
+        for (let j = 0; j < count; j++) {
+          await wordButtons.first().click();
+          await page.waitForTimeout(300);
         }
         await submitButton.click();
       } else {
-        // Image match or gap fill - click first available option
-        const choiceButtons = page.locator('.btn, button').filter({ hasNotText: 'Exercise' });
-        const visibleButtons = await choiceButtons.all();
-        for (const btn of visibleButtons) {
-          if (await btn.isVisible()) {
-            try {
-              await btn.click({ timeout: 1000 });
-              break;
-            } catch {
-              continue;
-            }
-          }
+        // Image match or gap fill - click first clickable option
+        // Look for cards or choice buttons
+        const imageCards = page.locator('.card.cursor-pointer, .btn[lang="ps"]');
+        const count = await imageCards.count();
+        if (count > 0) {
+          await imageCards.first().click();
         }
       }
 
-      // Wait for auto-advance
-      await page.waitForTimeout(2000);
+      // Wait for feedback and auto-advance
+      await page.waitForTimeout(2500);
     }
 
     // Should see completion screen
@@ -139,20 +133,28 @@ test.describe('LanguageLoader MVP', () => {
 
     // Quick complete (click through exercises)
     for (let i = 0; i < 6; i++) {
-      await page.waitForTimeout(500);
-      const buttons = page.locator('button');
-      const visibleButtons = await buttons.all();
-      for (const btn of visibleButtons) {
-        if (await btn.isVisible()) {
-          try {
-            await btn.click({ timeout: 500 });
-            break;
-          } catch {
-            continue;
-          }
+      await page.waitForTimeout(1000);
+
+      const submitButton = page.getByRole('button', { name: 'Check Answer' });
+      const isWordBank = await submitButton.isVisible({ timeout: 500 }).catch(() => false);
+
+      if (isWordBank) {
+        const wordButtons = page.locator('.btn-outline[lang="ps"]');
+        const count = await wordButtons.count();
+        for (let j = 0; j < count; j++) {
+          await wordButtons.first().click();
+          await page.waitForTimeout(300);
+        }
+        await submitButton.click();
+      } else {
+        const imageCards = page.locator('.card.cursor-pointer, .btn[lang="ps"]');
+        const count = await imageCards.count();
+        if (count > 0) {
+          await imageCards.first().click();
         }
       }
-      await page.waitForTimeout(1500);
+
+      await page.waitForTimeout(2500);
     }
 
     // Go back to learn page
@@ -168,7 +170,7 @@ test.describe('LanguageLoader MVP', () => {
 
     // Lesson 3 should still be locked
     const lesson3Card = page.locator('.card').filter({ hasText: 'Lesson 3' });
-    await expect(lesson3Card.getByText('Locked')).toBeVisible();
+    await expect(lesson3Card.getByRole('button', { name: 'Locked' })).toBeVisible();
 
     // Should see SRS review CTA
     await expect(page.getByText(/cards due for review/)).toBeVisible();
@@ -181,21 +183,32 @@ test.describe('LanguageLoader MVP', () => {
     await page.getByText('Start Lesson').click();
 
     for (let i = 0; i < 6; i++) {
-      await page.waitForTimeout(500);
-      const buttons = page.locator('button');
-      const visibleButtons = await buttons.all();
-      for (const btn of visibleButtons) {
-        if (await btn.isVisible()) {
-          try {
-            await btn.click({ timeout: 500 });
-            break;
-          } catch {
-            continue;
-          }
+      await page.waitForTimeout(1000);
+
+      const submitButton = page.getByRole('button', { name: 'Check Answer' });
+      const isWordBank = await submitButton.isVisible({ timeout: 500 }).catch(() => false);
+
+      if (isWordBank) {
+        const wordButtons = page.locator('.btn-outline[lang="ps"]');
+        const count = await wordButtons.count();
+        for (let j = 0; j < count; j++) {
+          await wordButtons.first().click();
+          await page.waitForTimeout(300);
+        }
+        await submitButton.click();
+      } else {
+        const imageCards = page.locator('.card.cursor-pointer, .btn[lang="ps"]');
+        const count = await imageCards.count();
+        if (count > 0) {
+          await imageCards.first().click();
         }
       }
-      await page.waitForTimeout(1500);
+
+      await page.waitForTimeout(2500);
     }
+
+    // Wait for completion screen
+    await expect(page.getByText('Lesson Complete!')).toBeVisible({ timeout: 10000 });
 
     // Navigate to review page
     await page.goto('/languageloader-fe/review');
@@ -230,7 +243,7 @@ test.describe('LanguageLoader MVP', () => {
     await page.goto('/languageloader-fe/settings');
 
     // Should see settings page
-    await expect(page.getByText('Settings')).toBeVisible();
+    await expect(page.getByRole('heading', { name: 'Settings' })).toBeVisible();
     await expect(page.getByText('Data Management')).toBeVisible();
 
     // Should see reset button
