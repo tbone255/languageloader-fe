@@ -210,8 +210,12 @@ test.describe('LanguageLoader MVP', () => {
     // Wait for completion screen
     await expect(page.getByText('Lesson Complete!')).toBeVisible({ timeout: 10000 });
 
-    // Navigate to review page
-    await page.goto('/languageloader-fe/review');
+    // Wait a bit to ensure SRS cards are registered to localStorage
+    await page.waitForTimeout(1000);
+
+    // Navigate to review page (use click to trigger state refresh)
+    await page.getByRole('link', { name: 'Review Cards' }).click();
+    await page.waitForTimeout(500);
 
     // Should see cards due
     await expect(page.getByText(/Card 1 of/)).toBeVisible();
