@@ -443,14 +443,14 @@
     {
       "srs_id": "srs-006",
       "srs_type": "cloze",
-      "tags": ["vocab", "noun"],
+      "tags": ["grammar", "demonstrative"],
       "source_sentence_id": "s1-003",
       "cloze": {
-        "template": "دا {{0}} دی",
+        "template": "{{0}} میز دی",
         "blanks": [
           {
             "blank_index": 0,
-            "fill": "میز"
+            "fill": "دا"
           }
         ],
         "meaning_en": "This is a table."
@@ -473,14 +473,14 @@
     {
       "srs_id": "srs-008",
       "srs_type": "cloze",
-      "tags": ["vocab", "noun"],
+      "tags": ["grammar", "demonstrative"],
       "source_sentence_id": "s1-004",
       "cloze": {
-        "template": "هغه {{0}} ده",
+        "template": "{{0}} چوکۍ ده",
         "blanks": [
           {
             "blank_index": 0,
-            "fill": "چوکۍ"
+            "fill": "هغه"
           }
         ],
         "meaning_en": "That is a chair."
@@ -503,14 +503,14 @@
     {
       "srs_id": "srs-010",
       "srs_type": "cloze",
-      "tags": ["vocab", "noun"],
+      "tags": ["grammar", "demonstrative"],
       "source_sentence_id": "s1-005",
       "cloze": {
-        "template": "دا {{0}} ده",
+        "template": "{{0}} دروازه ده",
         "blanks": [
           {
             "blank_index": 0,
-            "fill": "دروازه"
+            "fill": "دا"
           }
         ],
         "meaning_en": "This is a door."
@@ -533,14 +533,14 @@
     {
       "srs_id": "srs-012",
       "srs_type": "cloze",
-      "tags": ["vocab", "noun"],
+      "tags": ["grammar", "demonstrative"],
       "source_sentence_id": "s1-006",
       "cloze": {
-        "template": "هغه {{0}} ده",
+        "template": "{{0}} کړکۍ ده",
         "blanks": [
           {
             "blank_index": 0,
-            "fill": "کړکۍ"
+            "fill": "هغه"
           }
         ],
         "meaning_en": "That is a window."
