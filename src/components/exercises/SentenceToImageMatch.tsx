@@ -80,7 +80,7 @@ export default function SentenceToImageMatch({
                 ${showFeedback ? 'cursor-default' : ''}
               `}
             >
-              <figure className="p-4 min-h-[200px] flex items-center justify-center bg-base-200">
+              <figure className="p-4 min-h-[200px] flex items-center justify-center bg-base-200 rounded-t-2xl">
                 {/* Image placeholder - will use actual images in production */}
                 <div className="text-6xl" role="img" aria-label={imageId.replace('img-', '').replace(/-/g, ' ')}>
                   {getImagePlaceholder(imageId)}
