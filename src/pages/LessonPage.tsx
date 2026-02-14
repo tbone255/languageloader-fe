@@ -1,14 +1,223 @@
-// LessonPage
-// Purpose: Single route with internal state machine handling intro → exercises → completion
+/**
+ * LessonPage
+ *
+ * State machine that drives the user through a lesson:
+ * 1. Intro (lesson objectives and meta)
+ * 2. Exercises (step through in sequence)
+ * 3. Completion (summary and SRS registration)
+ */
 
-const LessonPage = () => {
-  return (
-    <div>
-      <h1>Lesson</h1>
-      {/* TODO: Implement state machine for intro → exercises → completion */}
-      {/* TODO: On completion, generate SRS cards once */}
-    </div>
-  );
-};
+import { useEffect, useState } from 'react';
+import { useParams, useNavigate, Link } from 'react-router-dom';
+import { getLesson, markLessonCompleted, markExerciseCompleted } from '../services/lessonService';
+import { srsItemService } from '../services/srsItemService';
+import type { Lesson, Exercise } from '../types/lesson';
 
-export default LessonPage;
+import SentenceToImageMatch from '../components/exercises/SentenceToImageMatch';
+import WordBankBuild from '../components/exercises/WordBankBuild';
+import GapFill from '../components/exercises/GapFill';
+
+type LessonState = 'loading' | 'intro' | 'exercise' | 'completion';
+
+export default function LessonPage() {
+  const { lessonId } = useParams<{ lessonId: string }>();
+  const navigate = useNavigate();
+
+  const [lesson, setLesson] = useState<Lesson | null>(null);
+  const [state, setState] = useState<LessonState>('loading');
+  const [currentExerciseIndex, setCurrentExerciseIndex] = useState(0);
+
+  // Load lesson on mount
+  useEffect(() => {
+    if (!lessonId) {
+      navigate('/learn');
+      return;
+    }
+
+    getLesson(lessonId).then((loadedLesson) => {
+      if (!loadedLesson) {
+        navigate('/learn');
+        return;
+      }
+
+      setLesson(loadedLesson);
+      setState('intro');
+    });
+  }, [lessonId, navigate]);
+
+  const handleStartLesson = () => {
+    setState('exercise');
+  };
+
+  const handleExerciseComplete = (correct: boolean) => {
+    if (!lesson) return;
+
+    const currentExercise = lesson.exercises[currentExerciseIndex];
+
+    // Mark exercise as completed
+    markExerciseCompleted(lesson.lesson_id, currentExercise.exercise_id);
+
+    // Move to next exercise or completion
+    if (currentExerciseIndex < lesson.exercises.length - 1) {
+      setCurrentExerciseIndex(currentExerciseIndex + 1);
+    } else {
+      // All exercises done
+      setState('completion');
+      handleLessonComplete();
+    }
+  };
+
+  const handleLessonComplete = () => {
+    if (!lesson) return;
+
+    // Mark lesson as completed
+    markLessonCompleted(lesson.lesson_id);
+
+    // Register SRS items
+    srsItemService.registerSRSItems(lesson.srs);
+  };
+
+  if (state === 'loading' || !lesson) {
+    return (
+      <div className="flex items-center justify-center min-h-[400px]">
+        <span className="loading loading-spinner loading-lg"></span>
+      </div>
+    );
+  }
+
+  if (state === 'intro') {
+    return (
+      <div className="max-w-2xl mx-auto">
+        <div className="card bg-base-100 shadow-lg">
+          <div className="card-body">
+            <div className="badge badge-primary mb-4">Lesson {lesson.lesson_meta.order}</div>
+            <h1 className="card-title text-3xl mb-4">{lesson.lesson_meta.title}</h1>
+
+            {lesson.lesson_meta.description && (
+              <p className="text-lg mb-6">{lesson.lesson_meta.description}</p>
+            )}
+
+            {lesson.lesson_meta.objectives && lesson.lesson_meta.objectives.length > 0 && (
+              <div className="mb-6">
+                <h2 className="font-semibold mb-2">Learning Objectives:</h2>
+                <ul className="list-disc list-inside space-y-1">
+                  {lesson.lesson_meta.objectives.map((obj, i) => (
+                    <li key={i}>{obj}</li>
+                  ))}
+                </ul>
+              </div>
+            )}
+
+            <div className="stats shadow mb-6">
+              <div className="stat">
+                <div className="stat-title">Exercises</div>
+                <div className="stat-value text-2xl">{lesson.exercises.length}</div>
+              </div>
+              <div className="stat">
+                <div className="stat-title">New Cards</div>
+                <div className="stat-value text-2xl">{lesson.srs.length}</div>
+              </div>
+            </div>
+
+            <div className="card-actions justify-end">
+              <button onClick={handleStartLesson} className="btn btn-primary btn-lg btn-wide">
+                Start Lesson
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (state === 'exercise') {
+    const currentExercise = lesson.exercises[currentExerciseIndex];
+    const progress = ((currentExerciseIndex + 1) / lesson.exercises.length) * 100;
+
+    return (
+      <div>
+        {/* Progress bar */}
+        <div className="mb-6">
+          <div className="flex justify-between text-sm mb-1">
+            <span>
+              Exercise {currentExerciseIndex + 1} of {lesson.exercises.length}
+            </span>
+            <span>{Math.round(progress)}%</span>
+          </div>
+          <progress className="progress progress-primary w-full" value={progress} max="100"></progress>
+        </div>
+
+        {/* Render appropriate exercise component */}
+        {renderExercise(currentExercise, lesson, handleExerciseComplete)}
+      </div>
+    );
+  }
+
+  if (state === 'completion') {
+    return (
+      <div className="max-w-2xl mx-auto">
+        <div className="card bg-base-100 shadow-lg">
+          <div className="card-body text-center">
+            <div className="text-6xl mb-4">🎉</div>
+            <h1 className="card-title text-3xl justify-center mb-4">Lesson Complete!</h1>
+            <p className="text-lg mb-6">You've completed {lesson.lesson_meta.title}</p>
+
+            <div className="stats shadow mb-6">
+              <div className="stat">
+                <div className="stat-title">Exercises Completed</div>
+                <div className="stat-value text-2xl">{lesson.exercises.length}</div>
+              </div>
+              <div className="stat">
+                <div className="stat-title">Cards Added to Review</div>
+                <div className="stat-value text-2xl">{lesson.srs.length}</div>
+              </div>
+            </div>
+
+            <div className="card-actions justify-center gap-4">
+              <Link to="/learn" className="btn btn-outline">
+                Back to Lessons
+              </Link>
+              <Link to="/review" className="btn btn-primary">
+                Review Cards
+              </Link>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  return null;
+}
+
+/**
+ * Render the appropriate exercise component based on type.
+ */
+function renderExercise(
+  exercise: Exercise,
+  lesson: Lesson,
+  onComplete: (correct: boolean) => void
+) {
+  // Get the sentence(s) referenced by this exercise
+  const sentenceId = exercise.sentence_ids?.[0] || exercise.correct_sentence_id;
+  const sentence = lesson.sentences.find((s) => s.sentence_id === sentenceId);
+
+  if (!sentence) {
+    return <div className="alert alert-error">Error: Sentence not found for exercise</div>;
+  }
+
+  switch (exercise.type) {
+    case 'sentence_to_image_match':
+      return <SentenceToImageMatch exercise={exercise} sentence={sentence} onComplete={onComplete} />;
+
+    case 'word_bank_build':
+      return <WordBankBuild exercise={exercise} sentence={sentence} onComplete={onComplete} />;
+
+    case 'gap_fill_single':
+      return <GapFill exercise={exercise} sentence={sentence} onComplete={onComplete} />;
+
+    default:
+      return <div className="alert alert-error">Unknown exercise type: {exercise.type}</div>;
+  }
+}
+
