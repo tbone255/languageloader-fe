@@ -82,11 +82,10 @@ export default function SentenceToImageMatch({
             >
               <figure className="p-4 min-h-[200px] flex items-center justify-center bg-base-200">
                 {/* Image placeholder - will use actual images in production */}
-                <div className="text-6xl">{getImagePlaceholder(imageId)}</div>
+                <div className="text-6xl" role="img" aria-label={imageId.replace('img-', '').replace(/-/g, ' ')}>
+                  {getImagePlaceholder(imageId)}
+                </div>
               </figure>
-              <div className="card-body p-4">
-                <p className="text-sm text-center opacity-60">{imageId}</p>
-              </div>
             </button>
           );
         })}
