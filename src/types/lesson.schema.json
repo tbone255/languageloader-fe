@@ -1,0 +1,379 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://languageloader.app/schemas/lesson-v1.schema.json",
+  "title": "LanguageLoader Lesson Schema v1",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "lesson_id",
+    "lesson_meta",
+    "target_language",
+    "sentences",
+    "exercises",
+    "srs"
+  ],
+  "properties": {
+    "schema_version": {
+      "type": "string",
+      "const": "1.0.0"
+    },
+
+    "lesson_id": {
+      "type": "string",
+      "format": "uuid"
+    },
+
+    "lesson_meta": {
+      "type": "object",
+      "required": ["title", "order"],
+      "properties": {
+        "title": {
+          "type": "string",
+          "description": "Human-readable lesson title"
+        },
+        "order": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "Sequence number (1-indexed)"
+        },
+        "description": {
+          "type": "string",
+          "description": "Brief description of lesson content"
+        },
+        "objectives": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Learning objectives for this lesson"
+        }
+      },
+      "additionalProperties": false
+    },
+
+    "target_language": {
+      "type": "object",
+      "required": ["iso_639_1", "name", "direction"],
+      "properties": {
+        "iso_639_1": {
+          "type": "string",
+          "minLength": 2,
+          "maxLength": 2,
+          "description": "ISO 639-1 two-letter language code"
+        },
+        "name": {
+          "type": "string",
+          "description": "Language name in English"
+        },
+        "script": {
+          "type": "string",
+          "description": "Writing system (e.g., 'Arabic', 'Latin')"
+        },
+        "direction": {
+          "type": "string",
+          "enum": ["ltr", "rtl"],
+          "description": "Text direction"
+        }
+      },
+      "additionalProperties": false
+    },
+
+    "sentences": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/Sentence" }
+    },
+
+    "exercises": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/Exercise" }
+    },
+
+    "srs": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/SRSItem" }
+    }
+  },
+  "additionalProperties": false,
+
+  "$defs": {
+
+    "Token": {
+      "type": "object",
+      "required": ["id", "text"],
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique token identifier within this sentence"
+        },
+        "text": {
+          "type": "string",
+          "description": "Surface form of the token"
+        },
+        "normalized": {
+          "type": "string",
+          "description": "Normalized/lemma form"
+        },
+        "transliteration": {
+          "type": "string",
+          "description": "Romanization of the token"
+        },
+        "ipa": {
+          "type": "string",
+          "description": "IPA pronunciation"
+        }
+      },
+      "additionalProperties": false
+    },
+
+    "Sentence": {
+      "type": "object",
+      "required": [
+        "sentence_id",
+        "tokens",
+        "gloss_word_by_word",
+        "meaning_en",
+        "srs_uuids"
+      ],
+      "properties": {
+
+        "sentence_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+
+        "tokens": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/Token" }
+        },
+
+        "text": {
+          "type": "string",
+          "description": "Optional pre-rendered text string. Tokens are source of truth."
+        },
+
+        "gloss_word_by_word": {
+          "description": "Map of token_id → English gloss",
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+
+        "meaning_en": {
+          "type": "string",
+          "description": "Full English translation of the sentence"
+        },
+
+        "image_refs": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["image_id"],
+            "properties": {
+              "image_id": { "type": "string" },
+              "url": { "type": "string", "format": "uri" },
+              "alt": { "type": "string" }
+            },
+            "additionalProperties": false
+          }
+        },
+
+        "cloze_spans": {
+          "type": "array",
+          "description": "Defines which tokens form cloze blanks",
+          "items": {
+            "type": "object",
+            "required": ["blank_index", "token_ids"],
+            "properties": {
+              "blank_index": {
+                "type": "integer",
+                "description": "0-based index identifying this blank"
+              },
+              "token_ids": {
+                "type": "array",
+                "items": { "type": "string" },
+                "description": "Token IDs that form this blank"
+              }
+            },
+            "additionalProperties": false
+          }
+        },
+
+        "srs_uuids": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "description": "SRS item IDs generated from this sentence"
+        }
+      },
+      "additionalProperties": false
+    },
+
+    "Exercise": {
+      "type": "object",
+      "required": ["exercise_id", "type"],
+      "properties": {
+
+        "exercise_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+
+        "type": {
+          "type": "string",
+          "enum": [
+            "sentence_to_image_match",
+            "word_bank_build",
+            "gap_fill_single"
+          ],
+          "description": "Exercise type determines which component renders it"
+        },
+
+        "sentence_ids": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "description": "References to sentences used in this exercise"
+        },
+
+        "correct_sentence_id": {
+          "type": "string",
+          "format": "uuid",
+          "description": "For sentence_to_image_match: the sentence that matches the images"
+        },
+
+        "image_options": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Image IDs for matching exercises"
+        },
+
+        "correct_image_id": {
+          "type": "string",
+          "description": "For sentence_to_image_match: the correct image for the sentence"
+        },
+
+        "word_bank": {
+          "type": "array",
+          "description": "For word_bank_build: tokens user can select",
+          "items": {
+            "type": "object",
+            "required": ["id", "text"],
+            "properties": {
+              "id": { "type": "string" },
+              "text": { "type": "string" },
+              "token_id": {
+                "type": "string",
+                "description": "Links to a token in the target sentence"
+              }
+            },
+            "additionalProperties": false
+          }
+        },
+
+        "gap": {
+          "type": "object",
+          "description": "For gap_fill_single: the blank and choices",
+          "required": ["blank_index", "choices", "correct"],
+          "properties": {
+            "blank_index": {
+              "type": "integer",
+              "description": "Which cloze_span is blanked (0-based)"
+            },
+            "choices": {
+              "type": "array",
+              "items": { "type": "string" },
+              "description": "Answer options"
+            },
+            "correct": {
+              "type": "string",
+              "description": "Correct answer (must be in choices)"
+            }
+          },
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
+    },
+
+    "SRSItem": {
+      "type": "object",
+      "required": ["srs_id", "srs_type"],
+      "properties": {
+
+        "srs_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+
+        "srs_type": {
+          "type": "string",
+          "enum": ["flip", "cloze"]
+        },
+
+        "tags": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Tags for filtering/organization (e.g., 'vocab', 'grammar')"
+        },
+
+        "source_sentence_id": {
+          "type": "string",
+          "format": "uuid",
+          "description": "Links back to the sentence this was derived from"
+        },
+
+        "flip": {
+          "type": "object",
+          "description": "Front/back flashcard data",
+          "required": ["front", "back"],
+          "properties": {
+            "front": { "type": "string" },
+            "back": {
+              "type": "object",
+              "required": ["meaning_en"],
+              "properties": {
+                "meaning_en": { "type": "string" },
+                "pronunciation": { "type": "string" },
+                "transliteration": { "type": "string" },
+                "ipa": { "type": "string" }
+              },
+              "additionalProperties": false
+            }
+          },
+          "additionalProperties": false
+        },
+
+        "cloze": {
+          "type": "object",
+          "description": "Cloze deletion card data",
+          "required": ["template", "blanks", "meaning_en"],
+          "properties": {
+            "template": {
+              "type": "string",
+              "description": "Sentence with {{0}}, {{1}}, etc. for blanks"
+            },
+            "blanks": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "required": ["blank_index", "fill"],
+                "properties": {
+                  "blank_index": { "type": "integer" },
+                  "fill": { "type": "string" }
+                },
+                "additionalProperties": false
+              }
+            },
+            "meaning_en": { "type": "string" }
+          },
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
+    }
+
+  }
+}
