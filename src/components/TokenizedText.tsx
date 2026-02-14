@@ -6,7 +6,7 @@
  */
 
 import { useState } from 'react';
-import type { Token, Sentence } from '../types/lesson';
+import type { Sentence } from '../types/lesson';
 
 interface TokenizedTextProps {
   sentence: Sentence;

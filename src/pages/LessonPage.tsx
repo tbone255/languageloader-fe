@@ -50,7 +50,7 @@ export default function LessonPage() {
     setState('exercise');
   };
 
-  const handleExerciseComplete = (correct: boolean) => {
+  const handleExerciseComplete = (_correct: boolean) => {
     if (!lesson) return;
 
     const currentExercise = lesson.exercises[currentExerciseIndex];
@@ -205,7 +205,7 @@ export default function LessonPage() {
 function renderExercise(
   exercise: Exercise,
   lesson: Lesson,
-  onComplete: (correct: boolean) => void
+  onComplete: (_correct: boolean) => void
 ) {
   // Get the sentence(s) referenced by this exercise
   const sentenceId = exercise.sentence_ids?.[0] || exercise.correct_sentence_id;
