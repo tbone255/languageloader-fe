@@ -1,6 +1,7 @@
 import { useRef, useState, useEffect } from 'react';
 import { Rating } from 'ts-fsrs';
 import { SRSService, type SRSCard } from '../services/srsService';
+import wordPhrasesJson from '../mvpdb/wordsphrases.json';
 
 interface WordPhrase {
   id: number;
@@ -24,9 +25,8 @@ export const SRS = () => {
   // Initialize cards and map on mount
   useEffect(() => {
     async function loadData() {
-      // Dynamically import the JSON data
-      const module = await import('../mvpdb/wordsphrases.json');
-      const wordPhrasesData: WordPhrase[] = module.default;
+      // Use static import for JSON data
+      const wordPhrasesData: WordPhrase[] = wordPhrasesJson as WordPhrase[];
 
       // Create map of wordphrase id to wordphrase object
       const map = new Map<number, WordPhrase>();
