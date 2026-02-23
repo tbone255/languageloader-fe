@@ -14,336 +14,328 @@
   },
   "sentences": [
     {
-      "sentence_id": "44e897d8-89e4-4593-8988-fc03c36b2433",
+      "sentence_id": "18a3ec51-4bba-4429-ba99-aae914984fc3",
       "tokens": [
         {
-          "id": "0256c0b6-736f-4901-b6ed-786d2bd4e9e7",
+          "id": "82341c91-3423-4829-80a9-cbd70f478303",
           "text": "دا",
           "normalized": "دا",
           "transliteration": "dā"
         },
         {
-          "id": "145d1abd-fb2a-49d1-af1c-fdedb08a1d4f",
+          "id": "5aff296e-1143-4d9d-ba6d-f48e7a278256",
           "text": "اس",
           "normalized": "اس",
           "ipa": "as"
         },
         {
-          "id": "9f0a3716-baea-47c5-8642-bf700aa71690",
+          "id": "57b9fc63-cea5-4cdb-a3bb-8ad722cddd46",
           "text": "دی",
           "normalized": "دی",
           "transliteration": "day"
         }
       ],
       "gloss_word_by_word": {
-        "0256c0b6-736f-4901-b6ed-786d2bd4e9e7": "this",
-        "145d1abd-fb2a-49d1-af1c-fdedb08a1d4f": "horse",
-        "9f0a3716-baea-47c5-8642-bf700aa71690": "is"
+        "82341c91-3423-4829-80a9-cbd70f478303": "this",
+        "5aff296e-1143-4d9d-ba6d-f48e7a278256": "horse",
+        "57b9fc63-cea5-4cdb-a3bb-8ad722cddd46": "is"
       },
       "gloss_en": "this horse is",
-      "translation_en": "This is a horse.",
+      "translation_en": "",
       "srs_uuids": [
-        "31de4650-a280-40ea-86a3-2108334fe4fc",
-        "b71aa8cb-e0f4-4200-a9bf-448d23f8f84b"
+        "bca09883-4f02-4cd9-8cab-4feb3af321a4"
       ],
       "cloze_spans": [
         {
           "blank_index": 0,
           "token_ids": [
-            "145d1abd-fb2a-49d1-af1c-fdedb08a1d4f"
+            "5aff296e-1143-4d9d-ba6d-f48e7a278256"
           ]
         }
       ]
     },
     {
-      "sentence_id": "e1c91d09-89ca-4860-a57e-9f36dd9ad0d6",
+      "sentence_id": "5443d7b1-b293-44d1-b8b0-c77318c43adf",
       "tokens": [
         {
-          "id": "699b32fe-12dc-4c7b-86a2-92c0c00840e7",
+          "id": "99e75c59-052b-4580-9607-f0d1a3f0a6d3",
           "text": "هغه",
           "normalized": "هغه",
           "transliteration": "hagha"
         },
         {
-          "id": "3e27f2d2-1e19-4cf2-bbcc-0db7d73d197e",
+          "id": "6f0785dc-aba6-430e-b99b-e6881f8d3e35",
           "text": "کب",
           "normalized": "کب",
           "ipa": "kab"
         },
         {
-          "id": "687edfdb-a955-4404-b1df-8e87eb629dfe",
+          "id": "b8924187-7826-4c0a-b27b-26aaef9660a4",
           "text": "دی",
           "normalized": "دی",
           "transliteration": "day"
         }
       ],
       "gloss_word_by_word": {
-        "699b32fe-12dc-4c7b-86a2-92c0c00840e7": "that",
-        "3e27f2d2-1e19-4cf2-bbcc-0db7d73d197e": "fish",
-        "687edfdb-a955-4404-b1df-8e87eb629dfe": "is"
+        "99e75c59-052b-4580-9607-f0d1a3f0a6d3": "that",
+        "6f0785dc-aba6-430e-b99b-e6881f8d3e35": "fish",
+        "b8924187-7826-4c0a-b27b-26aaef9660a4": "is"
       },
       "gloss_en": "that fish is",
-      "translation_en": "That is a fish.",
+      "translation_en": "",
       "srs_uuids": [
-        "67edc9cc-c1f0-4ed6-88cb-9151730a7a75",
-        "05281a5a-38c8-4c9f-9b96-f6661f81221b"
+        "94d0b7bb-71f6-4890-980e-0cd99d93d1de"
       ],
       "cloze_spans": [
         {
           "blank_index": 0,
           "token_ids": [
-            "3e27f2d2-1e19-4cf2-bbcc-0db7d73d197e"
+            "6f0785dc-aba6-430e-b99b-e6881f8d3e35"
           ]
         }
       ]
     },
     {
-      "sentence_id": "6d54494c-3a12-4c00-b913-4fc655f3fff5",
+      "sentence_id": "b3a83c9b-5353-4032-b2de-5191798ff43a",
       "tokens": [
         {
-          "id": "642f93f2-2b81-4387-a91b-ad307a2c1b81",
+          "id": "7dec0738-1949-455c-815a-b4ec57a87f89",
           "text": "دا",
           "normalized": "دا",
           "transliteration": "dā"
         },
         {
-          "id": "56201f42-24de-4ece-b03f-1dfe32c6e702",
+          "id": "b4f313dc-044c-4b3b-bea8-45427b172bca",
           "text": "آم",
           "normalized": "آم"
         },
         {
-          "id": "7d46ba6d-2dcd-4c9d-9045-636dd8990fbe",
+          "id": "57d5eda2-f129-4f36-8aa9-6e20322eabd5",
           "text": "دی",
           "normalized": "دی",
           "transliteration": "day"
         }
       ],
       "gloss_word_by_word": {
-        "642f93f2-2b81-4387-a91b-ad307a2c1b81": "this",
-        "56201f42-24de-4ece-b03f-1dfe32c6e702": "mango",
-        "7d46ba6d-2dcd-4c9d-9045-636dd8990fbe": "is"
+        "7dec0738-1949-455c-815a-b4ec57a87f89": "this",
+        "b4f313dc-044c-4b3b-bea8-45427b172bca": "mango",
+        "57d5eda2-f129-4f36-8aa9-6e20322eabd5": "is"
       },
       "gloss_en": "this mango is",
-      "translation_en": "This is a mango.",
+      "translation_en": "",
       "srs_uuids": [
-        "25954cf6-e717-43e2-af68-87733e302d49",
-        "97b43559-fff0-4529-be10-119dba78046b"
+        "2f6acce5-a1f1-497a-885d-4aebaba86d3e"
       ],
       "cloze_spans": [
         {
           "blank_index": 0,
           "token_ids": [
-            "56201f42-24de-4ece-b03f-1dfe32c6e702"
+            "b4f313dc-044c-4b3b-bea8-45427b172bca"
           ]
         }
       ]
     },
     {
-      "sentence_id": "939df205-317d-4a9f-836a-daa87e22e773",
+      "sentence_id": "fd22a1b3-6ca7-401c-aac3-7d166a34c230",
       "tokens": [
         {
-          "id": "a5eb3988-55ba-4a26-85ea-a0a22446ddde",
+          "id": "42f7fdd9-fc01-4b4e-8642-9e06206fac28",
           "text": "هغه",
           "normalized": "هغه",
           "transliteration": "hagha"
         },
         {
-          "id": "f724391e-6fe2-4980-b83e-f8d7f02f6b7a",
+          "id": "e9343a64-1901-46f8-9368-f1a758848a8e",
           "text": "ګل",
           "normalized": "ګل",
           "ipa": "ɡwəl"
         },
         {
-          "id": "fa426453-c5e0-4bb6-b39b-afbde919fe2b",
+          "id": "aa5dcc90-8e1e-46e1-b896-1a22a806d59e",
           "text": "دی",
           "normalized": "دی",
           "transliteration": "day"
         }
       ],
       "gloss_word_by_word": {
-        "a5eb3988-55ba-4a26-85ea-a0a22446ddde": "that",
-        "f724391e-6fe2-4980-b83e-f8d7f02f6b7a": "large hailstones, first snow on the mountains",
-        "fa426453-c5e0-4bb6-b39b-afbde919fe2b": "is"
+        "42f7fdd9-fc01-4b4e-8642-9e06206fac28": "that",
+        "e9343a64-1901-46f8-9368-f1a758848a8e": "large hailstones, first snow on the mountains",
+        "aa5dcc90-8e1e-46e1-b896-1a22a806d59e": "is"
       },
       "gloss_en": "that large hailstones, first snow on the mountains is",
-      "translation_en": "That is a flower.",
+      "translation_en": "",
       "srs_uuids": [
-        "0dd502bc-0b74-4d3b-9c66-a67bc58f6722",
-        "7ba3992f-4b7e-41c4-9900-2595a7e88961"
+        "f925bd78-166a-48ce-9524-589f3112d170"
       ],
       "cloze_spans": [
         {
           "blank_index": 0,
           "token_ids": [
-            "f724391e-6fe2-4980-b83e-f8d7f02f6b7a"
+            "e9343a64-1901-46f8-9368-f1a758848a8e"
           ]
         }
       ]
     },
     {
-      "sentence_id": "6c373f89-ccab-424f-a6f8-b93b150f750f",
+      "sentence_id": "aba90ec0-0335-4264-ac20-32f90d9f7108",
       "tokens": [
         {
-          "id": "c6abfc8b-da5c-44fc-9fcd-d838b1bdc97b",
+          "id": "c6d3a14a-ba61-4f32-b445-b8cf631b90f3",
           "text": "دا",
           "normalized": "دا",
           "transliteration": "dā"
         },
         {
-          "id": "07ef6734-5ca3-46eb-967c-7908e093575b",
+          "id": "ecf58ba7-66ee-403e-a2a8-337377d24a8b",
           "text": "پشۍ",
           "normalized": "پشۍ",
           "ipa": "pəˈʃəi̯"
         },
         {
-          "id": "3f62468a-6a7b-4994-bd7d-47443c5a6ead",
+          "id": "fdeb5237-d44d-49c0-8e73-ce5922992ab6",
           "text": "ده",
           "normalized": "ده",
           "transliteration": "da"
         }
       ],
       "gloss_word_by_word": {
-        "c6abfc8b-da5c-44fc-9fcd-d838b1bdc97b": "this",
-        "07ef6734-5ca3-46eb-967c-7908e093575b": "cat",
-        "3f62468a-6a7b-4994-bd7d-47443c5a6ead": "is"
+        "c6d3a14a-ba61-4f32-b445-b8cf631b90f3": "this",
+        "ecf58ba7-66ee-403e-a2a8-337377d24a8b": "cat",
+        "fdeb5237-d44d-49c0-8e73-ce5922992ab6": "is"
       },
       "gloss_en": "this cat is",
-      "translation_en": "This is a cat.",
+      "translation_en": "",
       "srs_uuids": [
-        "ad8531d3-9e7f-417a-bdd8-ee4a3731487b",
-        "cfed8cdf-13f7-499b-9243-c9fb23ea5f14"
+        "aab012c1-ba5d-4568-a14d-facdf3af1052"
       ],
       "cloze_spans": [
         {
           "blank_index": 0,
           "token_ids": [
-            "07ef6734-5ca3-46eb-967c-7908e093575b"
+            "ecf58ba7-66ee-403e-a2a8-337377d24a8b"
           ]
         }
       ]
     },
     {
-      "sentence_id": "c9f5a11d-057e-4dd4-828d-7bf02fd1a3c2",
+      "sentence_id": "6df4a53d-11b4-43bb-9700-f05e943c39b0",
       "tokens": [
         {
-          "id": "1bd75700-8cc8-4b7d-af10-3a0a23e8e4c7",
+          "id": "35917b44-4386-4899-a556-176b0e800b7d",
           "text": "هغه",
           "normalized": "هغه",
           "transliteration": "hagha"
         },
         {
-          "id": "a368bdf9-4cd5-460d-9884-c43d5a10630f",
+          "id": "618cab47-9f90-42ab-904a-b7f77394bb85",
           "text": "ونه",
           "normalized": "ونه",
           "ipa": "ˈwəna"
         },
         {
-          "id": "2e5d974a-c476-476a-afa7-b8577346b122",
+          "id": "16705f9f-77cd-41bd-866d-1429a1309998",
           "text": "ده",
           "normalized": "ده",
           "transliteration": "da"
         }
       ],
       "gloss_word_by_word": {
-        "1bd75700-8cc8-4b7d-af10-3a0a23e8e4c7": "that",
-        "a368bdf9-4cd5-460d-9884-c43d5a10630f": "tree; height",
-        "2e5d974a-c476-476a-afa7-b8577346b122": "is"
+        "35917b44-4386-4899-a556-176b0e800b7d": "that",
+        "618cab47-9f90-42ab-904a-b7f77394bb85": "tree; height",
+        "16705f9f-77cd-41bd-866d-1429a1309998": "is"
       },
       "gloss_en": "that tree; height is",
-      "translation_en": "That is a tree.",
+      "translation_en": "",
       "srs_uuids": [
-        "0655473d-4bd4-496d-8ac8-1c113aefdfdd",
-        "08e4e739-215a-43e6-8e40-d5d174f35171"
+        "a03c0c3f-0444-4816-a00f-b77fb3b13d4a"
       ],
       "cloze_spans": [
         {
           "blank_index": 0,
           "token_ids": [
-            "a368bdf9-4cd5-460d-9884-c43d5a10630f"
+            "618cab47-9f90-42ab-904a-b7f77394bb85"
           ]
         }
       ]
     },
     {
-      "sentence_id": "d1f69d9f-5f80-4f55-9749-5b6ca22febed",
+      "sentence_id": "c866d9bc-7cfd-42bb-a648-66c820546a03",
       "tokens": [
         {
-          "id": "3f905b99-3342-46f3-bbbc-a5c10a751b61",
+          "id": "a683b803-102c-4a09-a7e8-e8b251d398d9",
           "text": "دا",
           "normalized": "دا",
           "transliteration": "dā"
         },
         {
-          "id": "47ca9138-6c8d-4365-b63b-0d683b05bfbb",
+          "id": "fa54e8b5-448c-4ca3-b97f-e7cb81e4d2ce",
           "text": "مړۍ",
           "normalized": "مړۍ",
           "ipa": "maˈɺ̢əi̯"
         },
         {
-          "id": "734b6c86-a896-4ede-870c-1a98860616e4",
+          "id": "47b9f052-6a17-4155-b4a7-96440c66a257",
           "text": "ده",
           "normalized": "ده",
           "transliteration": "da"
         }
       ],
       "gloss_word_by_word": {
-        "3f905b99-3342-46f3-bbbc-a5c10a751b61": "this",
-        "47ca9138-6c8d-4365-b63b-0d683b05bfbb": "piece, bread, bite, sip, gulp, food, meal",
-        "734b6c86-a896-4ede-870c-1a98860616e4": "is"
+        "a683b803-102c-4a09-a7e8-e8b251d398d9": "this",
+        "fa54e8b5-448c-4ca3-b97f-e7cb81e4d2ce": "piece, bread, bite, sip, gulp, food, meal",
+        "47b9f052-6a17-4155-b4a7-96440c66a257": "is"
       },
       "gloss_en": "this piece, bread, bite, sip, gulp, food, meal is",
-      "translation_en": "This is food.",
+      "translation_en": "",
       "srs_uuids": [
-        "6c22c096-02f3-4b29-9940-a8f0bd85239f",
-        "55d3e330-fa05-4ae4-93d3-ca3229419137"
+        "9a04b6df-827d-47da-bba9-ba8666fa0fc0"
       ],
       "cloze_spans": [
         {
           "blank_index": 0,
           "token_ids": [
-            "47ca9138-6c8d-4365-b63b-0d683b05bfbb"
+            "fa54e8b5-448c-4ca3-b97f-e7cb81e4d2ce"
           ]
         }
       ]
     },
     {
-      "sentence_id": "cf9222fe-696d-4406-878f-b6da1d5968fa",
+      "sentence_id": "331c502c-d36f-4459-ac5c-2895039b63c5",
       "tokens": [
         {
-          "id": "72a02526-3abe-49bc-9288-a877d01665d6",
+          "id": "628f5b82-5d56-44a9-a06e-567705f1fed6",
           "text": "هغه",
           "normalized": "هغه",
           "transliteration": "hagha"
         },
         {
-          "id": "4b2cc720-0a12-4341-8391-112f300edecf",
+          "id": "17171ad2-f9a3-4cd3-933e-b10336befead",
           "text": "سپی",
           "normalized": "سپی",
           "ipa": "spaɪ"
         },
         {
-          "id": "79c5de9f-518b-4dde-84ba-833026a0c750",
+          "id": "8345c82b-9130-46c8-b531-59c5d44b8a06",
           "text": "دی",
           "normalized": "دی",
           "transliteration": "day"
         }
       ],
       "gloss_word_by_word": {
-        "72a02526-3abe-49bc-9288-a877d01665d6": "that",
-        "4b2cc720-0a12-4341-8391-112f300edecf": "dog",
-        "79c5de9f-518b-4dde-84ba-833026a0c750": "is"
+        "628f5b82-5d56-44a9-a06e-567705f1fed6": "that",
+        "17171ad2-f9a3-4cd3-933e-b10336befead": "dog",
+        "8345c82b-9130-46c8-b531-59c5d44b8a06": "is"
       },
       "gloss_en": "that dog is",
-      "translation_en": "That is a dog.",
+      "translation_en": "",
       "srs_uuids": [
-        "e15cd406-3811-4683-b9d7-1d1c1a3fdf49",
-        "d3bfb2cf-dc77-4703-9183-10b1803c972d"
+        "5c4af6e4-7882-4767-94bc-45516b9514fa"
       ],
       "cloze_spans": [
         {
           "blank_index": 0,
           "token_ids": [
-            "4b2cc720-0a12-4341-8391-112f300edecf"
+            "17171ad2-f9a3-4cd3-933e-b10336befead"
           ]
         }
       ]
@@ -353,160 +345,160 @@
     {
       "type": "sentence_to_image_match",
       "sentence_ids": [
-        "44e897d8-89e4-4593-8988-fc03c36b2433"
+        "18a3ec51-4bba-4429-ba99-aae914984fc3"
       ],
-      "correct_sentence_id": "44e897d8-89e4-4593-8988-fc03c36b2433",
+      "correct_sentence_id": "18a3ec51-4bba-4429-ba99-aae914984fc3",
       "image_options": [
         "img-آم",
+        "img-کب",
         "img-ګل",
-        "img-اس",
-        "img-کب"
+        "img-اس"
       ],
       "correct_image_id": "img-اس",
-      "exercise_id": "592d27a9-8660-44e1-b41b-00fbcd74cda3"
+      "exercise_id": "84df4ac7-a73a-43fc-99cf-d9f56e307e3c"
     },
     {
       "type": "word_bank_build",
       "sentence_ids": [
-        "e1c91d09-89ca-4860-a57e-9f36dd9ad0d6"
+        "5443d7b1-b293-44d1-b8b0-c77318c43adf"
       ],
       "word_bank": [
         {
-          "id": "e9b4900e-93fd-4c54-b1e0-9469bb6e412d",
-          "text": "هغه",
-          "token_id": "699b32fe-12dc-4c7b-86a2-92c0c00840e7"
-        },
-        {
-          "id": "1ed76eeb-a61b-48cb-8ae6-cad9b28cb69a",
+          "id": "ec8591a3-3ded-4c13-ba52-bfe34a32440a",
           "text": "دی",
-          "token_id": "687edfdb-a955-4404-b1df-8e87eb629dfe"
+          "token_id": "b8924187-7826-4c0a-b27b-26aaef9660a4"
         },
         {
-          "id": "f56ecc40-7089-4f57-99aa-6a3d21dd2304",
+          "id": "8404285c-a7d0-4008-94b7-8cf3487cefcd",
           "text": "کب",
-          "token_id": "3e27f2d2-1e19-4cf2-bbcc-0db7d73d197e"
+          "token_id": "6f0785dc-aba6-430e-b99b-e6881f8d3e35"
+        },
+        {
+          "id": "478d3c53-6aa9-4965-b8ae-204c9cf2f804",
+          "text": "هغه",
+          "token_id": "99e75c59-052b-4580-9607-f0d1a3f0a6d3"
         }
       ],
-      "exercise_id": "e3422c6f-eaf1-4a72-95d3-5c761a60aad7"
+      "exercise_id": "7945ad36-e4fb-4da2-9a2e-773b2c205234"
     },
     {
       "type": "gap_fill_single",
       "sentence_ids": [
-        "6d54494c-3a12-4c00-b913-4fc655f3fff5"
+        "b3a83c9b-5353-4032-b2de-5191798ff43a"
       ],
       "gap": {
         "blank_index": 0,
         "choices": [
-          "آم",
-          "ګل",
+          "کب",
           "اس",
-          "کب"
+          "آم",
+          "ګل"
         ],
         "correct": "آم"
       },
-      "exercise_id": "82613fc2-1617-4399-8e40-9350a2c576e1"
+      "exercise_id": "d9a54e10-0e55-42ce-b313-a76d2d61c6cc"
     },
     {
       "type": "sentence_to_image_match",
       "sentence_ids": [
-        "939df205-317d-4a9f-836a-daa87e22e773"
+        "fd22a1b3-6ca7-401c-aac3-7d166a34c230"
       ],
-      "correct_sentence_id": "939df205-317d-4a9f-836a-daa87e22e773",
+      "correct_sentence_id": "fd22a1b3-6ca7-401c-aac3-7d166a34c230",
       "image_options": [
+        "img-آم",
         "img-کب",
         "img-ګل",
-        "img-اس",
-        "img-آم"
+        "img-اس"
       ],
       "correct_image_id": "img-ګل",
-      "exercise_id": "3bae2bd5-7d81-4a45-8079-3583e43e0edf"
+      "exercise_id": "14f71d8a-8df0-4a7d-b052-f8e9379372bb"
     },
     {
       "type": "word_bank_build",
       "sentence_ids": [
-        "6c373f89-ccab-424f-a6f8-b93b150f750f"
+        "aba90ec0-0335-4264-ac20-32f90d9f7108"
       ],
       "word_bank": [
         {
-          "id": "74831acc-d79b-430d-b068-500167ede7e2",
+          "id": "1f9a29ab-bcfc-4bb0-a5e7-107700467c98",
           "text": "دا",
-          "token_id": "c6abfc8b-da5c-44fc-9fcd-d838b1bdc97b"
+          "token_id": "c6d3a14a-ba61-4f32-b445-b8cf631b90f3"
         },
         {
-          "id": "dd87500b-8057-489f-a910-304bf2968f8c",
+          "id": "368409bb-2b2b-43de-82fa-7fbfa5a87db6",
           "text": "ده",
-          "token_id": "3f62468a-6a7b-4994-bd7d-47443c5a6ead"
+          "token_id": "fdeb5237-d44d-49c0-8e73-ce5922992ab6"
         },
         {
-          "id": "e5cb1c92-3761-412d-a592-e7bfafb77f52",
+          "id": "72890741-6216-4519-a6ca-c46c78befe9e",
           "text": "پشۍ",
-          "token_id": "07ef6734-5ca3-46eb-967c-7908e093575b"
+          "token_id": "ecf58ba7-66ee-403e-a2a8-337377d24a8b"
         }
       ],
-      "exercise_id": "e832b90e-ad2c-4099-bbaa-10029acf9a04"
+      "exercise_id": "3fa66595-1e49-4cc7-b58e-6e334b167564"
     },
     {
       "type": "gap_fill_single",
       "sentence_ids": [
-        "c9f5a11d-057e-4dd4-828d-7bf02fd1a3c2"
+        "6df4a53d-11b4-43bb-9700-f05e943c39b0"
       ],
       "gap": {
         "blank_index": 0,
         "choices": [
-          "آم",
           "اس",
           "ونه",
-          "کب"
+          "کب",
+          "آم"
         ],
         "correct": "ونه"
       },
-      "exercise_id": "c90edaa1-33a7-4395-8a3a-d9c03103ad30"
+      "exercise_id": "f722a155-a786-45cb-b42c-66f8275bef4b"
     },
     {
       "type": "sentence_to_image_match",
       "sentence_ids": [
-        "d1f69d9f-5f80-4f55-9749-5b6ca22febed"
+        "c866d9bc-7cfd-42bb-a648-66c820546a03"
       ],
-      "correct_sentence_id": "d1f69d9f-5f80-4f55-9749-5b6ca22febed",
+      "correct_sentence_id": "c866d9bc-7cfd-42bb-a648-66c820546a03",
       "image_options": [
-        "img-آم",
-        "img-کب",
         "img-اس",
+        "img-کب",
+        "img-آم",
         "img-مړۍ"
       ],
       "correct_image_id": "img-مړۍ",
-      "exercise_id": "7cbbc9e6-ef92-46b4-a6aa-834987991d3b"
+      "exercise_id": "f734bffb-83e3-463d-9fc9-fa89841a16e4"
     },
     {
       "type": "word_bank_build",
       "sentence_ids": [
-        "cf9222fe-696d-4406-878f-b6da1d5968fa"
+        "331c502c-d36f-4459-ac5c-2895039b63c5"
       ],
       "word_bank": [
         {
-          "id": "3a80867d-bda6-49c1-a9e3-a252686138f9",
-          "text": "هغه",
-          "token_id": "72a02526-3abe-49bc-9288-a877d01665d6"
-        },
-        {
-          "id": "bce693ad-6df2-452b-9c5b-82ba0f674d6e",
-          "text": "سپی",
-          "token_id": "4b2cc720-0a12-4341-8391-112f300edecf"
-        },
-        {
-          "id": "b6ae75ce-44df-4893-9ef9-2087a2a8339b",
+          "id": "0f1bce09-6b96-4c01-a456-1b64d423bfa4",
           "text": "دی",
-          "token_id": "79c5de9f-518b-4dde-84ba-833026a0c750"
+          "token_id": "8345c82b-9130-46c8-b531-59c5d44b8a06"
+        },
+        {
+          "id": "28b46da4-e083-4733-90eb-da647cdb25b6",
+          "text": "هغه",
+          "token_id": "628f5b82-5d56-44a9-a06e-567705f1fed6"
+        },
+        {
+          "id": "7ad17726-3794-4f61-a2c1-9b8d671b7e61",
+          "text": "سپی",
+          "token_id": "17171ad2-f9a3-4cd3-933e-b10336befead"
         }
       ],
-      "exercise_id": "d23c6f1c-b5e5-45d4-b9b6-32040709c977"
+      "exercise_id": "7ba3506b-2120-4589-8e2e-c69ab20ee4c2"
     }
   ],
   "srs": [
     {
-      "srs_id": "31de4650-a280-40ea-86a3-2108334fe4fc",
+      "srs_id": "bca09883-4f02-4cd9-8cab-4feb3af321a4",
       "srs_type": "flip",
-      "source_sentence_id": "44e897d8-89e4-4593-8988-fc03c36b2433",
+      "source_sentence_id": "18a3ec51-4bba-4429-ba99-aae914984fc3",
       "tags": [
         "vocab"
       ],
@@ -518,27 +510,9 @@
       }
     },
     {
-      "srs_id": "b71aa8cb-e0f4-4200-a9bf-448d23f8f84b",
-      "srs_type": "cloze",
-      "source_sentence_id": "44e897d8-89e4-4593-8988-fc03c36b2433",
-      "tags": [
-        "grammar"
-      ],
-      "cloze": {
-        "template": "دا {{0}} دی",
-        "blanks": [
-          {
-            "blank_index": 0,
-            "fill": "اس"
-          }
-        ],
-        "translation_en": "This is a horse."
-      }
-    },
-    {
-      "srs_id": "67edc9cc-c1f0-4ed6-88cb-9151730a7a75",
+      "srs_id": "94d0b7bb-71f6-4890-980e-0cd99d93d1de",
       "srs_type": "flip",
-      "source_sentence_id": "e1c91d09-89ca-4860-a57e-9f36dd9ad0d6",
+      "source_sentence_id": "5443d7b1-b293-44d1-b8b0-c77318c43adf",
       "tags": [
         "vocab"
       ],
@@ -550,27 +524,9 @@
       }
     },
     {
-      "srs_id": "05281a5a-38c8-4c9f-9b96-f6661f81221b",
-      "srs_type": "cloze",
-      "source_sentence_id": "e1c91d09-89ca-4860-a57e-9f36dd9ad0d6",
-      "tags": [
-        "grammar"
-      ],
-      "cloze": {
-        "template": "هغه {{0}} دی",
-        "blanks": [
-          {
-            "blank_index": 0,
-            "fill": "کب"
-          }
-        ],
-        "translation_en": "That is a fish."
-      }
-    },
-    {
-      "srs_id": "25954cf6-e717-43e2-af68-87733e302d49",
+      "srs_id": "2f6acce5-a1f1-497a-885d-4aebaba86d3e",
       "srs_type": "flip",
-      "source_sentence_id": "6d54494c-3a12-4c00-b913-4fc655f3fff5",
+      "source_sentence_id": "b3a83c9b-5353-4032-b2de-5191798ff43a",
       "tags": [
         "vocab"
       ],
@@ -582,27 +538,9 @@
       }
     },
     {
-      "srs_id": "97b43559-fff0-4529-be10-119dba78046b",
-      "srs_type": "cloze",
-      "source_sentence_id": "6d54494c-3a12-4c00-b913-4fc655f3fff5",
-      "tags": [
-        "grammar"
-      ],
-      "cloze": {
-        "template": "دا {{0}} دی",
-        "blanks": [
-          {
-            "blank_index": 0,
-            "fill": "آم"
-          }
-        ],
-        "translation_en": "This is a mango."
-      }
-    },
-    {
-      "srs_id": "0dd502bc-0b74-4d3b-9c66-a67bc58f6722",
+      "srs_id": "f925bd78-166a-48ce-9524-589f3112d170",
       "srs_type": "flip",
-      "source_sentence_id": "939df205-317d-4a9f-836a-daa87e22e773",
+      "source_sentence_id": "fd22a1b3-6ca7-401c-aac3-7d166a34c230",
       "tags": [
         "vocab"
       ],
@@ -614,27 +552,9 @@
       }
     },
     {
-      "srs_id": "7ba3992f-4b7e-41c4-9900-2595a7e88961",
-      "srs_type": "cloze",
-      "source_sentence_id": "939df205-317d-4a9f-836a-daa87e22e773",
-      "tags": [
-        "grammar"
-      ],
-      "cloze": {
-        "template": "هغه {{0}} دی",
-        "blanks": [
-          {
-            "blank_index": 0,
-            "fill": "ګل"
-          }
-        ],
-        "translation_en": "That is a flower."
-      }
-    },
-    {
-      "srs_id": "ad8531d3-9e7f-417a-bdd8-ee4a3731487b",
+      "srs_id": "aab012c1-ba5d-4568-a14d-facdf3af1052",
       "srs_type": "flip",
-      "source_sentence_id": "6c373f89-ccab-424f-a6f8-b93b150f750f",
+      "source_sentence_id": "aba90ec0-0335-4264-ac20-32f90d9f7108",
       "tags": [
         "vocab"
       ],
@@ -646,27 +566,9 @@
       }
     },
     {
-      "srs_id": "cfed8cdf-13f7-499b-9243-c9fb23ea5f14",
-      "srs_type": "cloze",
-      "source_sentence_id": "6c373f89-ccab-424f-a6f8-b93b150f750f",
-      "tags": [
-        "grammar"
-      ],
-      "cloze": {
-        "template": "دا {{0}} ده",
-        "blanks": [
-          {
-            "blank_index": 0,
-            "fill": "پشۍ"
-          }
-        ],
-        "translation_en": "This is a cat."
-      }
-    },
-    {
-      "srs_id": "0655473d-4bd4-496d-8ac8-1c113aefdfdd",
+      "srs_id": "a03c0c3f-0444-4816-a00f-b77fb3b13d4a",
       "srs_type": "flip",
-      "source_sentence_id": "c9f5a11d-057e-4dd4-828d-7bf02fd1a3c2",
+      "source_sentence_id": "6df4a53d-11b4-43bb-9700-f05e943c39b0",
       "tags": [
         "vocab"
       ],
@@ -678,27 +580,9 @@
       }
     },
     {
-      "srs_id": "08e4e739-215a-43e6-8e40-d5d174f35171",
-      "srs_type": "cloze",
-      "source_sentence_id": "c9f5a11d-057e-4dd4-828d-7bf02fd1a3c2",
-      "tags": [
-        "grammar"
-      ],
-      "cloze": {
-        "template": "هغه {{0}} ده",
-        "blanks": [
-          {
-            "blank_index": 0,
-            "fill": "ونه"
-          }
-        ],
-        "translation_en": "That is a tree."
-      }
-    },
-    {
-      "srs_id": "6c22c096-02f3-4b29-9940-a8f0bd85239f",
+      "srs_id": "9a04b6df-827d-47da-bba9-ba8666fa0fc0",
       "srs_type": "flip",
-      "source_sentence_id": "d1f69d9f-5f80-4f55-9749-5b6ca22febed",
+      "source_sentence_id": "c866d9bc-7cfd-42bb-a648-66c820546a03",
       "tags": [
         "vocab"
       ],
@@ -710,27 +594,9 @@
       }
     },
     {
-      "srs_id": "55d3e330-fa05-4ae4-93d3-ca3229419137",
-      "srs_type": "cloze",
-      "source_sentence_id": "d1f69d9f-5f80-4f55-9749-5b6ca22febed",
-      "tags": [
-        "grammar"
-      ],
-      "cloze": {
-        "template": "دا {{0}} ده",
-        "blanks": [
-          {
-            "blank_index": 0,
-            "fill": "مړۍ"
-          }
-        ],
-        "translation_en": "This is food."
-      }
-    },
-    {
-      "srs_id": "e15cd406-3811-4683-b9d7-1d1c1a3fdf49",
+      "srs_id": "5c4af6e4-7882-4767-94bc-45516b9514fa",
       "srs_type": "flip",
-      "source_sentence_id": "cf9222fe-696d-4406-878f-b6da1d5968fa",
+      "source_sentence_id": "331c502c-d36f-4459-ac5c-2895039b63c5",
       "tags": [
         "vocab"
       ],
@@ -739,24 +605,6 @@
         "back": {
           "translation_en": "dog"
         }
-      }
-    },
-    {
-      "srs_id": "d3bfb2cf-dc77-4703-9183-10b1803c972d",
-      "srs_type": "cloze",
-      "source_sentence_id": "cf9222fe-696d-4406-878f-b6da1d5968fa",
-      "tags": [
-        "grammar"
-      ],
-      "cloze": {
-        "template": "هغه {{0}} دی",
-        "blanks": [
-          {
-            "blank_index": 0,
-            "fill": "سپی"
-          }
-        ],
-        "translation_en": "That is a dog."
       }
     }
   ]
