@@ -7,6 +7,7 @@
 
 import { NavLink } from 'react-router-dom';
 import ThemeSwitcher from './ThemeSwitcher';
+import { ParticleAnimationProvider } from '../contexts/AnimationContext';
 
 interface AppLayoutProps {
   children: React.ReactNode;
@@ -14,6 +15,7 @@ interface AppLayoutProps {
 
 export default function AppLayout({ children }: AppLayoutProps) {
   return (
+    <ParticleAnimationProvider>
     <div className="min-h-screen flex flex-col">
       {/* Navbar */}
       <div className="navbar bg-base-200">
@@ -66,6 +68,7 @@ export default function AppLayout({ children }: AppLayoutProps) {
             </li>
             <li>
               <NavLink
+                id="review-tab-nav"
                 to="/review"
                 className={({ isActive }) => (isActive ? 'active' : '')}
               >
@@ -90,5 +93,6 @@ export default function AppLayout({ children }: AppLayoutProps) {
       {/* Main content */}
       <main className="flex-1 container mx-auto p-4">{children}</main>
     </div>
+    </ParticleAnimationProvider>
   );
 }

@@ -11,7 +11,8 @@ import { useEffect, useState } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { getLesson, markLessonCompleted, markExerciseCompleted } from '../services/lessonService';
 import { srsItemService } from '../services/srsItemService';
-import type { Lesson, Exercise } from '../types/lesson';
+import { useParticleAnimation } from '../contexts/AnimationContext';
+import type { Lesson, Exercise, SRSItem } from '../types/lesson';
 
 import SentenceToImageMatch from '../components/exercises/SentenceToImageMatch';
 import WordBankBuild from '../components/exercises/WordBankBuild';
@@ -23,6 +24,7 @@ type LessonState = 'loading' | 'intro' | 'exercise' | 'completion';
 export default function LessonPage() {
   const { lessonId } = useParams<{ lessonId: string }>();
   const navigate = useNavigate();
+  const { fireParticle } = useParticleAnimation();
 
   const [lesson, setLesson] = useState<Lesson | null>(null);
   const [state, setState] = useState<LessonState>('loading');
@@ -42,6 +44,11 @@ export default function LessonPage() {
       }
 
       setLesson(loadedLesson);
+
+      // Register SRS item data so hasCards() works, then load persisted card states
+      srsItemService.registerItemData(loadedLesson.srs);
+      srsItemService.loadFromStorage();
+
       setState('intro');
     });
   }, [lessonId, navigate]);
@@ -74,8 +81,16 @@ export default function LessonPage() {
     // Mark lesson as completed
     markLessonCompleted(lesson.lesson_id);
 
-    // Create SRS cards for this lesson
+    // Create any remaining SRS cards (idempotent — won't duplicate)
     srsItemService.createCardsForItems(lesson.srs);
+  };
+
+  /** Called when a user first hovers/taps a word in an exercise sentence */
+  const handleDiscoverSentence = (srsItems: SRSItem[], fromRect: DOMRect) => {
+    srsItemService.createCardsForItems(srsItems);
+    const fromX = fromRect.left + fromRect.width / 2;
+    const fromY = fromRect.top + fromRect.height / 2;
+    fireParticle(fromX, fromY);
   };
 
   if (state === 'loading' || !lesson) {
@@ -143,6 +158,16 @@ export default function LessonPage() {
     const currentExercise = lesson.exercises[currentExerciseIndex];
     const progress = ((currentExerciseIndex + 1) / lesson.exercises.length) * 100;
 
+    // Get sentence and its SRS items for the current exercise
+    const sentenceId = currentExercise.sentence_ids?.[0] || currentExercise.correct_sentence_id;
+    const sentence = lesson.sentences.find((s) => s.sentence_id === sentenceId);
+    const sentenceSrsItems = sentence
+      ? lesson.srs.filter((item) => sentence.srs_uuids.includes(item.srs_id))
+      : [];
+
+    const onDiscoverSentence = (fromRect: DOMRect) =>
+      handleDiscoverSentence(sentenceSrsItems, fromRect);
+
     return (
       <div>
         {/* Progress bar */}
@@ -158,7 +183,35 @@ export default function LessonPage() {
 
         {/* Render appropriate exercise component with fade-in animation */}
         <div key={currentExerciseIndex} className="animate-fadeIn">
-          {renderExercise(currentExercise, lesson, handleExerciseComplete)}
+          {!sentence ? (
+            <div className="alert alert-error">Error: Sentence not found for exercise</div>
+          ) : currentExercise.type === 'sentence_to_image_match' ? (
+            <SentenceToImageMatch
+              exercise={currentExercise}
+              sentence={sentence}
+              onComplete={handleExerciseComplete}
+              sentenceSrsItems={sentenceSrsItems}
+              onDiscoverSentence={onDiscoverSentence}
+            />
+          ) : currentExercise.type === 'word_bank_build' ? (
+            <WordBankBuild
+              exercise={currentExercise}
+              sentence={sentence}
+              onComplete={handleExerciseComplete}
+              sentenceSrsItems={sentenceSrsItems}
+              onDiscoverSentence={onDiscoverSentence}
+            />
+          ) : currentExercise.type === 'gap_fill_single' ? (
+            <GapFill
+              exercise={currentExercise}
+              sentence={sentence}
+              onComplete={handleExerciseComplete}
+              sentenceSrsItems={sentenceSrsItems}
+              onDiscoverSentence={onDiscoverSentence}
+            />
+          ) : (
+            <div className="alert alert-error">Unknown exercise type: {currentExercise.type}</div>
+          )}
         </div>
       </div>
     );
@@ -200,35 +253,3 @@ export default function LessonPage() {
 
   return null;
 }
-
-/**
- * Render the appropriate exercise component based on type.
- */
-function renderExercise(
-  exercise: Exercise,
-  lesson: Lesson,
-  onComplete: (_correct: boolean) => void
-) {
-  // Get the sentence(s) referenced by this exercise
-  const sentenceId = exercise.sentence_ids?.[0] || exercise.correct_sentence_id;
-  const sentence = lesson.sentences.find((s) => s.sentence_id === sentenceId);
-
-  if (!sentence) {
-    return <div className="alert alert-error">Error: Sentence not found for exercise</div>;
-  }
-
-  switch (exercise.type) {
-    case 'sentence_to_image_match':
-      return <SentenceToImageMatch exercise={exercise} sentence={sentence} onComplete={onComplete} />;
-
-    case 'word_bank_build':
-      return <WordBankBuild exercise={exercise} sentence={sentence} onComplete={onComplete} />;
-
-    case 'gap_fill_single':
-      return <GapFill exercise={exercise} sentence={sentence} onComplete={onComplete} />;
-
-    default:
-      return <div className="alert alert-error">Unknown exercise type: {exercise.type}</div>;
-  }
-}
-

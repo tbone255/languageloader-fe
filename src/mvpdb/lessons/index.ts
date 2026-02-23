@@ -22,9 +22,9 @@ export interface LessonRegistryEntry {
  */
 export const LESSON_REGISTRY: LessonRegistryEntry[] = [
   {
-    lesson_id: 'a1b2c3d4-e5f6-4a7b-8c9d-0e1f2a3b4c5d',
+    lesson_id: 'pus-001',
     order: 1,
-    title: 'Deixis and Singular Nouns',
+    title: 'Deixis + Singular Nouns',
     data: lesson1 as Lesson,
   },
   {

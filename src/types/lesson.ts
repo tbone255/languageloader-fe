@@ -57,8 +57,10 @@ export interface Sentence {
   text?: string;
   /** Map of token_id → English gloss */
   gloss_word_by_word: Record<string, string>;
-  /** Full English translation of the sentence */
-  meaning_en: string;
+  /** Word-by-word gloss in target-language word order */
+  gloss_en?: string;
+  /** Natural English translation of the sentence */
+  translation_en?: string;
   image_refs?: ImageRef[];
   /** Defines which tokens form cloze blanks */
   cloze_spans?: ClozeSpan[];
@@ -139,7 +141,7 @@ export interface FlipCard {
 }
 
 export interface FlipCardBack {
-  meaning_en: string;
+  translation_en: string;
   pronunciation?: string;
   transliteration?: string;
   ipa?: string;
@@ -149,7 +151,7 @@ export interface ClozeCard {
   /** Sentence with {{0}}, {{1}}, etc. for blanks */
   template: string;
   blanks: ClozeBlank[];
-  meaning_en: string;
+  translation_en: string;
 }
 
 export interface ClozeBlank {

@@ -210,6 +210,15 @@ export class SRSItemService {
   }
 
   /**
+   * Check if cards exist for all given SRS IDs.
+   * Returns true if the list is empty (no gate needed).
+   */
+  hasCards(srs_ids: string[]): boolean {
+    if (srs_ids.length === 0) return true;
+    return srs_ids.every((id) => this.cards.has(id));
+  }
+
+  /**
    * Get statistics.
    */
   getStats() {

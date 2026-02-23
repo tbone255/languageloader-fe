@@ -14,12 +14,15 @@ interface TokenizedTextProps {
   size?: 'sm' | 'base' | 'lg' | 'xl' | '2xl' | '3xl' | '4xl' | '5xl';
   /** Show glosses on hover (default) or click */
   trigger?: 'hover' | 'click';
+  /** Called whenever any token is hovered or tapped */
+  onTokenHover?: (rect: DOMRect) => void;
 }
 
 export default function TokenizedText({
   sentence,
   size = '2xl',
-  trigger = 'hover'
+  trigger = 'hover',
+  onTokenHover,
 }: TokenizedTextProps) {
   const [activeTokenId, setActiveTokenId] = useState<string | null>(null);
 
@@ -29,9 +32,13 @@ export default function TokenizedText({
     }
   };
 
-  const handleTokenHover = (tokenId: string | null) => {
+  const handleTokenHover = (tokenId: string | null, event?: React.MouseEvent | React.TouchEvent) => {
     if (trigger === 'hover') {
       setActiveTokenId(tokenId);
+    }
+    if (tokenId && event && onTokenHover) {
+      const rect = (event.currentTarget as HTMLElement).getBoundingClientRect();
+      onTokenHover(rect);
     }
   };
 
@@ -69,7 +76,8 @@ export default function TokenizedText({
                   }
                 `}
                 onClick={() => handleTokenClick(token.id)}
-                onMouseEnter={() => handleTokenHover(token.id)}
+                onMouseEnter={(e) => handleTokenHover(token.id, e)}
+                onTouchStart={(e) => handleTokenHover(token.id, e)}
                 onMouseLeave={() => handleTokenHover(null)}
               >
                 {token.text}
@@ -128,9 +136,9 @@ export default function TokenizedText({
       </div>
 
       {/* Full sentence translation below */}
-      {sentence.meaning_en && (
+      {sentence.translation_en && (
         <p className="text-base text-base-content/70 mt-3 text-center">
-          {sentence.meaning_en}
+          {sentence.translation_en}
         </p>
       )}
     </div>

@@ -5,27 +5,38 @@
  */
 
 import { useState } from 'react';
-import type { Exercise, Sentence } from '../../types/lesson';
+import type { Exercise, Sentence, SRSItem } from '../../types/lesson';
 import TokenizedText from '../TokenizedText';
+import { srsItemService } from '../../services/srsItemService';
 
 interface SentenceToImageMatchProps {
   exercise: Exercise;
   sentence: Sentence;
   onComplete: (correct: boolean) => void;
+  sentenceSrsItems?: SRSItem[];
+  onDiscoverSentence?: (rect: DOMRect) => void;
 }
+
+const isTouchDevice = () => 'ontouchstart' in window || navigator.maxTouchPoints > 0;
 
 export default function SentenceToImageMatch({
   exercise,
   sentence,
   onComplete,
+  sentenceSrsItems = [],
+  onDiscoverSentence,
 }: SentenceToImageMatchProps) {
   const [selectedImageId, setSelectedImageId] = useState<string | null>(null);
   const [showFeedback, setShowFeedback] = useState(false);
   const [isCorrect, setIsCorrect] = useState(false);
   const [fadeOut, setFadeOut] = useState(false);
+  const [sentenceDiscovered, setSentenceDiscovered] = useState(() => {
+    if (sentenceSrsItems.length === 0) return true;
+    return srsItemService.hasCards(sentenceSrsItems.map((i) => i.srs_id));
+  });
 
   const handleImageClick = (imageId: string) => {
-    if (showFeedback) return; // Disable clicks after answer
+    if (showFeedback) return;
 
     setSelectedImageId(imageId);
     const correct = imageId === exercise.correct_image_id;
@@ -40,23 +51,27 @@ export default function SentenceToImageMatch({
     }, 300);
   };
 
-  // Render sentence with interactive tokens
-  const renderSentence = () => {
-    return (
-      <div className="text-center mb-6">
-        <TokenizedText sentence={sentence} size="3xl" />
-        <p className="text-sm text-base-content/50 mt-2 italic">
-          Hover over words for translations
-        </p>
-      </div>
-    );
+  const handleTokenHover = (rect: DOMRect) => {
+    if (!sentenceDiscovered) {
+      setSentenceDiscovered(true);
+      onDiscoverSentence?.(rect);
+    }
   };
+
+  const discoveryVerb = isTouchDevice() ? 'Tap' : 'Hover';
 
   return (
     <div className={`max-w-4xl mx-auto transition-opacity duration-300 ${fadeOut ? 'opacity-0' : 'opacity-100'}`}>
       <div className="mb-8">
         <h2 className="text-xl font-semibold mb-4">Select the matching image</h2>
-        {renderSentence()}
+        <div className="text-center mb-6">
+          <TokenizedText sentence={sentence} size="3xl" onTokenHover={handleTokenHover} />
+          <p className="text-sm text-base-content/50 mt-2 italic">
+            {sentenceDiscovered
+              ? 'Hover over words for translations'
+              : `${discoveryVerb} words to discover them`}
+          </p>
+        </div>
       </div>
 
       {/* Image options grid */}
@@ -81,7 +96,6 @@ export default function SentenceToImageMatch({
               `}
             >
               <figure className="p-4 min-h-[200px] flex items-center justify-center bg-base-200 rounded-t-2xl">
-                {/* Image placeholder - will use actual images in production */}
                 <div className="text-6xl" role="img" aria-label={imageId.replace('img-', '').replace(/-/g, ' ')}>
                   {getImagePlaceholder(imageId)}
                 </div>
@@ -119,9 +133,21 @@ export default function SentenceToImageMatch({
             </svg>
             <span>{isCorrect ? 'Correct!' : 'Try again next time'}</span>
           </div>
-          <button onClick={handleContinue} className="btn btn-primary btn-wide">
-            Continue
-          </button>
+
+          {sentenceDiscovered ? (
+            <button onClick={handleContinue} className="btn btn-primary btn-wide">
+              Continue
+            </button>
+          ) : (
+            <div
+              className="tooltip tooltip-top w-full"
+              data-tip={`There are undiscovered words! ${discoveryVerb} the words in the sentence above to add them to your review cards.`}
+            >
+              <button className="btn btn-primary btn-wide opacity-50 cursor-not-allowed w-full" disabled>
+                Continue
+              </button>
+            </div>
+          )}
         </div>
       )}
     </div>
@@ -152,6 +178,14 @@ function getImagePlaceholder(imageId: string): string {
     'img-your-tables': '🪑👉',
     'img-my-door': '🚪✋',
     'img-your-chairs': '🪑👉',
+    'img-اس': '🐎',
+    'img-کب': '🐟',
+    'img-آم': '🥭',
+    'img-ګل': '🌸',
+    'img-پشۍ': '🐱',
+    'img-ونه': '🌲',
+    'img-مړۍ': '🍞',
+    'img-سپی': '🐶',
   };
 
   return placeholders[imageId] || '🖼️';

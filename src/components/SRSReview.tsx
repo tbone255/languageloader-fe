@@ -201,7 +201,7 @@ function renderFlipCard(card: SRSItemCard, showAnswer: boolean, sentences: Map<s
       {showAnswer && (
         <div>
           <p className="text-sm uppercase opacity-60 mb-2">Back</p>
-          <p className="text-3xl mb-2">{flip.back.meaning_en}</p>
+          <p className="text-3xl mb-2">{flip.back.translation_en}</p>
           {flip.back.transliteration && (
             <p className="text-xl opacity-70 mb-1">{flip.back.transliteration}</p>
           )}
@@ -252,7 +252,7 @@ function renderClozeCard(card: SRSItemCard, showAnswer: boolean, _sentences: Map
       {showAnswer && (
         <div>
           <p className="text-sm uppercase opacity-60 mb-2">Translation</p>
-          <p className="text-2xl">{cloze.meaning_en}</p>
+          <p className="text-2xl">{cloze.translation_en}</p>
         </div>
       )}
     </div>

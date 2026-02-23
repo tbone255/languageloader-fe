@@ -1,15 +1,10 @@
 {
   "schema_version": "1.0.0",
-  "lesson_id": "a1b2c3d4-e5f6-4a7b-8c9d-0e1f2a3b4c5d",
+  "lesson_id": "pus-001",
   "lesson_meta": {
-    "title": "Deixis and Singular Nouns",
+    "title": "Deixis + Singular Nouns",
     "order": 1,
-    "description": "Learn to identify objects using 'this' and 'that' with singular nouns",
-    "objectives": [
-      "Use demonstratives دا (dā) and هغه (haǧë) correctly",
-      "Identify 6-8 concrete nouns in Pashto",
-      "Form basic 'This is X' and 'That is X' sentences"
-    ]
+    "description": "Learn to point at things using 'this' and 'that' with common concrete nouns."
   },
   "target_language": {
     "iso_639_1": "ps",
@@ -19,531 +14,749 @@
   },
   "sentences": [
     {
-      "sentence_id": "s1-001",
+      "sentence_id": "44e897d8-89e4-4593-8988-fc03c36b2433",
       "tokens": [
         {
-          "id": "t1",
+          "id": "0256c0b6-736f-4901-b6ed-786d2bd4e9e7",
           "text": "دا",
-          "transliteration": "dā",
-          "ipa": "dɑː"
+          "normalized": "دا",
+          "transliteration": "dā"
         },
         {
-          "id": "t2",
-          "text": "کتاب",
-          "transliteration": "kitāb",
-          "ipa": "kɪtɑːb"
+          "id": "145d1abd-fb2a-49d1-af1c-fdedb08a1d4f",
+          "text": "اس",
+          "normalized": "اس",
+          "ipa": "as"
         },
         {
-          "id": "t3",
+          "id": "9f0a3716-baea-47c5-8642-bf700aa71690",
           "text": "دی",
-          "transliteration": "day",
-          "ipa": "daj"
+          "normalized": "دی",
+          "transliteration": "day"
         }
       ],
-      "text": "دا کتاب دی",
       "gloss_word_by_word": {
-        "t1": "this",
-        "t2": "book",
-        "t3": "is"
+        "0256c0b6-736f-4901-b6ed-786d2bd4e9e7": "this",
+        "145d1abd-fb2a-49d1-af1c-fdedb08a1d4f": "horse",
+        "9f0a3716-baea-47c5-8642-bf700aa71690": "is"
       },
-      "meaning_en": "This is a book.",
-      "image_refs": [
-        {
-          "image_id": "img-book",
-          "alt": "A book"
-        }
+      "gloss_en": "this horse is",
+      "translation_en": "This is a horse.",
+      "srs_uuids": [
+        "31de4650-a280-40ea-86a3-2108334fe4fc",
+        "b71aa8cb-e0f4-4200-a9bf-448d23f8f84b"
       ],
       "cloze_spans": [
         {
           "blank_index": 0,
-          "token_ids": ["t1"]
+          "token_ids": [
+            "145d1abd-fb2a-49d1-af1c-fdedb08a1d4f"
+          ]
         }
-      ],
-      "srs_uuids": ["srs-001", "srs-002"]
+      ]
     },
     {
-      "sentence_id": "s1-002",
+      "sentence_id": "e1c91d09-89ca-4860-a57e-9f36dd9ad0d6",
       "tokens": [
         {
-          "id": "t1",
+          "id": "699b32fe-12dc-4c7b-86a2-92c0c00840e7",
           "text": "هغه",
-          "transliteration": "haǧë",
-          "ipa": "haʁə"
+          "normalized": "هغه",
+          "transliteration": "hagha"
         },
         {
-          "id": "t2",
-          "text": "قلم",
-          "transliteration": "qalam",
-          "ipa": "qalam"
+          "id": "3e27f2d2-1e19-4cf2-bbcc-0db7d73d197e",
+          "text": "کب",
+          "normalized": "کب",
+          "ipa": "kab"
         },
         {
-          "id": "t3",
+          "id": "687edfdb-a955-4404-b1df-8e87eb629dfe",
           "text": "دی",
-          "transliteration": "day",
-          "ipa": "daj"
+          "normalized": "دی",
+          "transliteration": "day"
         }
       ],
-      "text": "هغه قلم دی",
       "gloss_word_by_word": {
-        "t1": "that",
-        "t2": "pen",
-        "t3": "is"
+        "699b32fe-12dc-4c7b-86a2-92c0c00840e7": "that",
+        "3e27f2d2-1e19-4cf2-bbcc-0db7d73d197e": "fish",
+        "687edfdb-a955-4404-b1df-8e87eb629dfe": "is"
       },
-      "meaning_en": "That is a pen.",
-      "image_refs": [
-        {
-          "image_id": "img-pen",
-          "alt": "A pen"
-        }
+      "gloss_en": "that fish is",
+      "translation_en": "That is a fish.",
+      "srs_uuids": [
+        "67edc9cc-c1f0-4ed6-88cb-9151730a7a75",
+        "05281a5a-38c8-4c9f-9b96-f6661f81221b"
       ],
       "cloze_spans": [
         {
           "blank_index": 0,
-          "token_ids": ["t1"]
+          "token_ids": [
+            "3e27f2d2-1e19-4cf2-bbcc-0db7d73d197e"
+          ]
         }
-      ],
-      "srs_uuids": ["srs-003", "srs-004"]
+      ]
     },
     {
-      "sentence_id": "s1-003",
+      "sentence_id": "6d54494c-3a12-4c00-b913-4fc655f3fff5",
       "tokens": [
         {
-          "id": "t1",
+          "id": "642f93f2-2b81-4387-a91b-ad307a2c1b81",
           "text": "دا",
-          "transliteration": "dā",
-          "ipa": "dɑː"
+          "normalized": "دا",
+          "transliteration": "dā"
         },
         {
-          "id": "t2",
-          "text": "میز",
-          "transliteration": "mez",
-          "ipa": "meːz"
+          "id": "56201f42-24de-4ece-b03f-1dfe32c6e702",
+          "text": "آم",
+          "normalized": "آم"
         },
         {
-          "id": "t3",
+          "id": "7d46ba6d-2dcd-4c9d-9045-636dd8990fbe",
           "text": "دی",
-          "transliteration": "day",
-          "ipa": "daj"
+          "normalized": "دی",
+          "transliteration": "day"
         }
       ],
-      "text": "دا میز دی",
       "gloss_word_by_word": {
-        "t1": "this",
-        "t2": "table",
-        "t3": "is"
+        "642f93f2-2b81-4387-a91b-ad307a2c1b81": "this",
+        "56201f42-24de-4ece-b03f-1dfe32c6e702": "mango",
+        "7d46ba6d-2dcd-4c9d-9045-636dd8990fbe": "is"
       },
-      "meaning_en": "This is a table.",
-      "image_refs": [
-        {
-          "image_id": "img-table",
-          "alt": "A table"
-        }
+      "gloss_en": "this mango is",
+      "translation_en": "This is a mango.",
+      "srs_uuids": [
+        "25954cf6-e717-43e2-af68-87733e302d49",
+        "97b43559-fff0-4529-be10-119dba78046b"
       ],
       "cloze_spans": [
         {
           "blank_index": 0,
-          "token_ids": ["t2"]
+          "token_ids": [
+            "56201f42-24de-4ece-b03f-1dfe32c6e702"
+          ]
         }
-      ],
-      "srs_uuids": ["srs-005", "srs-006"]
+      ]
     },
     {
-      "sentence_id": "s1-004",
+      "sentence_id": "939df205-317d-4a9f-836a-daa87e22e773",
       "tokens": [
         {
-          "id": "t1",
+          "id": "a5eb3988-55ba-4a26-85ea-a0a22446ddde",
           "text": "هغه",
-          "transliteration": "haǧë",
-          "ipa": "haʁə"
+          "normalized": "هغه",
+          "transliteration": "hagha"
         },
         {
-          "id": "t2",
-          "text": "چوکۍ",
-          "transliteration": "čokəy",
-          "ipa": "t͡ʃoːkəj"
+          "id": "f724391e-6fe2-4980-b83e-f8d7f02f6b7a",
+          "text": "ګل",
+          "normalized": "ګل",
+          "ipa": "ɡwəl"
         },
         {
-          "id": "t3",
-          "text": "ده",
-          "transliteration": "da",
-          "ipa": "da"
+          "id": "fa426453-c5e0-4bb6-b39b-afbde919fe2b",
+          "text": "دی",
+          "normalized": "دی",
+          "transliteration": "day"
         }
       ],
-      "text": "هغه چوکۍ ده",
       "gloss_word_by_word": {
-        "t1": "that",
-        "t2": "chair",
-        "t3": "is"
+        "a5eb3988-55ba-4a26-85ea-a0a22446ddde": "that",
+        "f724391e-6fe2-4980-b83e-f8d7f02f6b7a": "large hailstones, first snow on the mountains",
+        "fa426453-c5e0-4bb6-b39b-afbde919fe2b": "is"
       },
-      "meaning_en": "That is a chair.",
-      "image_refs": [
-        {
-          "image_id": "img-chair",
-          "alt": "A chair"
-        }
+      "gloss_en": "that large hailstones, first snow on the mountains is",
+      "translation_en": "That is a flower.",
+      "srs_uuids": [
+        "0dd502bc-0b74-4d3b-9c66-a67bc58f6722",
+        "7ba3992f-4b7e-41c4-9900-2595a7e88961"
       ],
       "cloze_spans": [
         {
           "blank_index": 0,
-          "token_ids": ["t2"]
+          "token_ids": [
+            "f724391e-6fe2-4980-b83e-f8d7f02f6b7a"
+          ]
         }
-      ],
-      "srs_uuids": ["srs-007", "srs-008"]
+      ]
     },
     {
-      "sentence_id": "s1-005",
+      "sentence_id": "6c373f89-ccab-424f-a6f8-b93b150f750f",
       "tokens": [
         {
-          "id": "t1",
+          "id": "c6abfc8b-da5c-44fc-9fcd-d838b1bdc97b",
           "text": "دا",
-          "transliteration": "dā",
-          "ipa": "dɑː"
+          "normalized": "دا",
+          "transliteration": "dā"
         },
         {
-          "id": "t2",
-          "text": "دروازه",
-          "transliteration": "darwāza",
-          "ipa": "darwɑːza"
+          "id": "07ef6734-5ca3-46eb-967c-7908e093575b",
+          "text": "پشۍ",
+          "normalized": "پشۍ",
+          "ipa": "pəˈʃəi̯"
         },
         {
-          "id": "t3",
+          "id": "3f62468a-6a7b-4994-bd7d-47443c5a6ead",
           "text": "ده",
-          "transliteration": "da",
-          "ipa": "da"
+          "normalized": "ده",
+          "transliteration": "da"
         }
       ],
-      "text": "دا دروازه ده",
       "gloss_word_by_word": {
-        "t1": "this",
-        "t2": "door",
-        "t3": "is"
+        "c6abfc8b-da5c-44fc-9fcd-d838b1bdc97b": "this",
+        "07ef6734-5ca3-46eb-967c-7908e093575b": "cat",
+        "3f62468a-6a7b-4994-bd7d-47443c5a6ead": "is"
       },
-      "meaning_en": "This is a door.",
-      "image_refs": [
-        {
-          "image_id": "img-door",
-          "alt": "A door"
-        }
+      "gloss_en": "this cat is",
+      "translation_en": "This is a cat.",
+      "srs_uuids": [
+        "ad8531d3-9e7f-417a-bdd8-ee4a3731487b",
+        "cfed8cdf-13f7-499b-9243-c9fb23ea5f14"
       ],
       "cloze_spans": [
         {
           "blank_index": 0,
-          "token_ids": ["t2"]
+          "token_ids": [
+            "07ef6734-5ca3-46eb-967c-7908e093575b"
+          ]
         }
-      ],
-      "srs_uuids": ["srs-009", "srs-010"]
+      ]
     },
     {
-      "sentence_id": "s1-006",
+      "sentence_id": "c9f5a11d-057e-4dd4-828d-7bf02fd1a3c2",
       "tokens": [
         {
-          "id": "t1",
+          "id": "1bd75700-8cc8-4b7d-af10-3a0a23e8e4c7",
           "text": "هغه",
-          "transliteration": "haǧë",
-          "ipa": "haʁə"
+          "normalized": "هغه",
+          "transliteration": "hagha"
         },
         {
-          "id": "t2",
-          "text": "کړکۍ",
-          "transliteration": "kṛakəy",
-          "ipa": "kɽakəj"
+          "id": "a368bdf9-4cd5-460d-9884-c43d5a10630f",
+          "text": "ونه",
+          "normalized": "ونه",
+          "ipa": "ˈwəna"
         },
         {
-          "id": "t3",
+          "id": "2e5d974a-c476-476a-afa7-b8577346b122",
           "text": "ده",
-          "transliteration": "da",
-          "ipa": "da"
+          "normalized": "ده",
+          "transliteration": "da"
         }
       ],
-      "text": "هغه کړکۍ ده",
       "gloss_word_by_word": {
-        "t1": "that",
-        "t2": "window",
-        "t3": "is"
+        "1bd75700-8cc8-4b7d-af10-3a0a23e8e4c7": "that",
+        "a368bdf9-4cd5-460d-9884-c43d5a10630f": "tree; height",
+        "2e5d974a-c476-476a-afa7-b8577346b122": "is"
       },
-      "meaning_en": "That is a window.",
-      "image_refs": [
-        {
-          "image_id": "img-window",
-          "alt": "A window"
-        }
+      "gloss_en": "that tree; height is",
+      "translation_en": "That is a tree.",
+      "srs_uuids": [
+        "0655473d-4bd4-496d-8ac8-1c113aefdfdd",
+        "08e4e739-215a-43e6-8e40-d5d174f35171"
       ],
       "cloze_spans": [
         {
           "blank_index": 0,
-          "token_ids": ["t2"]
+          "token_ids": [
+            "a368bdf9-4cd5-460d-9884-c43d5a10630f"
+          ]
+        }
+      ]
+    },
+    {
+      "sentence_id": "d1f69d9f-5f80-4f55-9749-5b6ca22febed",
+      "tokens": [
+        {
+          "id": "3f905b99-3342-46f3-bbbc-a5c10a751b61",
+          "text": "دا",
+          "normalized": "دا",
+          "transliteration": "dā"
+        },
+        {
+          "id": "47ca9138-6c8d-4365-b63b-0d683b05bfbb",
+          "text": "مړۍ",
+          "normalized": "مړۍ",
+          "ipa": "maˈɺ̢əi̯"
+        },
+        {
+          "id": "734b6c86-a896-4ede-870c-1a98860616e4",
+          "text": "ده",
+          "normalized": "ده",
+          "transliteration": "da"
         }
       ],
-      "srs_uuids": ["srs-011", "srs-012"]
+      "gloss_word_by_word": {
+        "3f905b99-3342-46f3-bbbc-a5c10a751b61": "this",
+        "47ca9138-6c8d-4365-b63b-0d683b05bfbb": "piece, bread, bite, sip, gulp, food, meal",
+        "734b6c86-a896-4ede-870c-1a98860616e4": "is"
+      },
+      "gloss_en": "this piece, bread, bite, sip, gulp, food, meal is",
+      "translation_en": "This is food.",
+      "srs_uuids": [
+        "6c22c096-02f3-4b29-9940-a8f0bd85239f",
+        "55d3e330-fa05-4ae4-93d3-ca3229419137"
+      ],
+      "cloze_spans": [
+        {
+          "blank_index": 0,
+          "token_ids": [
+            "47ca9138-6c8d-4365-b63b-0d683b05bfbb"
+          ]
+        }
+      ]
+    },
+    {
+      "sentence_id": "cf9222fe-696d-4406-878f-b6da1d5968fa",
+      "tokens": [
+        {
+          "id": "72a02526-3abe-49bc-9288-a877d01665d6",
+          "text": "هغه",
+          "normalized": "هغه",
+          "transliteration": "hagha"
+        },
+        {
+          "id": "4b2cc720-0a12-4341-8391-112f300edecf",
+          "text": "سپی",
+          "normalized": "سپی",
+          "ipa": "spaɪ"
+        },
+        {
+          "id": "79c5de9f-518b-4dde-84ba-833026a0c750",
+          "text": "دی",
+          "normalized": "دی",
+          "transliteration": "day"
+        }
+      ],
+      "gloss_word_by_word": {
+        "72a02526-3abe-49bc-9288-a877d01665d6": "that",
+        "4b2cc720-0a12-4341-8391-112f300edecf": "dog",
+        "79c5de9f-518b-4dde-84ba-833026a0c750": "is"
+      },
+      "gloss_en": "that dog is",
+      "translation_en": "That is a dog.",
+      "srs_uuids": [
+        "e15cd406-3811-4683-b9d7-1d1c1a3fdf49",
+        "d3bfb2cf-dc77-4703-9183-10b1803c972d"
+      ],
+      "cloze_spans": [
+        {
+          "blank_index": 0,
+          "token_ids": [
+            "4b2cc720-0a12-4341-8391-112f300edecf"
+          ]
+        }
+      ]
     }
   ],
   "exercises": [
     {
-      "exercise_id": "ex-001",
       "type": "sentence_to_image_match",
-      "correct_sentence_id": "s1-001",
-      "image_options": ["img-book", "img-pen", "img-table"],
-      "correct_image_id": "img-book"
+      "sentence_ids": [
+        "44e897d8-89e4-4593-8988-fc03c36b2433"
+      ],
+      "correct_sentence_id": "44e897d8-89e4-4593-8988-fc03c36b2433",
+      "image_options": [
+        "img-آم",
+        "img-ګل",
+        "img-اس",
+        "img-کب"
+      ],
+      "correct_image_id": "img-اس",
+      "exercise_id": "592d27a9-8660-44e1-b41b-00fbcd74cda3"
     },
     {
-      "exercise_id": "ex-002",
       "type": "word_bank_build",
-      "sentence_ids": ["s1-002"],
+      "sentence_ids": [
+        "e1c91d09-89ca-4860-a57e-9f36dd9ad0d6"
+      ],
       "word_bank": [
         {
-          "id": "wb1",
+          "id": "e9b4900e-93fd-4c54-b1e0-9469bb6e412d",
           "text": "هغه",
-          "token_id": "t1"
+          "token_id": "699b32fe-12dc-4c7b-86a2-92c0c00840e7"
         },
         {
-          "id": "wb2",
-          "text": "قلم",
-          "token_id": "t2"
-        },
-        {
-          "id": "wb3",
+          "id": "1ed76eeb-a61b-48cb-8ae6-cad9b28cb69a",
           "text": "دی",
-          "token_id": "t3"
+          "token_id": "687edfdb-a955-4404-b1df-8e87eb629dfe"
         },
         {
-          "id": "wb4",
-          "text": "کتاب"
+          "id": "f56ecc40-7089-4f57-99aa-6a3d21dd2304",
+          "text": "کب",
+          "token_id": "3e27f2d2-1e19-4cf2-bbcc-0db7d73d197e"
         }
-      ]
+      ],
+      "exercise_id": "e3422c6f-eaf1-4a72-95d3-5c761a60aad7"
     },
     {
-      "exercise_id": "ex-003",
       "type": "gap_fill_single",
-      "sentence_ids": ["s1-003"],
+      "sentence_ids": [
+        "6d54494c-3a12-4c00-b913-4fc655f3fff5"
+      ],
       "gap": {
         "blank_index": 0,
-        "choices": ["میز", "قلم", "کتاب"],
-        "correct": "میز"
-      }
+        "choices": [
+          "آم",
+          "ګل",
+          "اس",
+          "کب"
+        ],
+        "correct": "آم"
+      },
+      "exercise_id": "82613fc2-1617-4399-8e40-9350a2c576e1"
     },
     {
-      "exercise_id": "ex-004",
       "type": "sentence_to_image_match",
-      "correct_sentence_id": "s1-004",
-      "image_options": ["img-chair", "img-door", "img-window"],
-      "correct_image_id": "img-chair"
+      "sentence_ids": [
+        "939df205-317d-4a9f-836a-daa87e22e773"
+      ],
+      "correct_sentence_id": "939df205-317d-4a9f-836a-daa87e22e773",
+      "image_options": [
+        "img-کب",
+        "img-ګل",
+        "img-اس",
+        "img-آم"
+      ],
+      "correct_image_id": "img-ګل",
+      "exercise_id": "3bae2bd5-7d81-4a45-8079-3583e43e0edf"
     },
     {
-      "exercise_id": "ex-005",
       "type": "word_bank_build",
-      "sentence_ids": ["s1-005"],
+      "sentence_ids": [
+        "6c373f89-ccab-424f-a6f8-b93b150f750f"
+      ],
       "word_bank": [
         {
-          "id": "wb1",
+          "id": "74831acc-d79b-430d-b068-500167ede7e2",
           "text": "دا",
-          "token_id": "t1"
+          "token_id": "c6abfc8b-da5c-44fc-9fcd-d838b1bdc97b"
         },
         {
-          "id": "wb2",
-          "text": "دروازه",
-          "token_id": "t2"
-        },
-        {
-          "id": "wb3",
+          "id": "dd87500b-8057-489f-a910-304bf2968f8c",
           "text": "ده",
-          "token_id": "t3"
+          "token_id": "3f62468a-6a7b-4994-bd7d-47443c5a6ead"
         },
         {
-          "id": "wb4",
-          "text": "چوکۍ"
+          "id": "e5cb1c92-3761-412d-a592-e7bfafb77f52",
+          "text": "پشۍ",
+          "token_id": "07ef6734-5ca3-46eb-967c-7908e093575b"
         }
-      ]
+      ],
+      "exercise_id": "e832b90e-ad2c-4099-bbaa-10029acf9a04"
     },
     {
-      "exercise_id": "ex-006",
       "type": "gap_fill_single",
-      "sentence_ids": ["s1-006"],
+      "sentence_ids": [
+        "c9f5a11d-057e-4dd4-828d-7bf02fd1a3c2"
+      ],
       "gap": {
         "blank_index": 0,
-        "choices": ["کړکۍ", "میز", "دروازه"],
-        "correct": "کړکۍ"
-      }
+        "choices": [
+          "آم",
+          "اس",
+          "ونه",
+          "کب"
+        ],
+        "correct": "ونه"
+      },
+      "exercise_id": "c90edaa1-33a7-4395-8a3a-d9c03103ad30"
+    },
+    {
+      "type": "sentence_to_image_match",
+      "sentence_ids": [
+        "d1f69d9f-5f80-4f55-9749-5b6ca22febed"
+      ],
+      "correct_sentence_id": "d1f69d9f-5f80-4f55-9749-5b6ca22febed",
+      "image_options": [
+        "img-آم",
+        "img-کب",
+        "img-اس",
+        "img-مړۍ"
+      ],
+      "correct_image_id": "img-مړۍ",
+      "exercise_id": "7cbbc9e6-ef92-46b4-a6aa-834987991d3b"
+    },
+    {
+      "type": "word_bank_build",
+      "sentence_ids": [
+        "cf9222fe-696d-4406-878f-b6da1d5968fa"
+      ],
+      "word_bank": [
+        {
+          "id": "3a80867d-bda6-49c1-a9e3-a252686138f9",
+          "text": "هغه",
+          "token_id": "72a02526-3abe-49bc-9288-a877d01665d6"
+        },
+        {
+          "id": "bce693ad-6df2-452b-9c5b-82ba0f674d6e",
+          "text": "سپی",
+          "token_id": "4b2cc720-0a12-4341-8391-112f300edecf"
+        },
+        {
+          "id": "b6ae75ce-44df-4893-9ef9-2087a2a8339b",
+          "text": "دی",
+          "token_id": "79c5de9f-518b-4dde-84ba-833026a0c750"
+        }
+      ],
+      "exercise_id": "d23c6f1c-b5e5-45d4-b9b6-32040709c977"
     }
   ],
   "srs": [
     {
-      "srs_id": "srs-001",
+      "srs_id": "31de4650-a280-40ea-86a3-2108334fe4fc",
       "srs_type": "flip",
-      "tags": ["vocab", "noun"],
-      "source_sentence_id": "s1-001",
+      "source_sentence_id": "44e897d8-89e4-4593-8988-fc03c36b2433",
+      "tags": [
+        "vocab"
+      ],
       "flip": {
-        "front": "کتاب",
+        "front": "اس",
         "back": {
-          "meaning_en": "book",
-          "transliteration": "kitāb",
-          "ipa": "kɪtɑːb"
+          "translation_en": "horse"
         }
       }
     },
     {
-      "srs_id": "srs-002",
+      "srs_id": "b71aa8cb-e0f4-4200-a9bf-448d23f8f84b",
       "srs_type": "cloze",
-      "tags": ["grammar", "demonstrative"],
-      "source_sentence_id": "s1-001",
+      "source_sentence_id": "44e897d8-89e4-4593-8988-fc03c36b2433",
+      "tags": [
+        "grammar"
+      ],
       "cloze": {
-        "template": "{{0}} کتاب دی",
+        "template": "دا {{0}} دی",
         "blanks": [
           {
             "blank_index": 0,
-            "fill": "دا"
+            "fill": "اس"
           }
         ],
-        "meaning_en": "This is a book."
+        "translation_en": "This is a horse."
       }
     },
     {
-      "srs_id": "srs-003",
+      "srs_id": "67edc9cc-c1f0-4ed6-88cb-9151730a7a75",
       "srs_type": "flip",
-      "tags": ["vocab", "noun"],
-      "source_sentence_id": "s1-002",
+      "source_sentence_id": "e1c91d09-89ca-4860-a57e-9f36dd9ad0d6",
+      "tags": [
+        "vocab"
+      ],
       "flip": {
-        "front": "قلم",
+        "front": "کب",
         "back": {
-          "meaning_en": "pen",
-          "transliteration": "qalam",
-          "ipa": "qalam"
+          "translation_en": "fish"
         }
       }
     },
     {
-      "srs_id": "srs-004",
+      "srs_id": "05281a5a-38c8-4c9f-9b96-f6661f81221b",
       "srs_type": "cloze",
-      "tags": ["grammar", "demonstrative"],
-      "source_sentence_id": "s1-002",
+      "source_sentence_id": "e1c91d09-89ca-4860-a57e-9f36dd9ad0d6",
+      "tags": [
+        "grammar"
+      ],
       "cloze": {
-        "template": "{{0}} قلم دی",
+        "template": "هغه {{0}} دی",
         "blanks": [
           {
             "blank_index": 0,
-            "fill": "هغه"
+            "fill": "کب"
           }
         ],
-        "meaning_en": "That is a pen."
+        "translation_en": "That is a fish."
       }
     },
     {
-      "srs_id": "srs-005",
+      "srs_id": "25954cf6-e717-43e2-af68-87733e302d49",
       "srs_type": "flip",
-      "tags": ["vocab", "noun"],
-      "source_sentence_id": "s1-003",
+      "source_sentence_id": "6d54494c-3a12-4c00-b913-4fc655f3fff5",
+      "tags": [
+        "vocab"
+      ],
       "flip": {
-        "front": "میز",
+        "front": "آم",
         "back": {
-          "meaning_en": "table",
-          "transliteration": "mez",
-          "ipa": "meːz"
+          "translation_en": "mango"
         }
       }
     },
     {
-      "srs_id": "srs-006",
+      "srs_id": "97b43559-fff0-4529-be10-119dba78046b",
       "srs_type": "cloze",
-      "tags": ["grammar", "demonstrative"],
-      "source_sentence_id": "s1-003",
+      "source_sentence_id": "6d54494c-3a12-4c00-b913-4fc655f3fff5",
+      "tags": [
+        "grammar"
+      ],
       "cloze": {
-        "template": "{{0}} میز دی",
+        "template": "دا {{0}} دی",
         "blanks": [
           {
             "blank_index": 0,
-            "fill": "دا"
+            "fill": "آم"
           }
         ],
-        "meaning_en": "This is a table."
+        "translation_en": "This is a mango."
       }
     },
     {
-      "srs_id": "srs-007",
+      "srs_id": "0dd502bc-0b74-4d3b-9c66-a67bc58f6722",
       "srs_type": "flip",
-      "tags": ["vocab", "noun"],
-      "source_sentence_id": "s1-004",
+      "source_sentence_id": "939df205-317d-4a9f-836a-daa87e22e773",
+      "tags": [
+        "vocab"
+      ],
       "flip": {
-        "front": "چوکۍ",
+        "front": "ګل",
         "back": {
-          "meaning_en": "chair",
-          "transliteration": "čokəy",
-          "ipa": "t͡ʃoːkəj"
+          "translation_en": "large hailstones, first snow on the mountains"
         }
       }
     },
     {
-      "srs_id": "srs-008",
+      "srs_id": "7ba3992f-4b7e-41c4-9900-2595a7e88961",
       "srs_type": "cloze",
-      "tags": ["grammar", "demonstrative"],
-      "source_sentence_id": "s1-004",
+      "source_sentence_id": "939df205-317d-4a9f-836a-daa87e22e773",
+      "tags": [
+        "grammar"
+      ],
       "cloze": {
-        "template": "{{0}} چوکۍ ده",
+        "template": "هغه {{0}} دی",
         "blanks": [
           {
             "blank_index": 0,
-            "fill": "هغه"
+            "fill": "ګل"
           }
         ],
-        "meaning_en": "That is a chair."
+        "translation_en": "That is a flower."
       }
     },
     {
-      "srs_id": "srs-009",
+      "srs_id": "ad8531d3-9e7f-417a-bdd8-ee4a3731487b",
       "srs_type": "flip",
-      "tags": ["vocab", "noun"],
-      "source_sentence_id": "s1-005",
+      "source_sentence_id": "6c373f89-ccab-424f-a6f8-b93b150f750f",
+      "tags": [
+        "vocab"
+      ],
       "flip": {
-        "front": "دروازه",
+        "front": "پشۍ",
         "back": {
-          "meaning_en": "door",
-          "transliteration": "darwāza",
-          "ipa": "darwɑːza"
+          "translation_en": "cat"
         }
       }
     },
     {
-      "srs_id": "srs-010",
+      "srs_id": "cfed8cdf-13f7-499b-9243-c9fb23ea5f14",
       "srs_type": "cloze",
-      "tags": ["grammar", "demonstrative"],
-      "source_sentence_id": "s1-005",
+      "source_sentence_id": "6c373f89-ccab-424f-a6f8-b93b150f750f",
+      "tags": [
+        "grammar"
+      ],
       "cloze": {
-        "template": "{{0}} دروازه ده",
+        "template": "دا {{0}} ده",
         "blanks": [
           {
             "blank_index": 0,
-            "fill": "دا"
+            "fill": "پشۍ"
           }
         ],
-        "meaning_en": "This is a door."
+        "translation_en": "This is a cat."
       }
     },
     {
-      "srs_id": "srs-011",
+      "srs_id": "0655473d-4bd4-496d-8ac8-1c113aefdfdd",
       "srs_type": "flip",
-      "tags": ["vocab", "noun"],
-      "source_sentence_id": "s1-006",
+      "source_sentence_id": "c9f5a11d-057e-4dd4-828d-7bf02fd1a3c2",
+      "tags": [
+        "vocab"
+      ],
       "flip": {
-        "front": "کړکۍ",
+        "front": "ونه",
         "back": {
-          "meaning_en": "window",
-          "transliteration": "kṛakəy",
-          "ipa": "kɽakəj"
+          "translation_en": "tree; height"
         }
       }
     },
     {
-      "srs_id": "srs-012",
+      "srs_id": "08e4e739-215a-43e6-8e40-d5d174f35171",
       "srs_type": "cloze",
-      "tags": ["grammar", "demonstrative"],
-      "source_sentence_id": "s1-006",
+      "source_sentence_id": "c9f5a11d-057e-4dd4-828d-7bf02fd1a3c2",
+      "tags": [
+        "grammar"
+      ],
       "cloze": {
-        "template": "{{0}} کړکۍ ده",
+        "template": "هغه {{0}} ده",
         "blanks": [
           {
             "blank_index": 0,
-            "fill": "هغه"
+            "fill": "ونه"
           }
         ],
-        "meaning_en": "That is a window."
+        "translation_en": "That is a tree."
+      }
+    },
+    {
+      "srs_id": "6c22c096-02f3-4b29-9940-a8f0bd85239f",
+      "srs_type": "flip",
+      "source_sentence_id": "d1f69d9f-5f80-4f55-9749-5b6ca22febed",
+      "tags": [
+        "vocab"
+      ],
+      "flip": {
+        "front": "مړۍ",
+        "back": {
+          "translation_en": "piece, bread, bite, sip, gulp, food, meal"
+        }
+      }
+    },
+    {
+      "srs_id": "55d3e330-fa05-4ae4-93d3-ca3229419137",
+      "srs_type": "cloze",
+      "source_sentence_id": "d1f69d9f-5f80-4f55-9749-5b6ca22febed",
+      "tags": [
+        "grammar"
+      ],
+      "cloze": {
+        "template": "دا {{0}} ده",
+        "blanks": [
+          {
+            "blank_index": 0,
+            "fill": "مړۍ"
+          }
+        ],
+        "translation_en": "This is food."
+      }
+    },
+    {
+      "srs_id": "e15cd406-3811-4683-b9d7-1d1c1a3fdf49",
+      "srs_type": "flip",
+      "source_sentence_id": "cf9222fe-696d-4406-878f-b6da1d5968fa",
+      "tags": [
+        "vocab"
+      ],
+      "flip": {
+        "front": "سپی",
+        "back": {
+          "translation_en": "dog"
+        }
+      }
+    },
+    {
+      "srs_id": "d3bfb2cf-dc77-4703-9183-10b1803c972d",
+      "srs_type": "cloze",
+      "source_sentence_id": "cf9222fe-696d-4406-878f-b6da1d5968fa",
+      "tags": [
+        "grammar"
+      ],
+      "cloze": {
+        "template": "هغه {{0}} دی",
+        "blanks": [
+          {
+            "blank_index": 0,
+            "fill": "سپی"
+          }
+        ],
+        "translation_en": "That is a dog."
       }
     }
   ]

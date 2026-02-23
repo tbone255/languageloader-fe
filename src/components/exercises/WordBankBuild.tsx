@@ -6,24 +6,35 @@
  */
 
 import { useState, useEffect } from 'react';
-import type { Exercise, Sentence } from '../../types/lesson';
+import type { Exercise, Sentence, SRSItem } from '../../types/lesson';
+import { srsItemService } from '../../services/srsItemService';
 
 interface WordBankBuildProps {
   exercise: Exercise;
   sentence: Sentence;
   onComplete: (correct: boolean) => void;
+  sentenceSrsItems?: SRSItem[];
+  onDiscoverSentence?: (rect: DOMRect) => void;
 }
+
+const isTouchDevice = () => 'ontouchstart' in window || navigator.maxTouchPoints > 0;
 
 export default function WordBankBuild({
   exercise,
   sentence,
   onComplete,
+  sentenceSrsItems = [],
+  onDiscoverSentence,
 }: WordBankBuildProps) {
   const [selectedWords, setSelectedWords] = useState<string[]>([]);
   const [availableWords, setAvailableWords] = useState<string[]>([]);
   const [showFeedback, setShowFeedback] = useState(false);
   const [isCorrect, setIsCorrect] = useState(false);
   const [fadeOut, setFadeOut] = useState(false);
+  const [sentenceDiscovered, setSentenceDiscovered] = useState(() => {
+    if (sentenceSrsItems.length === 0) return true;
+    return srsItemService.hasCards(sentenceSrsItems.map((i) => i.srs_id));
+  });
 
   // Shuffle word bank on mount
   useEffect(() => {
@@ -50,6 +61,14 @@ export default function WordBankBuild({
     const newSelected = selectedWords.filter((_, i) => i !== index);
     setSelectedWords(newSelected);
     setAvailableWords([...availableWords, wordId]);
+  };
+
+  const handleWordHover = (event: React.MouseEvent | React.TouchEvent) => {
+    if (!sentenceDiscovered) {
+      setSentenceDiscovered(true);
+      const rect = (event.currentTarget as HTMLElement).getBoundingClientRect();
+      onDiscoverSentence?.(rect);
+    }
   };
 
   const handleSubmit = () => {
@@ -83,12 +102,14 @@ export default function WordBankBuild({
     return exercise.word_bank?.find((w) => w.id === wordId)?.text || '';
   };
 
+  const discoveryVerb = isTouchDevice() ? 'Tap' : 'Hover';
+
   return (
     <div className={`max-w-4xl mx-auto transition-opacity duration-300 ${fadeOut ? 'opacity-0' : 'opacity-100'}`}>
       <div className="mb-8">
         <h2 className="text-xl font-semibold mb-4">Build the sentence</h2>
-        {sentence.meaning_en && (
-          <p className="text-lg text-base-content/70 mb-4">{sentence.meaning_en}</p>
+        {sentence.translation_en && (
+          <p className="text-lg text-base-content/70 mb-4">{sentence.translation_en}</p>
         )}
       </div>
 
@@ -119,7 +140,9 @@ export default function WordBankBuild({
       {/* Word bank */}
       <div className="card bg-base-100 shadow-md mb-6">
         <div className="card-body">
-          <h3 className="text-sm font-semibold mb-2 opacity-60">Available words:</h3>
+          <h3 className="text-sm font-semibold mb-2 opacity-60">
+            {sentenceDiscovered ? 'Available words:' : `${discoveryVerb} words to discover them:`}
+          </h3>
           <div className="flex flex-wrap gap-2">
             {availableWords.length === 0 ? (
               <p className="text-base-content/40 italic">All words used</p>
@@ -128,6 +151,8 @@ export default function WordBankBuild({
                 <button
                   key={wordId}
                   onClick={() => handleWordClick(wordId)}
+                  onMouseEnter={handleWordHover}
+                  onTouchStart={handleWordHover}
                   disabled={showFeedback}
                   className="btn btn-outline btn-lg"
                   lang="ps"
@@ -189,9 +214,21 @@ export default function WordBankBuild({
               )}
             </div>
           </div>
-          <button onClick={handleContinue} className="btn btn-primary btn-wide">
-            Continue
-          </button>
+
+          {sentenceDiscovered ? (
+            <button onClick={handleContinue} className="btn btn-primary btn-wide">
+              Continue
+            </button>
+          ) : (
+            <div
+              className="tooltip tooltip-top w-full"
+              data-tip={`There are undiscovered words! ${discoveryVerb} the words in the word bank above to add them to your review cards.`}
+            >
+              <button className="btn btn-primary btn-wide opacity-50 cursor-not-allowed w-full" disabled>
+                Continue
+              </button>
+            </div>
+          )}
         </div>
       )}
     </div>

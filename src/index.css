@@ -30,6 +30,18 @@
     background: transparent;
     color: inherit;
   }
+
+  /* Review tab sparkle when a word is discovered */
+  @keyframes review-tab-sparkle {
+    0% { box-shadow: none; transform: scale(1); }
+    30% { box-shadow: 0 0 0 3px oklch(var(--p) / 0.6), 0 0 10px oklch(var(--p) / 0.4); transform: scale(1.12); }
+    100% { box-shadow: none; transform: scale(1); }
+  }
+
+  .review-tab-sparkle {
+    animation: review-tab-sparkle 0.55s ease-out;
+    border-radius: 8px;
+  }
 }
 /* 
 :root {
