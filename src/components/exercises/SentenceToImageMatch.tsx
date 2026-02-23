@@ -30,10 +30,14 @@ export default function SentenceToImageMatch({
   const [showFeedback, setShowFeedback] = useState(false);
   const [isCorrect, setIsCorrect] = useState(false);
   const [fadeOut, setFadeOut] = useState(false);
-  const [sentenceDiscovered, setSentenceDiscovered] = useState(() => {
-    if (sentenceSrsItems.length === 0) return true;
-    return srsItemService.hasCards(sentenceSrsItems.map((i) => i.srs_id));
+  const allTokenIds = sentence.tokens.map((t) => t.id);
+  const [discoveredTokenIds, setDiscoveredTokenIds] = useState<Set<string>>(() => {
+    const alreadyDone =
+      sentenceSrsItems.length === 0 ||
+      srsItemService.hasCards(sentenceSrsItems.map((i) => i.srs_id));
+    return alreadyDone ? new Set(allTokenIds) : new Set<string>();
   });
+  const allDiscovered = allTokenIds.every((id) => discoveredTokenIds.has(id));
 
   const handleImageClick = (imageId: string) => {
     if (showFeedback) return;
@@ -51,9 +55,9 @@ export default function SentenceToImageMatch({
     }, 300);
   };
 
-  const handleTokenHover = (rect: DOMRect) => {
-    if (!sentenceDiscovered) {
-      setSentenceDiscovered(true);
+  const handleTokenHover = (tokenId: string, rect: DOMRect) => {
+    if (!discoveredTokenIds.has(tokenId)) {
+      setDiscoveredTokenIds((prev) => new Set([...prev, tokenId]));
       onDiscoverSentence?.(rect);
     }
   };
@@ -67,7 +71,7 @@ export default function SentenceToImageMatch({
         <div className="text-center mb-6">
           <TokenizedText sentence={sentence} size="3xl" onTokenHover={handleTokenHover} />
           <p className="text-sm text-base-content/50 mt-2 italic">
-            {sentenceDiscovered
+            {allDiscovered
               ? 'Hover over words for translations'
               : `${discoveryVerb} words to discover them`}
           </p>
@@ -134,7 +138,7 @@ export default function SentenceToImageMatch({
             <span>{isCorrect ? 'Correct!' : 'Try again next time'}</span>
           </div>
 
-          {sentenceDiscovered ? (
+          {allDiscovered ? (
             <button onClick={handleContinue} className="btn btn-primary btn-wide">
               Continue
             </button>

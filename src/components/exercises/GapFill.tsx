@@ -42,10 +42,21 @@ export default function GapFill({
   const [fadeOut, setFadeOut] = useState(false);
   const [choices, setChoices] = useState(() => shuffle(exercise.gap?.choices ?? []));
   const [activeTokenId, setActiveTokenId] = useState<string | null>(null);
-  const [sentenceDiscovered, setSentenceDiscovered] = useState(() => {
-    if (sentenceSrsItems.length === 0) return true;
-    return srsItemService.hasCards(sentenceSrsItems.map((i) => i.srs_id));
+  // Hoverable = non-blank tokens. Computed once (exercise.gap is stable).
+  const hoverableTokenIds = (() => {
+    if (!exercise.gap || !sentence.cloze_spans) return sentence.tokens.map((t) => t.id);
+    const clozeSpan = sentence.cloze_spans.find((cs) => cs.blank_index === exercise.gap!.blank_index);
+    const blankedIds = new Set(clozeSpan?.token_ids ?? []);
+    return sentence.tokens.filter((t) => !blankedIds.has(t.id)).map((t) => t.id);
+  })();
+
+  const [discoveredTokenIds, setDiscoveredTokenIds] = useState<Set<string>>(() => {
+    const alreadyDone =
+      sentenceSrsItems.length === 0 ||
+      srsItemService.hasCards(sentenceSrsItems.map((i) => i.srs_id));
+    return alreadyDone ? new Set(hoverableTokenIds) : new Set<string>();
   });
+  const allDiscovered = hoverableTokenIds.every((id) => discoveredTokenIds.has(id));
 
   const handleChoiceClick = (choice: string) => {
     if (showFeedback) return;
@@ -68,8 +79,8 @@ export default function GapFill({
 
   const handleTokenHover = (tokenId: string, event: React.MouseEvent | React.TouchEvent) => {
     setActiveTokenId(tokenId);
-    if (!sentenceDiscovered) {
-      setSentenceDiscovered(true);
+    if (!discoveredTokenIds.has(tokenId)) {
+      setDiscoveredTokenIds((prev) => new Set([...prev, tokenId]));
       const rect = (event.currentTarget as HTMLElement).getBoundingClientRect();
       onDiscoverSentence?.(rect);
     }
@@ -172,7 +183,7 @@ export default function GapFill({
       <div className="card bg-base-100 shadow-md mb-8">
         <div className="card-body text-center py-12">
           {renderSentenceWithBlank()}
-          {!sentenceDiscovered && (
+          {!allDiscovered && (
             <p className="text-sm text-base-content/50 mt-4 italic">
               {discoveryVerb} the words above to discover them
             </p>
@@ -248,7 +259,7 @@ export default function GapFill({
           </div>
 
           {isCorrect ? (
-            sentenceDiscovered ? (
+            allDiscovered ? (
               <button onClick={handleContinue} className="btn btn-primary btn-wide">
                 Continue
               </button>

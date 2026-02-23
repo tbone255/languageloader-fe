@@ -14,8 +14,8 @@ interface TokenizedTextProps {
   size?: 'sm' | 'base' | 'lg' | 'xl' | '2xl' | '3xl' | '4xl' | '5xl';
   /** Show glosses on hover (default) or click */
   trigger?: 'hover' | 'click';
-  /** Called whenever any token is hovered or tapped */
-  onTokenHover?: (rect: DOMRect) => void;
+  /** Called whenever any token is hovered or tapped, with tokenId and its bounding rect */
+  onTokenHover?: (tokenId: string, rect: DOMRect) => void;
 }
 
 export default function TokenizedText({
@@ -38,7 +38,7 @@ export default function TokenizedText({
     }
     if (tokenId && event && onTokenHover) {
       const rect = (event.currentTarget as HTMLElement).getBoundingClientRect();
-      onTokenHover(rect);
+      onTokenHover(tokenId, rect);
     }
   };
 

@@ -31,10 +31,14 @@ export default function WordBankBuild({
   const [showFeedback, setShowFeedback] = useState(false);
   const [isCorrect, setIsCorrect] = useState(false);
   const [fadeOut, setFadeOut] = useState(false);
-  const [sentenceDiscovered, setSentenceDiscovered] = useState(() => {
-    if (sentenceSrsItems.length === 0) return true;
-    return srsItemService.hasCards(sentenceSrsItems.map((i) => i.srs_id));
+  const allWordIds = exercise.word_bank?.map((w) => w.id) ?? [];
+  const [discoveredWordIds, setDiscoveredWordIds] = useState<Set<string>>(() => {
+    const alreadyDone =
+      sentenceSrsItems.length === 0 ||
+      srsItemService.hasCards(sentenceSrsItems.map((i) => i.srs_id));
+    return alreadyDone ? new Set(allWordIds) : new Set<string>();
   });
+  const allDiscovered = allWordIds.every((id) => discoveredWordIds.has(id));
 
   // Shuffle word bank on mount
   useEffect(() => {
@@ -46,10 +50,18 @@ export default function WordBankBuild({
     }
   }, [exercise.word_bank]);
 
-  const handleWordClick = (wordId: string) => {
+  const discoverWord = (wordId: string, event: React.MouseEvent | React.TouchEvent) => {
+    if (!discoveredWordIds.has(wordId)) {
+      setDiscoveredWordIds((prev) => new Set([...prev, wordId]));
+      const rect = (event.currentTarget as HTMLElement).getBoundingClientRect();
+      onDiscoverSentence?.(rect);
+    }
+  };
+
+  const handleWordClick = (wordId: string, event: React.MouseEvent) => {
     if (showFeedback) return;
 
-    // Move from available to selected
+    discoverWord(wordId, event);
     setSelectedWords([...selectedWords, wordId]);
     setAvailableWords(availableWords.filter((id) => id !== wordId));
   };
@@ -63,13 +75,6 @@ export default function WordBankBuild({
     setAvailableWords([...availableWords, wordId]);
   };
 
-  const handleWordHover = (event: React.MouseEvent | React.TouchEvent) => {
-    if (!sentenceDiscovered) {
-      setSentenceDiscovered(true);
-      const rect = (event.currentTarget as HTMLElement).getBoundingClientRect();
-      onDiscoverSentence?.(rect);
-    }
-  };
 
   const handleSubmit = () => {
     if (showFeedback || selectedWords.length === 0) return;
@@ -141,7 +146,7 @@ export default function WordBankBuild({
       <div className="card bg-base-100 shadow-md mb-6">
         <div className="card-body">
           <h3 className="text-sm font-semibold mb-2 opacity-60">
-            {sentenceDiscovered ? 'Available words:' : `${discoveryVerb} words to discover them:`}
+            {allDiscovered ? 'Available words:' : `${discoveryVerb} words to discover them:`}
           </h3>
           <div className="flex flex-wrap gap-2">
             {availableWords.length === 0 ? (
@@ -150,9 +155,9 @@ export default function WordBankBuild({
               availableWords.map((wordId) => (
                 <button
                   key={wordId}
-                  onClick={() => handleWordClick(wordId)}
-                  onMouseEnter={handleWordHover}
-                  onTouchStart={handleWordHover}
+                  onClick={(e) => handleWordClick(wordId, e)}
+                  onMouseEnter={(e) => discoverWord(wordId, e)}
+                  onTouchStart={(e) => discoverWord(wordId, e)}
                   disabled={showFeedback}
                   className="btn btn-outline btn-lg"
                   lang="ps"
@@ -215,7 +220,7 @@ export default function WordBankBuild({
             </div>
           </div>
 
-          {sentenceDiscovered ? (
+          {allDiscovered ? (
             <button onClick={handleContinue} className="btn btn-primary btn-wide">
               Continue
             </button>
