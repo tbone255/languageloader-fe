@@ -12,7 +12,7 @@ import { useParams, useNavigate, Link } from 'react-router-dom';
 import { getLesson, markLessonCompleted, markExerciseCompleted } from '../services/lessonService';
 import { srsItemService } from '../services/srsItemService';
 import { useParticleAnimation } from '../contexts/AnimationContext';
-import type { Lesson, Exercise, SRSItem } from '../types/lesson';
+import type { Lesson, SRSItem } from '../types/lesson';
 
 import SentenceToImageMatch from '../components/exercises/SentenceToImageMatch';
 import WordBankBuild from '../components/exercises/WordBankBuild';

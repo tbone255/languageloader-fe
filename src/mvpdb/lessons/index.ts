@@ -25,19 +25,23 @@ export const LESSON_REGISTRY: LessonRegistryEntry[] = [
     lesson_id: 'pus-001',
     order: 1,
     title: 'Deixis + Singular Nouns',
-    data: lesson1 as Lesson,
+    // Pipeline-generated: tsc infers overly-narrow literal types from JSON,
+    // so we go through unknown to satisfy the structural cast.
+    data: lesson1 as unknown as Lesson,
   },
   {
+    // TODO: replace with pipeline-generated pus-002 once lesson 2 is wired
     lesson_id: 'b2c3d4e5-f6a7-4b8c-9d0e-1f2a3b4c5d6e',
     order: 2,
     title: 'Pluralization and These/Those',
-    data: lesson2 as Lesson,
+    data: lesson2 as unknown as Lesson,
   },
   {
+    // TODO: replace with pipeline-generated pus-003 once lesson 3 is wired
     lesson_id: 'c3d4e5f6-a7b8-4c9d-0e1f-2a3b4c5d6e7f',
     order: 3,
     title: 'Possession and \'To Be\'',
-    data: lesson3 as Lesson,
+    data: lesson3 as unknown as Lesson,
   },
 ];
 
