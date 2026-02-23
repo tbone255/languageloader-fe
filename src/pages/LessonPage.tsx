@@ -87,10 +87,14 @@ export default function LessonPage() {
 
   /** Called when a user first hovers/taps a word in an exercise sentence */
   const handleDiscoverSentence = (srsItems: SRSItem[], fromRect: DOMRect) => {
+    // Only animate if these are genuinely new cards (not already in the SRS store)
+    const areNew = srsItems.length > 0 && !srsItemService.hasCards(srsItems.map((i) => i.srs_id));
     srsItemService.createCardsForItems(srsItems);
-    const fromX = fromRect.left + fromRect.width / 2;
-    const fromY = fromRect.top + fromRect.height / 2;
-    fireParticle(fromX, fromY);
+    if (areNew) {
+      const fromX = fromRect.left + fromRect.width / 2;
+      const fromY = fromRect.top + fromRect.height / 2;
+      fireParticle(fromX, fromY);
+    }
   };
 
   if (state === 'loading' || !lesson) {
