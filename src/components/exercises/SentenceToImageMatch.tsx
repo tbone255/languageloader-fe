@@ -8,6 +8,7 @@ import { useState } from 'react';
 import type { Exercise, Sentence, SRSItem } from '../../types/lesson';
 import TokenizedText from '../TokenizedText';
 import { srsItemService } from '../../services/srsItemService';
+import { getImagePlaceholder } from '../../utils/imageUtils';
 
 interface SentenceToImageMatchProps {
   exercise: Exercise;
@@ -158,39 +159,3 @@ export default function SentenceToImageMatch({
   );
 }
 
-/**
- * Get emoji placeholder for image ID.
- * In production, this would load actual image URLs.
- */
-function getImagePlaceholder(imageId: string): string {
-  const placeholders: Record<string, string> = {
-    'img-book': '📖',
-    'img-pen': '🖊️',
-    'img-table': '🪑',
-    'img-chair': '🪑',
-    'img-door': '🚪',
-    'img-window': '🪟',
-    'img-books-plural': '📚',
-    'img-pens-plural': '✏️',
-    'img-tables-plural': '🪑🪑',
-    'img-chairs-plural': '🪑🪑',
-    'img-doors-plural': '🚪🚪',
-    'img-windows-plural': '🪟🪟',
-    'img-my-book': '📖✋',
-    'img-your-pen': '🖊️👉',
-    'img-my-books': '📚✋',
-    'img-your-tables': '🪑👉',
-    'img-my-door': '🚪✋',
-    'img-your-chairs': '🪑👉',
-    'img-اس': '🐎',
-    'img-کب': '🐟',
-    'img-آم': '🥭',
-    'img-ګل': '🌸',
-    'img-پشۍ': '🐱',
-    'img-ونه': '🌲',
-    'img-مړۍ': '🍞',
-    'img-سپی': '🐶',
-  };
-
-  return placeholders[imageId] || '🖼️';
-}

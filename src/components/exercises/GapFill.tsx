@@ -9,6 +9,7 @@
 import { useState } from 'react';
 import type { Exercise, Sentence, SRSItem } from '../../types/lesson';
 import { srsItemService } from '../../services/srsItemService';
+import { getImagePlaceholder } from '../../utils/imageUtils';
 
 interface GapFillProps {
   exercise: Exercise;
@@ -178,6 +179,23 @@ export default function GapFill({
           <p className="text-lg text-base-content/70 mb-6">{sentence.translation_en}</p>
         )}
       </div>
+
+      {/* Image prompt — shown when sentence text alone lacks constraining context */}
+      {exercise.image_id && (
+        <div className="flex justify-center mb-6">
+          <div className="card bg-base-200 shadow-md">
+            <div className="card-body p-6 flex items-center justify-center">
+              <div
+                className="text-8xl"
+                role="img"
+                aria-label={exercise.image_id.replace('img-', '')}
+              >
+                {getImagePlaceholder(exercise.image_id)}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Sentence with blank */}
       <div className="card bg-base-100 shadow-md mb-8">

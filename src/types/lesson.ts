@@ -102,6 +102,8 @@ export interface Exercise {
   word_bank?: WordBankItem[];
   /** For gap_fill_single: the blank and choices */
   gap?: GapFill;
+  /** For gap_fill_single on short sentences: image shown as the semantic prompt */
+  image_id?: string;
 }
 
 export interface WordBankItem {
