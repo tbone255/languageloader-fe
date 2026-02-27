@@ -33,6 +33,13 @@ import SpotTheDifference from '../components/exercises/SpotTheDifference';
 import SubstitutionDrill from '../components/exercises/SubstitutionDrill';
 import InteractiveDialogue from '../components/exercises/InteractiveDialogue';
 import ListeningToTranslation from '../components/exercises/ListeningToTranslation';
+import SentenceTransformation from '../components/exercises/SentenceTransformation';
+import PatternCompletion from '../components/exercises/PatternCompletion';
+import StoryComprehension from '../components/exercises/StoryComprehension';
+import ListeningDictation from '../components/exercises/ListeningDictation';
+import HighlightPattern from '../components/exercises/HighlightPattern';
+import ContrastPairs from '../components/exercises/ContrastPairs';
+import AudioTextMatching from '../components/exercises/AudioTextMatching';
 import GrammarHintCard from '../components/exercises/GrammarHintCard';
 import TokenizedText from '../components/TokenizedText';
 
@@ -48,12 +55,14 @@ interface WarmupCard {
 
 interface CompletionResult {
   xpEarned: number;
+  gemsEarned: number;
   streakUpdated: boolean;
   freezeUsed: boolean;
   newStreak: number;
   accuracyPct: number;
   correctCount: number;
   originalLength: number;
+  goalJustMet: boolean;
 }
 
 export default function LessonPage() {
@@ -99,8 +108,10 @@ export default function LessonPage() {
       srsItemService.registerItemData(loadedLesson.srs);
       srsItemService.loadFromStorage();
 
-      // Initialize queue with all exercise indices in order
-      const indices = loadedLesson.exercises.map((_, i) => i);
+      // Initialize queue — Quick mode limits to 5 exercises
+      const sessionMode = gamificationService.getSessionMode();
+      const allIndices = loadedLesson.exercises.map((_, i) => i);
+      const indices = sessionMode === 'quick' ? allIndices.slice(0, 5) : allIndices;
       setExerciseQueue(indices);
       setQueuePos(0);
       setOriginalLength(indices.length);
@@ -189,8 +200,9 @@ export default function LessonPage() {
       }
     };
 
-    // Show grammar hint on wrong answer before advancing
-    if (!correct && currentExercise.grammar_hint) {
+    // Show grammar hint on wrong answer (if hints are enabled in settings)
+    const hintsEnabled = localStorage.getItem('languageloader_grammar_hints_enabled') !== 'false';
+    if (!correct && currentExercise.grammar_hint && hintsEnabled) {
       setPendingHint(currentExercise.grammar_hint);
       // Store the advance callback via closure — hint dismissal calls it
       pendingAdvanceRef.current = advanceQueue;
@@ -243,12 +255,14 @@ export default function LessonPage() {
 
     setCompletionResult({
       xpEarned: result.xpEarned,
+      gemsEarned: result.gemsEarned,
       streakUpdated: result.streakUpdated,
       freezeUsed: result.freezeUsed,
       newStreak: result.newStreak,
       accuracyPct,
       correctCount: finalCorrectCount,
       originalLength,
+      goalJustMet: result.goalJustMet,
     });
     setState('completion');
   };
@@ -544,6 +558,41 @@ export default function LessonPage() {
               lessonId={lesson.lesson_id}
               onComplete={handleExerciseComplete}
             />
+          ) : currentExercise.type === 'sentence_transformation' ? (
+            <SentenceTransformation
+              exercise={currentExercise}
+              onComplete={handleExerciseComplete}
+            />
+          ) : currentExercise.type === 'pattern_completion' ? (
+            <PatternCompletion
+              exercise={currentExercise}
+              onComplete={handleExerciseComplete}
+            />
+          ) : currentExercise.type === 'story_comprehension' ? (
+            <StoryComprehension
+              exercise={currentExercise}
+              onComplete={handleExerciseComplete}
+            />
+          ) : currentExercise.type === 'listening_dictation' ? (
+            <ListeningDictation
+              exercise={currentExercise}
+              onComplete={handleExerciseComplete}
+            />
+          ) : currentExercise.type === 'highlight_pattern' ? (
+            <HighlightPattern
+              exercise={currentExercise}
+              onComplete={handleExerciseComplete}
+            />
+          ) : currentExercise.type === 'contrast_pairs' ? (
+            <ContrastPairs
+              exercise={currentExercise}
+              onComplete={handleExerciseComplete}
+            />
+          ) : currentExercise.type === 'audio_text_matching' ? (
+            <AudioTextMatching
+              exercise={currentExercise}
+              onComplete={handleExerciseComplete}
+            />
           ) : (
             <div className="alert alert-error">
               Unknown exercise type or missing sentence: {currentExercise.type}
@@ -555,8 +604,9 @@ export default function LessonPage() {
   }
 
   if (state === 'completion' && completionResult) {
-    const { xpEarned, streakUpdated, freezeUsed, newStreak, accuracyPct, correctCount: cc, originalLength: ol } = completionResult;
+    const { xpEarned, gemsEarned, streakUpdated, freezeUsed, newStreak, accuracyPct, correctCount: cc, originalLength: ol, goalJustMet } = completionResult;
     const accuracyDisplay = Math.round(accuracyPct * 100);
+    const { xpToday, goalXp } = gamificationService.getDailyGoalProgress();
 
     return (
       <div className="max-w-2xl mx-auto">
@@ -566,7 +616,7 @@ export default function LessonPage() {
             <h1 className="card-title text-3xl justify-center mb-2">Lesson Complete!</h1>
             <p className="text-lg mb-6 text-base-content/70">{lesson.lesson_meta.title}</p>
 
-            <div className="stats shadow mb-6">
+            <div className="stats shadow mb-4">
               <div className="stat">
                 <div className="stat-title">Accuracy</div>
                 <div className={`stat-value text-2xl ${accuracyDisplay >= 80 ? 'text-success' : 'text-warning'}`}>
@@ -588,7 +638,42 @@ export default function LessonPage() {
               </div>
             </div>
 
-            {streakUpdated && !freezeUsed && (
+            {/* Gems earned */}
+            {gemsEarned > 0 && (
+              <div className="flex items-center justify-center gap-2 mb-4 text-sm">
+                <span className="text-xl">💎</span>
+                <span className="font-semibold">+{gemsEarned} gem{gemsEarned !== 1 ? 's' : ''} earned</span>
+              </div>
+            )}
+
+            {/* Daily goal progress */}
+            <div className="mb-4">
+              <div className="flex justify-between text-sm mb-1">
+                <span className="font-medium">Daily goal</span>
+                <span>{Math.min(xpToday, goalXp)} / {goalXp} XP</span>
+              </div>
+              <progress
+                className={`progress w-full ${goalJustMet ? 'progress-success' : 'progress-primary'}`}
+                value={Math.min(xpToday, goalXp)}
+                max={goalXp}
+              />
+              {goalJustMet && (
+                <p className="text-success text-sm mt-1 font-medium">Daily goal reached!</p>
+              )}
+            </div>
+
+            {/* Soft performance gate: nudge if accuracy < 60% */}
+            {accuracyPct < 0.6 && (
+              <div className="alert alert-warning mb-4">
+                <div>
+                  <p className="font-semibold">Tough session! That's totally fine.</p>
+                  <p className="text-sm">Try reviewing these cards before moving on. Repetition is how it sticks.</p>
+                </div>
+                <Link to="/review" className="btn btn-sm btn-warning">Review</Link>
+              </div>
+            )}
+
+            {streakUpdated && !freezeUsed && accuracyPct >= 0.6 && (
               <div className="alert alert-warning mb-4">
                 <span>🔥 {newStreak}-day streak! Keep it up.</span>
               </div>

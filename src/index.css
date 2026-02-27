@@ -42,6 +42,63 @@
     animation: review-tab-sparkle 0.55s ease-out;
     border-radius: 8px;
   }
+
+  /* Slide up animation for modals/overlays */
+  @keyframes slideUp {
+    from { opacity: 0; transform: translateY(40px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  .animate-slideUp { animation: slideUp 0.25s ease-out; }
+
+  /* Bounce animation for XP counter */
+  @keyframes xpBounce {
+    0%   { transform: scale(1); }
+    40%  { transform: scale(1.35); }
+    70%  { transform: scale(0.9); }
+    100% { transform: scale(1); }
+  }
+  .animate-xpBounce { animation: xpBounce 0.5s ease-out; }
+
+  /* Pulse for correct answer feedback */
+  @keyframes correctPulse {
+    0%   { box-shadow: 0 0 0 0 oklch(var(--su) / 0.6); }
+    70%  { box-shadow: 0 0 0 10px oklch(var(--su) / 0); }
+    100% { box-shadow: 0 0 0 0 oklch(var(--su) / 0); }
+  }
+  .animate-correctPulse { animation: correctPulse 0.6s ease-out; }
+}
+
+/* Dyslexia-friendly mode — applied via data-dyslexia attribute on <html> */
+[data-dyslexia] {
+  font-family: 'Lexend', system-ui, sans-serif;
+  letter-spacing: 0.04em;
+  word-spacing: 0.1em;
+}
+
+[data-dyslexia] body,
+[data-dyslexia] p,
+[data-dyslexia] span,
+[data-dyslexia] button,
+[data-dyslexia] input,
+[data-dyslexia] textarea {
+  line-height: 1.8;
+  font-size: 1.05rem;
+}
+
+[data-dyslexia] h1,
+[data-dyslexia] h2,
+[data-dyslexia] h3 {
+  letter-spacing: 0.02em;
+}
+
+/* RTL content improvements */
+[dir="rtl"] {
+  text-align: right;
+}
+
+/* Pashto script improvements — Noto Naskh Arabic provides better coverage */
+:lang(ps) {
+  font-family: 'Noto Naskh Arabic', 'Arabic Typesetting', 'Traditional Arabic', system-ui;
 }
 /* 
 :root {

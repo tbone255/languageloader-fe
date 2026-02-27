@@ -11,6 +11,7 @@ import ThemeSwitcher from './ThemeSwitcher';
 import StreakBar from './StreakBar';
 import BadgeToast from './BadgeToast';
 import { ParticleAnimationProvider } from '../contexts/AnimationContext';
+import OfflineBanner from './OfflineBanner';
 
 interface AppLayoutProps {
   children: React.ReactNode;
@@ -34,6 +35,8 @@ function AuthButton() {
           </div>
           <ul tabIndex={0} className="dropdown-content menu bg-base-100 rounded-box z-50 mt-3 w-48 p-2 shadow">
             <li><NavLink to="/profile">Profile</NavLink></li>
+            <li><NavLink to="/settings">Settings</NavLink></li>
+            <li><NavLink to="/stats">Statistics</NavLink></li>
             <li><button onClick={() => signOut()}>Sign out</button></li>
           </ul>
         </div>
@@ -72,7 +75,9 @@ export default function AppLayout({ children }: AppLayoutProps) {
             <ul className="menu menu-horizontal px-1">
               <li><NavLink to="/learn" className={({ isActive }) => isActive ? 'active' : ''}>Learn</NavLink></li>
               <li><NavLink to="/review" className={({ isActive }) => isActive ? 'active' : ''}>Review</NavLink></li>
+              <li><NavLink to="/stats" className={({ isActive }) => isActive ? 'active' : ''}>Stats</NavLink></li>
               <li><NavLink to="/profile" className={({ isActive }) => isActive ? 'active' : ''}>Profile</NavLink></li>
+              <li><NavLink to="/pro" className={({ isActive }) => `${isActive ? 'active' : ''} text-primary font-medium`}>Pro ✨</NavLink></li>
             </ul>
           </div>
 
@@ -91,7 +96,7 @@ export default function AppLayout({ children }: AppLayoutProps) {
           <div className="flex justify-around items-center py-2">
             <NavLink
               to="/learn"
-              className={({ isActive }) => `flex flex-col items-center gap-0.5 px-4 py-1 rounded-lg text-xs transition-colors
+              className={({ isActive }) => `flex flex-col items-center gap-0.5 px-3 py-1 rounded-lg text-xs transition-colors
                 ${isActive ? 'text-primary font-semibold' : 'opacity-60'}`}
             >
               <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -101,7 +106,7 @@ export default function AppLayout({ children }: AppLayoutProps) {
             </NavLink>
             <NavLink
               to="/review"
-              className={({ isActive }) => `flex flex-col items-center gap-0.5 px-4 py-1 rounded-lg text-xs transition-colors
+              className={({ isActive }) => `flex flex-col items-center gap-0.5 px-3 py-1 rounded-lg text-xs transition-colors
                 ${isActive ? 'text-primary font-semibold' : 'opacity-60'}`}
             >
               <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -110,8 +115,18 @@ export default function AppLayout({ children }: AppLayoutProps) {
               Review
             </NavLink>
             <NavLink
+              to="/stats"
+              className={({ isActive }) => `flex flex-col items-center gap-0.5 px-3 py-1 rounded-lg text-xs transition-colors
+                ${isActive ? 'text-primary font-semibold' : 'opacity-60'}`}
+            >
+              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+              </svg>
+              Stats
+            </NavLink>
+            <NavLink
               to="/profile"
-              className={({ isActive }) => `flex flex-col items-center gap-0.5 px-4 py-1 rounded-lg text-xs transition-colors
+              className={({ isActive }) => `flex flex-col items-center gap-0.5 px-3 py-1 rounded-lg text-xs transition-colors
                 ${isActive ? 'text-primary font-semibold' : 'opacity-60'}`}
             >
               <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -123,6 +138,7 @@ export default function AppLayout({ children }: AppLayoutProps) {
         </div>
 
         <BadgeToast />
+        <OfflineBanner />
       </div>
     </ParticleAnimationProvider>
   );

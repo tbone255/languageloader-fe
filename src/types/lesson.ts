@@ -92,7 +92,14 @@ export type ExerciseType =
   | 'listening_to_translation'
   | 'spot_the_difference'
   | 'substitution_drill'
-  | 'interactive_dialogue';
+  | 'interactive_dialogue'
+  | 'sentence_transformation'
+  | 'pattern_completion'
+  | 'story_comprehension'
+  | 'listening_dictation'
+  | 'highlight_pattern'
+  | 'contrast_pairs'
+  | 'audio_text_matching';
 
 export interface Exercise {
   exercise_id: string;
@@ -133,6 +140,20 @@ export interface Exercise {
   dialogue?: Dialogue;
   /** Optional grammar explanation shown after a wrong answer */
   grammar_hint?: GrammarHint;
+  /** For sentence_transformation */
+  transformation?: SentenceTransformation;
+  /** For pattern_completion */
+  pattern?: PatternCompletion;
+  /** For story_comprehension */
+  story?: StoryComprehension;
+  /** For listening_dictation */
+  dictation?: ListeningDictation;
+  /** For highlight_pattern */
+  highlight?: HighlightPattern;
+  /** For contrast_pairs */
+  contrast?: ContrastPairs;
+  /** For audio_text_matching */
+  audio_match?: AudioTextMatching;
 }
 
 export interface GrammarHint {
@@ -196,7 +217,82 @@ export interface GapFill {
   correct: string;
 }
 
-export type SRSType = 'flip' | 'cloze';
+/** Sentence transformation exercise — apply a grammatical rule to transform a sentence. */
+export interface SentenceTransformation {
+  instruction: string;         // e.g. "Convert to plural"
+  source_sentence: string;     // Pashto sentence to transform
+  source_translation?: string; // English meaning of source
+  choices: string[];           // Pashto options
+  correct: string;             // correct transformed sentence
+  explanation?: string;        // shown after answer
+}
+
+/** Pattern completion — fill in a cell in a paradigm/conjugation table. */
+export interface PatternCompletion {
+  instruction: string;    // e.g. "Complete the paradigm"
+  rows: PatternRow[];     // table rows
+  blank_row_index: number;
+  blank_column: 'form' | 'translation';
+  choices: string[];
+  correct: string;
+}
+
+export interface PatternRow {
+  label: string;       // e.g. "Masculine singular"
+  form: string;        // Pashto form
+  translation?: string;
+}
+
+/** Story comprehension — read a short passage, answer a comprehension question. */
+export interface StoryComprehension {
+  passage: string[];           // Pashto sentences (the story)
+  passage_translation?: string; // Optional English translation shown on demand
+  question: string;            // English comprehension question
+  choices: string[];           // English answer choices
+  correct: string;
+}
+
+/** Listening dictation — hear audio, type what was said. */
+export interface ListeningDictation {
+  audio_sentence_id: string;  // maps to audioService
+  correct_text: string;       // Pashto text user should produce
+  hint?: string;              // Optional hint shown upfront
+  lesson_id: string;          // needed by audioService
+}
+
+/** Highlight pattern — tap all words matching a grammatical pattern. */
+export interface HighlightPattern {
+  instruction: string;         // e.g. "Tap all the verbs"
+  tokens: HighlightToken[];
+  pattern_type: string;        // descriptive label
+}
+
+export interface HighlightToken {
+  id: string;
+  text: string;
+  matches_pattern: boolean;
+}
+
+/** Contrast pairs — see two contrasting examples, identify the linguistic difference. */
+export interface ContrastPairs {
+  instruction: string;
+  pair_a: { text: string; label?: string };
+  pair_b: { text: string; label?: string };
+  question: string;
+  choices: string[];
+  correct: string;
+  explanation?: string;
+}
+
+/** Audio-text matching — hear an audio clip, pick the matching Pashto text. */
+export interface AudioTextMatching {
+  audio_sentence_id: string;
+  lesson_id: string;
+  text_options: string[];  // Pashto text choices
+  correct_text: string;
+}
+
+export type SRSType = 'flip' | 'cloze' | 'flip_reverse' | 'audio_to_text' | 'pattern_prompt';
 
 export interface SRSItem {
   srs_id: string;
@@ -205,10 +301,16 @@ export interface SRSItem {
   tags?: string[];
   /** Links back to the sentence this was derived from */
   source_sentence_id?: string;
-  /** Front/back flashcard data */
+  /** Front/back flashcard data (L2 → L1) */
   flip?: FlipCard;
   /** Cloze deletion card data */
   cloze?: ClozeCard;
+  /** Reverse flip card (L1 → L2, production) */
+  flip_reverse?: FlipReverseCard;
+  /** Audio → meaning card */
+  audio_to_text?: AudioToTextCard;
+  /** Pattern prompt card */
+  pattern_prompt?: PatternPromptCard;
 }
 
 export interface FlipCard {
@@ -233,4 +335,29 @@ export interface ClozeCard {
 export interface ClozeBlank {
   blank_index: number;
   fill: string;
+}
+
+/** Reverse flip: English → Pashto production. */
+export interface FlipReverseCard {
+  front: string;             // English prompt
+  correct_target: string;    // Pashto answer
+  choices?: string[];        // Multiple-choice options (optional)
+}
+
+/** Audio → text: hear audio, recall Pashto/English meaning. */
+export interface AudioToTextCard {
+  audio_sentence_id: string;
+  lesson_id: string;
+  correct_text: string;   // Pashto
+  translation_en: string; // English
+  choices?: string[];     // Pashto choices for MC mode
+}
+
+/** Pattern prompt: given a slot label, produce the correct form. */
+export interface PatternPromptCard {
+  instruction: string;       // e.g. "Masculine plural of:"
+  source_word: string;       // Base word in Pashto
+  source_translation: string;
+  correct_form: string;      // target form in Pashto
+  choices?: string[];
 }
