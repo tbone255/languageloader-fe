@@ -36,6 +36,7 @@ type LessonState = 'loading' | 'intro' | 'exercise' | 'completion';
 interface CompletionResult {
   xpEarned: number;
   streakUpdated: boolean;
+  freezeUsed: boolean;
   newStreak: number;
   accuracyPct: number;
   correctCount: number;
@@ -163,7 +164,10 @@ export default function LessonPage() {
     }).catch(() => {});
 
     setCompletionResult({
-      ...result,
+      xpEarned: result.xpEarned,
+      streakUpdated: result.streakUpdated,
+      freezeUsed: result.freezeUsed,
+      newStreak: result.newStreak,
       accuracyPct,
       correctCount: finalCorrectCount,
       originalLength,
@@ -361,7 +365,7 @@ export default function LessonPage() {
   }
 
   if (state === 'completion' && completionResult) {
-    const { xpEarned, streakUpdated, newStreak, accuracyPct, correctCount: cc, originalLength: ol } = completionResult;
+    const { xpEarned, streakUpdated, freezeUsed, newStreak, accuracyPct, correctCount: cc, originalLength: ol } = completionResult;
     const accuracyDisplay = Math.round(accuracyPct * 100);
 
     return (
@@ -378,7 +382,7 @@ export default function LessonPage() {
                 <div className={`stat-value text-2xl ${accuracyDisplay >= 80 ? 'text-success' : 'text-warning'}`}>
                   {accuracyDisplay}%
                 </div>
-                <div className="stat-desc">{cc} / {ol} correct</div>
+                <div className="stat-desc">{cc} / {ol} first-attempt</div>
               </div>
               <div className="stat">
                 <div className="stat-title">XP Earned</div>
@@ -388,25 +392,32 @@ export default function LessonPage() {
               <div className="stat">
                 <div className="stat-title">Streak</div>
                 <div className={`stat-value text-2xl ${streakUpdated ? 'text-warning' : ''}`}>
-                  {streakUpdated ? '🔥' : ''}{newStreak}
+                  {newStreak > 0 ? '🔥' : ''}{newStreak}
                 </div>
-                <div className="stat-desc">{streakUpdated ? 'New record!' : 'days'}</div>
+                <div className="stat-desc">{newStreak === 1 ? 'day' : 'days'}</div>
               </div>
             </div>
 
-            {streakUpdated && (
+            {streakUpdated && !freezeUsed && (
               <div className="alert alert-warning mb-4">
-                <span>🔥 Streak extended to {newStreak} {newStreak === 1 ? 'day' : 'days'}!</span>
+                <span>🔥 {newStreak}-day streak! Keep it up.</span>
+              </div>
+            )}
+            {freezeUsed && (
+              <div className="alert alert-info mb-4">
+                <span>🛡️ Streak freeze used — your {newStreak}-day streak is safe!</span>
               </div>
             )}
 
+            {/* Guest prompt to sign up */}
+            <div className="alert alert-ghost border border-base-300 mb-4 text-sm">
+              <span>Sign in to sync progress across devices</span>
+              <Link to="/sign-in" className="btn btn-xs btn-primary ml-auto">Sign in</Link>
+            </div>
+
             <div className="card-actions justify-center gap-4">
-              <Link to="/learn" className="btn btn-outline">
-                Back to Lessons
-              </Link>
-              <Link to="/review" className="btn btn-primary">
-                Review Cards
-              </Link>
+              <Link to="/learn" className="btn btn-outline">Back to Lessons</Link>
+              <Link to="/review" className="btn btn-primary">Review Cards</Link>
             </div>
           </div>
         </div>
