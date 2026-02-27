@@ -12,6 +12,7 @@ import ReviewBrowsePage from './pages/ReviewBrowsePage';
 import SettingsPage from './pages/SettingsPage';
 import ProfilePage from './pages/ProfilePage';
 import OnboardingPage from './pages/OnboardingPage';
+import DrillPage from './pages/DrillPage';
 import DebugPage from './pages/DebugPage';
 import Demo from './pages/Demo';
 import { isOnboardingComplete } from './services/onboardingService';
@@ -63,6 +64,7 @@ function AppRoutes() {
           <Route path="/review/browse" element={<ReviewBrowsePage />} />
           <Route path="/settings" element={<SettingsPage />} />
           <Route path="/profile" element={<ProfilePage />} />
+          <Route path="/drill" element={<DrillPage />} />
           <Route path="/debug" element={<DebugPage />} />
           <Route path="/demo" element={<Demo />} />
           <Route

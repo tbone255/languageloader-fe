@@ -29,6 +29,13 @@ export default function LearnHomePage() {
     <div className="max-w-4xl mx-auto">
       <h1 className="text-4xl font-bold mb-6">Learn Pashto</h1>
 
+      {/* Drill CTA */}
+      <div className="flex gap-3 mb-4">
+        <Link to="/drill" className="btn btn-outline btn-sm gap-2">
+          🎯 Drill weak cards
+        </Link>
+      </div>
+
       {/* SRS Review CTA */}
       {dueCount > 0 && (
         <div className="alert alert-info mb-6">

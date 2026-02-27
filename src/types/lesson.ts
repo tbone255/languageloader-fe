@@ -131,6 +131,17 @@ export interface Exercise {
   substitution?: SubstitutionDrill;
   /** For interactive_dialogue */
   dialogue?: Dialogue;
+  /** Optional grammar explanation shown after a wrong answer */
+  grammar_hint?: GrammarHint;
+}
+
+export interface GrammarHint {
+  /** English explanation of the grammar rule */
+  rule: string;
+  /** Pashto example sentence illustrating the rule */
+  example_target: string;
+  /** English translation of the example */
+  example_en: string;
 }
 
 export interface MeaningChoice {

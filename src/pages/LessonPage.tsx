@@ -3,20 +3,24 @@
  *
  * State machine that drives the user through a lesson:
  * 1. Intro (lesson objectives and meta)
- * 2. Exercises (queue-based with error requeue)
- * 3. Completion (XP, streak, accuracy)
+ * 2. Warmup (up to 5 due SRS cards from previous sessions — optional, skippable)
+ * 3. Exercises (queue-based with error requeue)
+ * 4. Completion (XP, streak, accuracy)
  */
 
 import { useEffect, useState } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
+import { Rating } from 'ts-fsrs';
 import { getLesson, markLessonCompleted, markExerciseCompleted } from '../services/lessonService';
 import { srsItemService } from '../services/srsItemService';
+import type { SRSItemCard } from '../services/srsItemService';
 import { gamificationService } from '../services/gamificationService';
+import { appendReviewEvent } from '../services/syncService';
 import { useParticleAnimation } from '../contexts/AnimationContext';
 import { playComplete } from '../utils/soundUtils';
 import { trackEvent } from '../services/analyticsService';
 import { checkLessonBadges, checkStreakBadges, checkXPBadges } from '../services/badgeService';
-import type { Lesson, SRSItem } from '../types/lesson';
+import type { Lesson, SRSItem, GrammarHint } from '../types/lesson';
 
 import SentenceToImageMatch from '../components/exercises/SentenceToImageMatch';
 import WordBankBuild from '../components/exercises/WordBankBuild';
@@ -29,9 +33,18 @@ import SpotTheDifference from '../components/exercises/SpotTheDifference';
 import SubstitutionDrill from '../components/exercises/SubstitutionDrill';
 import InteractiveDialogue from '../components/exercises/InteractiveDialogue';
 import ListeningToTranslation from '../components/exercises/ListeningToTranslation';
+import GrammarHintCard from '../components/exercises/GrammarHintCard';
 import TokenizedText from '../components/TokenizedText';
 
-type LessonState = 'loading' | 'intro' | 'exercise' | 'completion';
+type LessonState = 'loading' | 'intro' | 'warmup' | 'exercise' | 'completion';
+
+const WARMUP_MAX = 5;
+
+interface WarmupCard {
+  card: SRSItemCard;
+  showAnswer: boolean;
+  rated: boolean;
+}
 
 interface CompletionResult {
   xpEarned: number;
@@ -52,6 +65,10 @@ export default function LessonPage() {
   const [state, setState] = useState<LessonState>('loading');
   const [sessionStartMs] = useState(() => Date.now());
 
+  // Warmup state
+  const [warmupCards, setWarmupCards] = useState<WarmupCard[]>([]);
+  const [warmupPos, setWarmupPos] = useState(0);
+
   // Exercise queue — supports error requeue
   // Design decision: +7 re-insertion gap for within-session spacing.
   // Too small = feels immediate/annoying. Too large = forgotten.
@@ -61,6 +78,9 @@ export default function LessonPage() {
   const [originalLength, setOriginalLength] = useState(0);
   const [correctCount, setCorrectCount] = useState(0);
   const [completionResult, setCompletionResult] = useState<CompletionResult | null>(null);
+
+  // Grammar hint — shown as overlay after a wrong answer
+  const [pendingHint, setPendingHint] = useState<GrammarHint | null>(null);
 
   // Load lesson on mount
   useEffect(() => {
@@ -92,8 +112,47 @@ export default function LessonPage() {
   }, [lessonId, navigate]);
 
   const handleStartLesson = () => {
-    setState('exercise');
+    // Check for due SRS cards from previous lessons to warm up with
+    const due = srsItemService.getDueCards().slice(0, WARMUP_MAX);
+    if (due.length > 0) {
+      setWarmupCards(due.map((card) => ({ card, showAnswer: false, rated: false })));
+      setWarmupPos(0);
+      setState('warmup');
+    } else {
+      setState('exercise');
+    }
   };
+
+  // --- Warmup handlers ---
+
+  const handleWarmupShowAnswer = () => {
+    setWarmupCards((cards) =>
+      cards.map((c, i) => (i === warmupPos ? { ...c, showAnswer: true } : c))
+    );
+  };
+
+  const handleWarmupGrade = (rating: Rating) => {
+    const current = warmupCards[warmupPos];
+    if (!current || current.rated) return;
+
+    srsItemService.gradeCard(current.card.srs_id, rating);
+    const ratingNum = (
+      { [Rating.Again]: 1, [Rating.Hard]: 2, [Rating.Good]: 3, [Rating.Easy]: 4 } as Record<number, 1 | 2 | 3 | 4>
+    )[rating] ?? 3;
+    appendReviewEvent(current.card.srs_id, ratingNum).catch(() => {});
+
+    setWarmupCards((cards) =>
+      cards.map((c, i) => (i === warmupPos ? { ...c, rated: true } : c))
+    );
+
+    if (warmupPos + 1 >= warmupCards.length) {
+      setState('exercise');
+    } else {
+      setWarmupPos((p) => p + 1);
+    }
+  };
+
+  // --- Exercise handlers ---
 
   const handleExerciseComplete = (correct: boolean) => {
     if (!lesson) return;
@@ -122,12 +181,31 @@ export default function LessonPage() {
       is_retry: queuePos >= originalLength,
     });
 
-    if (queuePos + 1 >= newQueue.length) {
-      // All done (including retries) — go to completion
-      finishLesson(correct ? correctCount + 1 : correctCount);
+    const advanceQueue = () => {
+      if (queuePos + 1 >= newQueue.length) {
+        finishLesson(correct ? correctCount + 1 : correctCount);
+      } else {
+        setQueuePos((p) => p + 1);
+      }
+    };
+
+    // Show grammar hint on wrong answer before advancing
+    if (!correct && currentExercise.grammar_hint) {
+      setPendingHint(currentExercise.grammar_hint);
+      // Store the advance callback via closure — hint dismissal calls it
+      pendingAdvanceRef.current = advanceQueue;
     } else {
-      setQueuePos((p) => p + 1);
+      advanceQueue();
     }
+  };
+
+  // Ref to hold the pending advance function while hint is shown
+  // (avoids stale closure issues with state updates)
+  const pendingAdvanceRef = { current: () => {} };
+
+  const handleHintDismiss = () => {
+    setPendingHint(null);
+    pendingAdvanceRef.current();
   };
 
   const finishLesson = (finalCorrectCount: number) => {
@@ -246,6 +324,113 @@ export default function LessonPage() {
     );
   }
 
+  if (state === 'warmup') {
+    const current = warmupCards[warmupPos];
+    if (!current) return null;
+
+    const progress = (warmupPos / warmupCards.length) * 100;
+    const card = current.card;
+    const isFlip = card.item.srs_type === 'flip';
+    const isCloze = card.item.srs_type === 'cloze';
+
+    return (
+      <div className="max-w-2xl mx-auto">
+        {/* Header */}
+        <div className="flex items-center justify-between mb-4">
+          <div>
+            <h2 className="font-bold text-lg">Warm-up Review</h2>
+            <p className="text-sm opacity-60">Reviewing what you know before the new lesson</p>
+          </div>
+          <button
+            onClick={() => setState('exercise')}
+            className="btn btn-ghost btn-sm"
+          >
+            Skip warm-up
+          </button>
+        </div>
+
+        {/* Progress */}
+        <div className="mb-6">
+          <div className="flex justify-between text-sm mb-1">
+            <span>{warmupPos + 1} of {warmupCards.length}</span>
+            <span>{Math.round(progress)}%</span>
+          </div>
+          <progress className="progress progress-secondary w-full" value={progress} max="100"></progress>
+        </div>
+
+        {/* Card */}
+        <div className="card bg-base-100 shadow-lg min-h-[320px]">
+          <div className="card-body flex flex-col justify-center items-center text-center">
+            {/* Front */}
+            <div className="w-full mb-4">
+              {isFlip && card.item.flip && (
+                <>
+                  <p className="text-sm uppercase opacity-60 mb-2">Front</p>
+                  <p className="text-4xl" dir="rtl" lang="ps">{card.item.flip.front}</p>
+                </>
+              )}
+              {isCloze && card.item.cloze && (
+                <>
+                  <p className="text-sm uppercase opacity-60 mb-2">Complete the sentence</p>
+                  <p className="text-3xl leading-relaxed" dir="rtl" lang="ps">
+                    {card.item.cloze.template.replace(/\{\{\d+\}\}/g, '___')}
+                  </p>
+                </>
+              )}
+            </div>
+
+            {/* Answer (after reveal) */}
+            {current.showAnswer && (
+              <>
+                <div className="divider w-full"></div>
+                <div className="w-full">
+                  {isFlip && card.item.flip && (
+                    <>
+                      <p className="text-sm uppercase opacity-60 mb-2">Back</p>
+                      <p className="text-2xl mb-1">{card.item.flip.back.translation_en}</p>
+                      {card.item.flip.back.transliteration && (
+                        <p className="text-lg opacity-70">{card.item.flip.back.transliteration}</p>
+                      )}
+                    </>
+                  )}
+                  {isCloze && card.item.cloze && (
+                    <>
+                      <p className="text-sm uppercase opacity-60 mb-2">Answer</p>
+                      <p className="text-2xl" dir="rtl" lang="ps">
+                        {card.item.cloze.blanks.map((b) => b.fill).join(' / ')}
+                      </p>
+                      <p className="text-base opacity-70 mt-1">{card.item.cloze.translation_en}</p>
+                    </>
+                  )}
+                </div>
+              </>
+            )}
+
+            {/* Show Answer button */}
+            {!current.showAnswer && (
+              <button onClick={handleWarmupShowAnswer} className="btn btn-primary btn-wide mt-8">
+                Show Answer
+              </button>
+            )}
+
+            {/* Rating buttons */}
+            {current.showAnswer && !current.rated && (
+              <div className="mt-6 w-full">
+                <p className="text-sm mb-3 opacity-60">How well did you remember?</p>
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
+                  <button onClick={() => handleWarmupGrade(Rating.Again)} className="btn btn-error btn-sm">Again</button>
+                  <button onClick={() => handleWarmupGrade(Rating.Hard)} className="btn btn-warning btn-sm">Hard</button>
+                  <button onClick={() => handleWarmupGrade(Rating.Good)} className="btn btn-success btn-sm">Good</button>
+                  <button onClick={() => handleWarmupGrade(Rating.Easy)} className="btn btn-info btn-sm">Easy</button>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   if (state === 'exercise') {
     const currentIdx = exerciseQueue[queuePos];
     const currentExercise = lesson.exercises[currentIdx];
@@ -272,6 +457,11 @@ export default function LessonPage() {
 
     return (
       <div>
+        {/* Grammar hint overlay */}
+        {pendingHint && (
+          <GrammarHintCard hint={pendingHint} onDismiss={handleHintDismiss} />
+        )}
+
         {/* Progress bar */}
         <div className="mb-6">
           <div className="flex justify-between text-sm mb-1">
