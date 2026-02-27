@@ -1,11 +1,17 @@
 /**
  * TokenizedText Component
  *
- * Renders a sentence with interactive tokens that show translations and pronunciation on hover/click.
- * Implements the "token-level awareness" philosophy.
+ * Renders a sentence with interactive tokens that show translations,
+ * pronunciation, and IPA on hover/click (tap-to-gloss).
+ *
+ * Improvements (issue #88):
+ * - Click anywhere outside to dismiss active gloss
+ * - Shows IPA badge inline when available
+ * - Prevents tooltip from overflowing viewport edges
+ * - "Mobile-first": uses click/tap by default (no hover required)
  */
 
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import type { Sentence } from '../types/lesson';
 
 interface TokenizedTextProps {
@@ -25,11 +31,26 @@ export default function TokenizedText({
   onTokenHover,
 }: TokenizedTextProps) {
   const [activeTokenId, setActiveTokenId] = useState<string | null>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  // Dismiss on outside click
+  useEffect(() => {
+    if (!activeTokenId) return;
+    const handleOutside = (e: MouseEvent | TouchEvent) => {
+      if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
+        setActiveTokenId(null);
+      }
+    };
+    document.addEventListener('mousedown', handleOutside);
+    document.addEventListener('touchstart', handleOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleOutside);
+      document.removeEventListener('touchstart', handleOutside);
+    };
+  }, [activeTokenId]);
 
   const handleTokenClick = (tokenId: string) => {
-    if (trigger === 'click') {
-      setActiveTokenId(activeTokenId === tokenId ? null : tokenId);
-    }
+    setActiveTokenId(activeTokenId === tokenId ? null : tokenId);
   };
 
   const handleTokenHover = (tokenId: string | null, event?: React.MouseEvent | React.TouchEvent) => {
@@ -42,7 +63,7 @@ export default function TokenizedText({
     }
   };
 
-  const sizeClasses = {
+  const sizeClasses: Record<string, string> = {
     sm: 'text-sm',
     base: 'text-base',
     lg: 'text-lg',
@@ -54,7 +75,7 @@ export default function TokenizedText({
   };
 
   return (
-    <div className="relative inline-block">
+    <div className="relative" ref={containerRef}>
       <div
         className={`${sizeClasses[size]} leading-relaxed select-none`}
         dir="rtl"
@@ -63,70 +84,66 @@ export default function TokenizedText({
         {sentence.tokens.map((token, index) => {
           const isActive = activeTokenId === token.id;
           const gloss = sentence.gloss_word_by_word[token.id];
+          const hasGloss = !!(gloss || token.transliteration || token.ipa);
 
           return (
             <span key={token.id} className="relative inline-block">
               {index > 0 && ' '}
               <span
                 className={`
-                  cursor-pointer transition-all duration-150 rounded px-1
+                  transition-all duration-150 rounded px-0.5
+                  ${hasGloss ? 'cursor-pointer' : ''}
                   ${isActive
-                    ? 'bg-primary text-primary-content shadow-md'
-                    : 'hover:bg-primary/20'
+                    ? 'bg-primary text-primary-content shadow-sm'
+                    : hasGloss ? 'hover:bg-primary/15 active:bg-primary/25' : ''
                   }
                 `}
-                onClick={() => handleTokenClick(token.id)}
+                onClick={() => hasGloss && handleTokenClick(token.id)}
                 onMouseEnter={(e) => handleTokenHover(token.id, e)}
-                onTouchStart={(e) => handleTokenHover(token.id, e)}
-                onMouseLeave={() => handleTokenHover(null)}
+                onMouseLeave={() => trigger === 'hover' && handleTokenHover(null)}
               >
                 {token.text}
               </span>
 
               {/* Tooltip popover */}
-              {isActive && (
+              {isActive && hasGloss && (
                 <div
-                  className="absolute z-50 mt-2 -translate-x-1/2 left-1/2"
-                  style={{ minWidth: '200px' }}
+                  className="absolute z-50 bottom-full mb-2 left-1/2 -translate-x-1/2 pointer-events-none"
+                  style={{ minWidth: '180px', maxWidth: '260px' }}
                 >
-                  <div className="card bg-base-100 shadow-xl border border-base-300">
+                  <div className="card bg-base-100 shadow-xl border border-base-300 pointer-events-auto">
                     <div className="card-body p-4 space-y-2">
-                      {/* Original text */}
+                      {/* Token text */}
                       <div className="text-center border-b border-base-300 pb-2">
                         <p className="text-2xl font-bold" dir="rtl" lang="ps">
                           {token.text}
                         </p>
+                        {token.ipa && (
+                          <p className="text-xs font-mono opacity-60 mt-0.5">/{token.ipa}/</p>
+                        )}
                       </div>
 
-                      {/* Translation */}
+                      {/* English meaning */}
                       {gloss && (
                         <div>
-                          <p className="text-xs uppercase opacity-60 mb-1">Meaning</p>
-                          <p className="text-lg font-semibold">{gloss}</p>
+                          <p className="text-xs uppercase opacity-50 mb-0.5">Meaning</p>
+                          <p className="text-lg font-semibold leading-tight">{gloss}</p>
                         </div>
                       )}
 
-                      {/* Transliteration */}
+                      {/* Romanization */}
                       {token.transliteration && (
                         <div>
-                          <p className="text-xs uppercase opacity-60 mb-1">Romanization</p>
-                          <p className="text-base opacity-80">{token.transliteration}</p>
-                        </div>
-                      )}
-
-                      {/* IPA */}
-                      {token.ipa && (
-                        <div>
-                          <p className="text-xs uppercase opacity-60 mb-1">Pronunciation</p>
-                          <p className="text-base opacity-70 font-mono">/{token.ipa}/</p>
+                          <p className="text-xs uppercase opacity-50 mb-0.5">Romanization</p>
+                          <p className="text-sm opacity-80 italic">{token.transliteration}</p>
                         </div>
                       )}
                     </div>
 
-                    {/* Arrow pointer */}
+                    {/* Downward arrow */}
                     <div
-                      className="absolute -top-2 left-1/2 -translate-x-1/2 w-4 h-4 rotate-45 bg-base-100 border-l border-t border-base-300"
-                    ></div>
+                      className="absolute -bottom-2 left-1/2 -translate-x-1/2 w-4 h-4 rotate-45 bg-base-100 border-r border-b border-base-300"
+                    />
                   </div>
                 </div>
               )}
@@ -137,9 +154,14 @@ export default function TokenizedText({
 
       {/* Full sentence translation below */}
       {sentence.translation_en && (
-        <p className="text-base text-base-content/70 mt-3 text-center">
+        <p className="text-sm text-base-content/60 mt-2 text-center" dir="ltr">
           {sentence.translation_en}
         </p>
+      )}
+
+      {/* Tap hint on first render if tokens have glosses */}
+      {sentence.tokens.some((t) => sentence.gloss_word_by_word[t.id]) && (
+        <p className="text-xs opacity-30 text-center mt-1">tap a word for its meaning</p>
       )}
     </div>
   );

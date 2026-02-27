@@ -11,6 +11,8 @@ import { srsItemService } from '../services/srsItemService';
 import type { SRSItemCard } from '../services/srsItemService';
 import { getAllLessons } from '../services/lessonService';
 import { appendReviewEvent } from '../services/syncService';
+import { gamificationService } from '../services/gamificationService';
+import { trackEvent, trackReviewSessionComplete, trackSrsCardReviewed } from '../services/analyticsService';
 import type { Sentence } from '../types/lesson';
 import TokenizedText from './TokenizedText';
 
@@ -20,6 +22,9 @@ export default function SRSReview() {
   const [showAnswer, setShowAnswer] = useState(false);
   const [isLoaded, setIsLoaded] = useState(false);
   const [sentences, setSentences] = useState<Map<string, Sentence>>(new Map());
+  const [sessionComplete, setSessionComplete] = useState(false);
+  const [xpEarned, setXpEarned] = useState(0);
+  const [sessionStartMs] = useState(() => Date.now());
 
   useEffect(() => {
     loadCardsAndData();
@@ -56,6 +61,14 @@ export default function SRSReview() {
     const currentCard = dueCards[currentCardIndex];
     if (!currentCard) return;
 
+    // Track analytics before grading (stability_before)
+    trackSrsCardReviewed(
+      currentCard.item.srs_type,
+      rating,
+      currentCard.card.stability,
+      currentCard.card.lapses,
+    );
+
     // Grade the card and log review event for cross-device sync
     srsItemService.gradeCard(currentCard.srs_id, rating);
     const ratingNum = ({ [Rating.Again]: 1, [Rating.Hard]: 2, [Rating.Good]: 3, [Rating.Easy]: 4 } as Record<number, 1|2|3|4>)[rating] ?? 3;
@@ -66,10 +79,13 @@ export default function SRSReview() {
       setCurrentCardIndex(currentCardIndex + 1);
       setShowAnswer(false);
     } else {
-      // All cards reviewed
-      setDueCards([]);
-      setCurrentCardIndex(0);
-      setShowAnswer(false);
+      // Session complete — record XP and show completion screen
+      const { xpEarned: earned } = gamificationService.recordReviewSession(dueCards.length);
+      const durationMs = Date.now() - sessionStartMs;
+      trackReviewSessionComplete(dueCards.length, earned, durationMs);
+      trackEvent('streak_updated', { source: 'review' });
+      setXpEarned(earned);
+      setSessionComplete(true);
     }
   };
 
@@ -77,6 +93,36 @@ export default function SRSReview() {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
         <span className="loading loading-spinner loading-lg"></span>
+      </div>
+    );
+  }
+
+  if (sessionComplete) {
+    return (
+      <div className="max-w-2xl mx-auto">
+        <div className="card bg-base-100 shadow-lg">
+          <div className="card-body text-center">
+            <div className="text-6xl mb-4">✅</div>
+            <h2 className="card-title text-3xl justify-center mb-4">Review Complete!</h2>
+            <div className="stats shadow mb-6">
+              <div className="stat">
+                <div className="stat-title">Reviewed</div>
+                <div className="stat-value text-2xl">{dueCards.length}</div>
+                <div className="stat-desc">cards</div>
+              </div>
+              <div className="stat">
+                <div className="stat-title">XP Earned</div>
+                <div className="stat-value text-2xl text-primary">+{xpEarned}</div>
+                <div className="stat-desc">keep reviewing!</div>
+              </div>
+            </div>
+            <p className="text-base-content/60 mb-4">Cards you rated Again will resurface sooner.</p>
+            <div className="card-actions justify-center gap-3">
+              <a href="/learn" className="btn btn-outline">Back to Lessons</a>
+              <a href="/review/browse" className="btn btn-ghost btn-sm">Browse Cards</a>
+            </div>
+          </div>
+        </div>
       </div>
     );
   }
