@@ -787,7 +787,7 @@ The full Pashto curriculum is 100 lessons organized into 10 units of ~10 lessons
 | 9 | 81–90 | Feelings, hobbies, opinions, connectors | Phase 3 (B1) |
 | 10 | 91–100 | Extended expression, relative clauses, consolidation | Phase 4 bridge |
 
-**Grammar inserts (.5 lessons):** Six short grammar-focus sequences embedded within thematic units at the moment of first need — Imperatives (L19.5), Prepositions (L26.5), Comparatives (L35.5), Manner Adverbs (L52.5), Connectors (L82.5), Relative Clauses (L97.5). These render as 2–4 exercise slots attached to the preceding lesson, not as standalone lesson cards.
+**Grammar inserts (.5 lessons):** Six standalone shorter lessons (6–10 exercises) that appear in the path at the moment a grammar form is first needed — Imperatives (L19.5), Prepositions (L26.5), Comparatives (L35.5), Manner Adverbs (L52.5), Connectors (L82.5), Relative Clauses (L97.5).
 
 **Unit-end exercises:** Every unit closes with a synthesis exercise — roleplay (L40, L70, L90), mini-project (L50, L60, L80), or personal production (L24, L63, L94, L100). These generate the highest-value SRS cards and map to `interactive_dialogue`, `task_simulation`, and `personalization_prompt` exercise types.
 

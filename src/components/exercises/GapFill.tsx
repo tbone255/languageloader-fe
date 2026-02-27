@@ -10,6 +10,8 @@ import { useState } from 'react';
 import type { Exercise, Sentence, SRSItem } from '../../types/lesson';
 import { srsItemService } from '../../services/srsItemService';
 import { getImagePlaceholder } from '../../utils/imageUtils';
+import FeedbackAlert from './FeedbackAlert';
+import { playCorrect, playWrong } from '../../utils/soundUtils';
 
 interface GapFillProps {
   exercise: Exercise;
@@ -41,7 +43,7 @@ export default function GapFill({
   const [showFeedback, setShowFeedback] = useState(false);
   const [isCorrect, setIsCorrect] = useState(false);
   const [fadeOut, setFadeOut] = useState(false);
-  const [choices, setChoices] = useState(() => shuffle(exercise.gap?.choices ?? []));
+  const [choices] = useState(() => shuffle(exercise.gap?.choices ?? []));
   const [activeTokenId, setActiveTokenId] = useState<string | null>(null);
   // Hoverable = non-blank tokens. Computed once (exercise.gap is stable).
   const hoverableTokenIds = (() => {
@@ -65,17 +67,12 @@ export default function GapFill({
     const correct = choice === exercise.gap?.correct;
     setIsCorrect(correct);
     setShowFeedback(true);
-  };
-
-  const handleRetry = () => {
-    setSelectedChoice(null);
-    setShowFeedback(false);
-    setChoices(shuffle(exercise.gap?.choices ?? []));
+    if (correct) playCorrect(); else playWrong();
   };
 
   const handleContinue = () => {
     setFadeOut(true);
-    setTimeout(() => onComplete(true), 300);
+    setTimeout(() => onComplete(isCorrect), 300);
   };
 
   const handleTokenHover = (tokenId: string, event: React.MouseEvent | React.TouchEvent) => {
@@ -240,60 +237,24 @@ export default function GapFill({
       {/* Feedback */}
       {showFeedback && (
         <div className="mt-6 space-y-4">
-          <div className={`alert ${isCorrect ? 'alert-success' : 'alert-error'}`}>
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className="stroke-current shrink-0 h-6 w-6"
-              fill="none"
-              viewBox="0 0 24 24"
-            >
-              {isCorrect ? (
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
-                />
-              ) : (
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"
-                />
-              )}
-            </svg>
-            <div>
-              <div className="font-bold">{isCorrect ? 'Correct!' : 'Not quite'}</div>
-              {!isCorrect && (
-                <div className="text-sm">
-                  The answer is:{' '}
-                  <span className="font-semibold" dir="rtl" lang="ps">
-                    {exercise.gap?.correct}
-                  </span>
-                </div>
-              )}
-            </div>
-          </div>
+          <FeedbackAlert
+            isCorrect={isCorrect}
+            correctAnswer={exercise.gap?.correct}
+            correctAnswerDir="rtl"
+          />
 
-          {isCorrect ? (
-            allDiscovered ? (
-              <button onClick={handleContinue} className="btn btn-primary btn-wide">
+          {isCorrect && !allDiscovered ? (
+            <div
+              className="tooltip tooltip-top w-full"
+              data-tip={`There are undiscovered words! ${discoveryVerb} the words in the sentence above to add them to your review cards.`}
+            >
+              <button className="btn btn-primary btn-wide opacity-50 cursor-not-allowed w-full" disabled>
                 Continue
               </button>
-            ) : (
-              <div
-                className="tooltip tooltip-top w-full"
-                data-tip={`There are undiscovered words! ${discoveryVerb} the words in the sentence above to add them to your review cards.`}
-              >
-                <button className="btn btn-primary btn-wide opacity-50 cursor-not-allowed w-full" disabled>
-                  Continue
-                </button>
-              </div>
-            )
+            </div>
           ) : (
-            <button onClick={handleRetry} className="btn btn-warning btn-wide">
-              Try again
+            <button onClick={handleContinue} className="btn btn-primary btn-wide">
+              Continue
             </button>
           )}
         </div>

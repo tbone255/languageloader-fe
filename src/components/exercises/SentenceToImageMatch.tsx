@@ -9,6 +9,8 @@ import type { Exercise, Sentence, SRSItem } from '../../types/lesson';
 import TokenizedText from '../TokenizedText';
 import { srsItemService } from '../../services/srsItemService';
 import { getImagePlaceholder } from '../../utils/imageUtils';
+import FeedbackAlert from './FeedbackAlert';
+import { playCorrect, playWrong } from '../../utils/soundUtils';
 
 interface SentenceToImageMatchProps {
   exercise: Exercise;
@@ -47,6 +49,7 @@ export default function SentenceToImageMatch({
     const correct = imageId === exercise.correct_image_id;
     setIsCorrect(correct);
     setShowFeedback(true);
+    if (correct) playCorrect(); else playWrong();
   };
 
   const handleContinue = () => {
@@ -113,31 +116,7 @@ export default function SentenceToImageMatch({
       {/* Feedback */}
       {showFeedback && (
         <div className="mt-6 space-y-4">
-          <div className={`alert ${isCorrect ? 'alert-success' : 'alert-error'}`}>
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className="stroke-current shrink-0 h-6 w-6"
-              fill="none"
-              viewBox="0 0 24 24"
-            >
-              {isCorrect ? (
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
-                />
-              ) : (
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"
-                />
-              )}
-            </svg>
-            <span>{isCorrect ? 'Correct!' : 'Try again next time'}</span>
-          </div>
+          <FeedbackAlert isCorrect={isCorrect} />
 
           {allDiscovered ? (
             <button onClick={handleContinue} className="btn btn-primary btn-wide">

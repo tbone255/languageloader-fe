@@ -243,7 +243,7 @@ Six grammar focus inserts appear at the moment of first need within thematic uni
 | 82.5 | Unit 9 | Discourse connectors (and/but/so/because/when) |
 | 97.5 | Unit 10 | Relative clauses (who/which/that) |
 
-**Implementation note:** Grammar inserts render as 2–4 embedded exercise slots within the preceding thematic lesson's flow. They are surfaced in the path as a brief interstitial card ("Quick grammar note"), not as a full lesson requiring separate navigation. Their SRS output is `chunk_recall` and `pattern_prompt` cards targeting the introduced pattern.
+**Implementation note:** Grammar inserts are standalone lessons in the path, shorter than a standard lesson (6–10 exercises vs 12–18). They appear as their own node between the surrounding thematic lessons. Their SRS output is `chunk_recall` and `pattern_prompt` cards targeting the introduced pattern.
 
 ### Unit-End Exercises
 

@@ -84,7 +84,15 @@ export interface ClozeSpan {
 export type ExerciseType =
   | 'sentence_to_image_match'
   | 'word_bank_build'
-  | 'gap_fill_single';
+  | 'gap_fill_single'
+  | 'multiple_choice_meaning'
+  | 'word_to_image_match'
+  | 'sentence_unscramble'
+  | 'picture_to_sentence'
+  | 'listening_to_translation'
+  | 'spot_the_difference'
+  | 'substitution_drill'
+  | 'interactive_dialogue';
 
 export interface Exercise {
   exercise_id: string;
@@ -104,6 +112,61 @@ export interface Exercise {
   gap?: GapFill;
   /** For gap_fill_single on short sentences: image shown as the semantic prompt */
   image_id?: string;
+  /** For multiple_choice_meaning */
+  meaning?: MeaningChoice;
+  /** For word_to_image_match: single word prompt */
+  target_word?: string;
+  target_transliteration?: string;
+  /** For picture_to_sentence */
+  sentence_options?: string[];
+  correct_sentence?: string;
+  prompt_image_id?: string;
+  /** For listening_to_translation */
+  audio_sentence_id?: string;
+  translation_options?: string[];
+  correct_translation?: string;
+  /** For spot_the_difference */
+  sentence_pair?: SentencePair;
+  /** For substitution_drill */
+  substitution?: SubstitutionDrill;
+  /** For interactive_dialogue */
+  dialogue?: Dialogue;
+}
+
+export interface MeaningChoice {
+  target_token_id: string;
+  prompt_text: string;
+  choices: string[];
+  correct: string;
+}
+
+export interface SentencePair {
+  sentence_a_id: string;
+  sentence_b_id: string;
+  changed_token_id: string;
+}
+
+export interface SubstitutionDrill {
+  template_sentence_id: string;
+  slot_token_id: string;
+  choices: string[];
+  correct: string;
+  result_translation: string;
+}
+
+export interface Dialogue {
+  turns: DialogueTurn[];
+  user_turn_index: number;
+  prompt: string;
+}
+
+export interface DialogueTurn {
+  speaker: 'A' | 'B';
+  text: string;
+  translation: string;
+  is_user_input?: boolean;
+  choices?: string[];
+  correct?: string;
 }
 
 export interface WordBankItem {

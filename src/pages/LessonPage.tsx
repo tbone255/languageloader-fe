@@ -3,23 +3,43 @@
  *
  * State machine that drives the user through a lesson:
  * 1. Intro (lesson objectives and meta)
- * 2. Exercises (step through in sequence)
- * 3. Completion (summary and SRS registration)
+ * 2. Exercises (queue-based with error requeue)
+ * 3. Completion (XP, streak, accuracy)
  */
 
 import { useEffect, useState } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { getLesson, markLessonCompleted, markExerciseCompleted } from '../services/lessonService';
 import { srsItemService } from '../services/srsItemService';
+import { gamificationService } from '../services/gamificationService';
 import { useParticleAnimation } from '../contexts/AnimationContext';
+import { playComplete } from '../utils/soundUtils';
+import { trackEvent } from '../services/analyticsService';
 import type { Lesson, SRSItem } from '../types/lesson';
 
 import SentenceToImageMatch from '../components/exercises/SentenceToImageMatch';
 import WordBankBuild from '../components/exercises/WordBankBuild';
 import GapFill from '../components/exercises/GapFill';
+import MultipleChoiceMeaning from '../components/exercises/MultipleChoiceMeaning';
+import WordToImageMatch from '../components/exercises/WordToImageMatch';
+import SentenceUnscramble from '../components/exercises/SentenceUnscramble';
+import PictureToSentence from '../components/exercises/PictureToSentence';
+import SpotTheDifference from '../components/exercises/SpotTheDifference';
+import SubstitutionDrill from '../components/exercises/SubstitutionDrill';
+import InteractiveDialogue from '../components/exercises/InteractiveDialogue';
+import ListeningToTranslation from '../components/exercises/ListeningToTranslation';
 import TokenizedText from '../components/TokenizedText';
 
 type LessonState = 'loading' | 'intro' | 'exercise' | 'completion';
+
+interface CompletionResult {
+  xpEarned: number;
+  streakUpdated: boolean;
+  newStreak: number;
+  accuracyPct: number;
+  correctCount: number;
+  originalLength: number;
+}
 
 export default function LessonPage() {
   const { lessonId } = useParams<{ lessonId: string }>();
@@ -28,7 +48,16 @@ export default function LessonPage() {
 
   const [lesson, setLesson] = useState<Lesson | null>(null);
   const [state, setState] = useState<LessonState>('loading');
-  const [currentExerciseIndex, setCurrentExerciseIndex] = useState(0);
+
+  // Exercise queue — supports error requeue
+  // Design decision: +7 re-insertion gap for within-session spacing.
+  // Too small = feels immediate/annoying. Too large = forgotten.
+  // Tune based on session analytics.
+  const [exerciseQueue, setExerciseQueue] = useState<number[]>([]);
+  const [queuePos, setQueuePos] = useState(0);
+  const [originalLength, setOriginalLength] = useState(0);
+  const [correctCount, setCorrectCount] = useState(0);
+  const [completionResult, setCompletionResult] = useState<CompletionResult | null>(null);
 
   // Load lesson on mount
   useEffect(() => {
@@ -44,12 +73,18 @@ export default function LessonPage() {
       }
 
       setLesson(loadedLesson);
-
-      // Register SRS item data so hasCards() works, then load persisted card states
       srsItemService.registerItemData(loadedLesson.srs);
       srsItemService.loadFromStorage();
 
+      // Initialize queue with all exercise indices in order
+      const indices = loadedLesson.exercises.map((_, i) => i);
+      setExerciseQueue(indices);
+      setQueuePos(0);
+      setOriginalLength(indices.length);
+      setCorrectCount(0);
+
       setState('intro');
+      trackEvent('lesson_started', { lesson_id: loadedLesson.lesson_id, lesson_order: loadedLesson.lesson_meta.order });
     });
   }, [lessonId, navigate]);
 
@@ -57,37 +92,73 @@ export default function LessonPage() {
     setState('exercise');
   };
 
-  const handleExerciseComplete = (_correct: boolean) => {
+  const handleExerciseComplete = (correct: boolean) => {
     if (!lesson) return;
 
-    const currentExercise = lesson.exercises[currentExerciseIndex];
-
-    // Mark exercise as completed
+    const currentIdx = exerciseQueue[queuePos];
+    const currentExercise = lesson.exercises[currentIdx];
     markExerciseCompleted(lesson.lesson_id, currentExercise.exercise_id);
 
-    // Move to next exercise or completion
-    if (currentExerciseIndex < lesson.exercises.length - 1) {
-      setCurrentExerciseIndex(currentExerciseIndex + 1);
+    // Track first-attempt correct count (only for original exercises, not retries)
+    if (queuePos < originalLength && correct) {
+      setCorrectCount((c) => c + 1);
+    }
+
+    let newQueue = exerciseQueue;
+    if (!correct) {
+      // Re-insert this exercise ~7 slots later for spaced retry
+      const insertAt = Math.min(queuePos + 7, exerciseQueue.length);
+      newQueue = [...exerciseQueue];
+      newQueue.splice(insertAt, 0, currentIdx);
+      setExerciseQueue(newQueue);
+    }
+
+    trackEvent('exercise_completed', {
+      exercise_type: currentExercise.type,
+      correct,
+      is_retry: queuePos >= originalLength,
+    });
+
+    if (queuePos + 1 >= newQueue.length) {
+      // All done (including retries) — go to completion
+      finishLesson(correct ? correctCount + 1 : correctCount);
     } else {
-      // All exercises done
-      setState('completion');
-      handleLessonComplete();
+      setQueuePos((p) => p + 1);
     }
   };
 
-  const handleLessonComplete = () => {
+  const finishLesson = (finalCorrectCount: number) => {
     if (!lesson) return;
 
-    // Mark lesson as completed
     markLessonCompleted(lesson.lesson_id);
-
-    // Create any remaining SRS cards (idempotent — won't duplicate)
     srsItemService.createCardsForItems(lesson.srs);
+
+    // Design decision: accuracy = correctCount / originalLength (first-attempt performance).
+    // This is the pedagogically meaningful signal — retries don't inflate the score.
+    const accuracyPct = originalLength > 0 ? finalCorrectCount / originalLength : 0;
+    const result = gamificationService.recordLessonComplete(accuracyPct);
+
+    playComplete();
+    trackEvent('lesson_completed', {
+      lesson_id: lesson.lesson_id,
+      accuracy: accuracyPct,
+      xp_earned: result.xpEarned,
+    });
+    if (result.streakUpdated) {
+      trackEvent('streak_updated', { new_streak: result.newStreak });
+    }
+
+    setCompletionResult({
+      ...result,
+      accuracyPct,
+      correctCount: finalCorrectCount,
+      originalLength,
+    });
+    setState('completion');
   };
 
   /** Called when a user first hovers/taps a word in an exercise sentence */
   const handleDiscoverSentence = (srsItems: SRSItem[], fromRect: DOMRect) => {
-    // Only animate if these are genuinely new cards (not already in the SRS store)
     const areNew = srsItems.length > 0 && !srsItemService.hasCards(srsItems.map((i) => i.srs_id));
     srsItemService.createCardsForItems(srsItems);
     if (areNew) {
@@ -139,7 +210,6 @@ export default function LessonPage() {
               </div>
             </div>
 
-            {/* Preview sentence with interactive tokens */}
             {lesson.sentences.length > 0 && (
               <div className="bg-base-200 rounded-lg p-6 mb-6">
                 <p className="text-sm uppercase opacity-60 mb-3">Example Sentence</p>
@@ -159,10 +229,12 @@ export default function LessonPage() {
   }
 
   if (state === 'exercise') {
-    const currentExercise = lesson.exercises[currentExerciseIndex];
-    const progress = ((currentExerciseIndex + 1) / lesson.exercises.length) * 100;
+    const currentIdx = exerciseQueue[queuePos];
+    const currentExercise = lesson.exercises[currentIdx];
 
-    // Get sentence and its SRS items for the current exercise
+    // Progress: capped at originalLength to avoid bar jumping backward on retries
+    const progress = (Math.min(queuePos, originalLength) / originalLength) * 100;
+
     const sentenceId = currentExercise.sentence_ids?.[0] || currentExercise.correct_sentence_id;
     const sentence = lesson.sentences.find((s) => s.sentence_id === sentenceId);
     const sentenceSrsItems = sentence
@@ -172,24 +244,30 @@ export default function LessonPage() {
     const onDiscoverSentence = (fromRect: DOMRect) =>
       handleDiscoverSentence(sentenceSrsItems, fromRect);
 
+    // For spot_the_difference: resolve both sentences
+    const sentenceA = currentExercise.sentence_pair
+      ? lesson.sentences.find((s) => s.sentence_id === currentExercise.sentence_pair!.sentence_a_id)
+      : undefined;
+    const sentenceB = currentExercise.sentence_pair
+      ? lesson.sentences.find((s) => s.sentence_id === currentExercise.sentence_pair!.sentence_b_id)
+      : undefined;
+
     return (
       <div>
         {/* Progress bar */}
         <div className="mb-6">
           <div className="flex justify-between text-sm mb-1">
             <span>
-              Exercise {currentExerciseIndex + 1} of {lesson.exercises.length}
+              {Math.min(queuePos + 1, originalLength)} of {originalLength}
             </span>
             <span>{Math.round(progress)}%</span>
           </div>
           <progress className="progress progress-primary w-full" value={progress} max="100"></progress>
         </div>
 
-        {/* Render appropriate exercise component with fade-in animation */}
-        <div key={currentExerciseIndex} className="animate-fadeIn">
-          {!sentence ? (
-            <div className="alert alert-error">Error: Sentence not found for exercise</div>
-          ) : currentExercise.type === 'sentence_to_image_match' ? (
+        {/* Exercise component with fade-in animation */}
+        <div key={`${currentIdx}-${queuePos}`} className="animate-fadeIn">
+          {currentExercise.type === 'sentence_to_image_match' && sentence ? (
             <SentenceToImageMatch
               exercise={currentExercise}
               sentence={sentence}
@@ -197,7 +275,7 @@ export default function LessonPage() {
               sentenceSrsItems={sentenceSrsItems}
               onDiscoverSentence={onDiscoverSentence}
             />
-          ) : currentExercise.type === 'word_bank_build' ? (
+          ) : currentExercise.type === 'word_bank_build' && sentence ? (
             <WordBankBuild
               exercise={currentExercise}
               sentence={sentence}
@@ -205,7 +283,7 @@ export default function LessonPage() {
               sentenceSrsItems={sentenceSrsItems}
               onDiscoverSentence={onDiscoverSentence}
             />
-          ) : currentExercise.type === 'gap_fill_single' ? (
+          ) : currentExercise.type === 'gap_fill_single' && sentence ? (
             <GapFill
               exercise={currentExercise}
               sentence={sentence}
@@ -213,33 +291,100 @@ export default function LessonPage() {
               sentenceSrsItems={sentenceSrsItems}
               onDiscoverSentence={onDiscoverSentence}
             />
+          ) : currentExercise.type === 'multiple_choice_meaning' ? (
+            <MultipleChoiceMeaning
+              exercise={currentExercise}
+              onComplete={handleExerciseComplete}
+            />
+          ) : currentExercise.type === 'word_to_image_match' ? (
+            <WordToImageMatch
+              exercise={currentExercise}
+              onComplete={handleExerciseComplete}
+            />
+          ) : currentExercise.type === 'sentence_unscramble' && sentence ? (
+            <SentenceUnscramble
+              exercise={currentExercise}
+              sentence={sentence}
+              onComplete={handleExerciseComplete}
+            />
+          ) : currentExercise.type === 'picture_to_sentence' ? (
+            <PictureToSentence
+              exercise={currentExercise}
+              onComplete={handleExerciseComplete}
+            />
+          ) : currentExercise.type === 'spot_the_difference' && sentenceA && sentenceB ? (
+            <SpotTheDifference
+              exercise={currentExercise}
+              sentenceA={sentenceA}
+              sentenceB={sentenceB}
+              onComplete={handleExerciseComplete}
+            />
+          ) : currentExercise.type === 'substitution_drill' && sentence ? (
+            <SubstitutionDrill
+              exercise={currentExercise}
+              sentence={sentence}
+              onComplete={handleExerciseComplete}
+            />
+          ) : currentExercise.type === 'interactive_dialogue' ? (
+            <InteractiveDialogue
+              exercise={currentExercise}
+              onComplete={handleExerciseComplete}
+            />
+          ) : currentExercise.type === 'listening_to_translation' ? (
+            <ListeningToTranslation
+              exercise={currentExercise}
+              lessonId={lesson.lesson_id}
+              onComplete={handleExerciseComplete}
+            />
           ) : (
-            <div className="alert alert-error">Unknown exercise type: {currentExercise.type}</div>
+            <div className="alert alert-error">
+              Unknown exercise type or missing sentence: {currentExercise.type}
+            </div>
           )}
         </div>
       </div>
     );
   }
 
-  if (state === 'completion') {
+  if (state === 'completion' && completionResult) {
+    const { xpEarned, streakUpdated, newStreak, accuracyPct, correctCount: cc, originalLength: ol } = completionResult;
+    const accuracyDisplay = Math.round(accuracyPct * 100);
+
     return (
       <div className="max-w-2xl mx-auto">
         <div className="card bg-base-100 shadow-lg">
           <div className="card-body text-center">
             <div className="text-6xl mb-4">🎉</div>
-            <h1 className="card-title text-3xl justify-center mb-4">Lesson Complete!</h1>
-            <p className="text-lg mb-6">You've completed {lesson.lesson_meta.title}</p>
+            <h1 className="card-title text-3xl justify-center mb-2">Lesson Complete!</h1>
+            <p className="text-lg mb-6 text-base-content/70">{lesson.lesson_meta.title}</p>
 
             <div className="stats shadow mb-6">
               <div className="stat">
-                <div className="stat-title">Exercises Completed</div>
-                <div className="stat-value text-2xl">{lesson.exercises.length}</div>
+                <div className="stat-title">Accuracy</div>
+                <div className={`stat-value text-2xl ${accuracyDisplay >= 80 ? 'text-success' : 'text-warning'}`}>
+                  {accuracyDisplay}%
+                </div>
+                <div className="stat-desc">{cc} / {ol} correct</div>
               </div>
               <div className="stat">
-                <div className="stat-title">Cards Added to Review</div>
-                <div className="stat-value text-2xl">{lesson.srs.length}</div>
+                <div className="stat-title">XP Earned</div>
+                <div className="stat-value text-2xl text-primary">+{xpEarned}</div>
+                <div className="stat-desc">Total: {gamificationService.getState().xp} XP</div>
+              </div>
+              <div className="stat">
+                <div className="stat-title">Streak</div>
+                <div className={`stat-value text-2xl ${streakUpdated ? 'text-warning' : ''}`}>
+                  {streakUpdated ? '🔥' : ''}{newStreak}
+                </div>
+                <div className="stat-desc">{streakUpdated ? 'New record!' : 'days'}</div>
               </div>
             </div>
+
+            {streakUpdated && (
+              <div className="alert alert-warning mb-4">
+                <span>🔥 Streak extended to {newStreak} {newStreak === 1 ? 'day' : 'days'}!</span>
+              </div>
+            )}
 
             <div className="card-actions justify-center gap-4">
               <Link to="/learn" className="btn btn-outline">
