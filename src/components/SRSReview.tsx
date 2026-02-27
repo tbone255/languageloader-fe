@@ -10,6 +10,7 @@ import { Rating } from 'ts-fsrs';
 import { srsItemService } from '../services/srsItemService';
 import type { SRSItemCard } from '../services/srsItemService';
 import { getAllLessons } from '../services/lessonService';
+import { appendReviewEvent } from '../services/syncService';
 import type { Sentence } from '../types/lesson';
 import TokenizedText from './TokenizedText';
 
@@ -25,8 +26,8 @@ export default function SRSReview() {
   }, []);
 
   const loadCardsAndData = async () => {
-    // Load card states from localStorage first
-    srsItemService.loadFromStorage();
+    // Load card states from Dexie (falls back to localStorage automatically)
+    await srsItemService.loadFromDexie();
 
     // Load all lessons to get SRS item definitions (content)
     // This only registers item data, doesn't create new cards
@@ -55,8 +56,10 @@ export default function SRSReview() {
     const currentCard = dueCards[currentCardIndex];
     if (!currentCard) return;
 
-    // Grade the card
+    // Grade the card and log review event for cross-device sync
     srsItemService.gradeCard(currentCard.srs_id, rating);
+    const ratingNum = ({ [Rating.Again]: 1, [Rating.Hard]: 2, [Rating.Good]: 3, [Rating.Easy]: 4 } as Record<number, 1|2|3|4>)[rating] ?? 3;
+    appendReviewEvent(currentCard.srs_id, ratingNum).catch(() => {});
 
     // Move to next card
     if (currentCardIndex < dueCards.length - 1) {

@@ -23,6 +23,7 @@ export interface GamificationState {
 interface RecordLessonResult {
   xpEarned: number;
   streakUpdated: boolean;
+  freezeUsed: boolean;
   newStreak: number;
 }
 
@@ -73,13 +74,12 @@ class GamificationService {
     }
   }
 
-  private updateStreak(): boolean {
+  private updateStreak(): { updated: boolean; freezeUsed: boolean } {
     const today = todayISO();
     const last = this.state.lastActivityDate;
 
     if (last === today) {
-      // Already active today — no streak change
-      return false;
+      return { updated: false, freezeUsed: false };
     }
 
     const yesterday = new Date();
@@ -89,13 +89,34 @@ class GamificationService {
     if (last === yesterdayISO) {
       // Consecutive day
       this.state.streak += 1;
+    } else if (last) {
+      // Missed at least one day — try streak freeze
+      const daysBefore = new Date();
+      daysBefore.setDate(daysBefore.getDate() - 2);
+      const twoDaysAgoISO = daysBefore.toISOString().slice(0, 10);
+
+      if (last >= twoDaysAgoISO && this.state.streakFreezeCount > 0) {
+        // Gap of exactly 1 missed day + freeze available — protect streak
+        this.state.streakFreezeCount -= 1;
+        this.state.lastActivityDate = today;
+        return { updated: true, freezeUsed: true };
+      }
+      // Reset
+      this.state.streak = 1;
     } else {
-      // Gap of more than 1 day — reset
       this.state.streak = 1;
     }
 
     this.state.lastActivityDate = today;
-    return true;
+    return { updated: true, freezeUsed: false };
+  }
+
+  /** Award a streak freeze (e.g. at 7-day milestones). */
+  awardStreakFreeze(): void {
+    if (this.state.streakFreezeCount < 2) {
+      this.state.streakFreezeCount += 1;
+      this.save();
+    }
   }
 
   recordLessonComplete(accuracyPct: number): RecordLessonResult {
@@ -108,10 +129,15 @@ class GamificationService {
     this.state.xp += xpEarned;
     this.state.xpToday += xpEarned;
 
-    const streakUpdated = this.updateStreak();
-    this.save();
+    const { updated: streakUpdated, freezeUsed } = this.updateStreak();
 
-    return { xpEarned, streakUpdated, newStreak: this.state.streak };
+    // Award freeze at 7-day milestones
+    if (this.state.streak > 0 && this.state.streak % 7 === 0) {
+      this.awardStreakFreeze();
+    }
+
+    this.save();
+    return { xpEarned, streakUpdated, freezeUsed, newStreak: this.state.streak };
   }
 
   recordReviewSession(cardsReviewed: number): { xpEarned: number } {

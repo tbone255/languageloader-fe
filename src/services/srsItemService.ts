@@ -7,6 +7,7 @@
 
 import { createEmptyCard, fsrs, generatorParameters, Rating, type Card } from 'ts-fsrs';
 import type { SRSItem } from '../types/lesson';
+import { db } from './db';
 
 export interface SRSItemCard {
   srs_id: string;
@@ -124,29 +125,67 @@ export class SRSItemService {
   }
 
   /**
-   * Save cards to localStorage.
+   * Save cards — writes to Dexie (primary) and localStorage (fallback/legacy).
    */
   saveToStorage(): void {
-    try {
-      const serialized: SerializedSRSItemCard[] = Array.from(this.cards.values()).map((c) => ({
-        srs_id: c.srs_id,
-        card: {
-          due: c.card.due.toISOString(),
-          stability: c.card.stability,
-          difficulty: c.card.difficulty,
-          elapsed_days: c.card.elapsed_days,
-          scheduled_days: c.card.scheduled_days,
-          reps: c.card.reps,
-          lapses: c.card.lapses,
-          state: c.card.state,
-          last_review: c.card.last_review?.toISOString(),
-        },
-      }));
+    const flat = Array.from(this.cards.values()).map((c) => ({
+      srs_id: c.srs_id,
+      due: c.card.due.toISOString(),
+      stability: c.card.stability,
+      difficulty: c.card.difficulty,
+      elapsed_days: c.card.elapsed_days,
+      scheduled_days: c.card.scheduled_days,
+      reps: c.card.reps,
+      lapses: c.card.lapses,
+      state: c.card.state,
+      last_review: c.card.last_review?.toISOString(),
+    }));
 
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(serialized));
-    } catch (error) {
-      console.error('Failed to save SRS items to localStorage:', error);
-    }
+    // Async Dexie write (fire-and-forget; in-memory state is authoritative)
+    db.srs_cards.bulkPut(flat).catch(() => {
+      // Dexie unavailable — fall back to legacy localStorage format
+      try {
+        const legacy: SerializedSRSItemCard[] = flat.map((f) => ({
+          srs_id: f.srs_id,
+          card: { due: f.due, stability: f.stability, difficulty: f.difficulty,
+            elapsed_days: f.elapsed_days, scheduled_days: f.scheduled_days,
+            reps: f.reps, lapses: f.lapses, state: f.state, last_review: f.last_review },
+        }));
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(legacy));
+      } catch { /* ignore */ }
+    });
+  }
+
+  /**
+   * Load cards from Dexie (primary) or localStorage (legacy migration).
+   */
+  async loadFromDexie(): Promise<boolean> {
+    try {
+      const rows = await db.srs_cards.toArray();
+      if (rows.length > 0) {
+        for (const row of rows) {
+          const itemData = this.itemData.get(row.srs_id);
+          if (!itemData) continue;
+          this.cards.set(row.srs_id, {
+            srs_id: row.srs_id,
+            card: {
+              due: new Date(row.due),
+              stability: row.stability,
+              difficulty: row.difficulty,
+              elapsed_days: row.elapsed_days,
+              scheduled_days: row.scheduled_days,
+              reps: row.reps,
+              lapses: row.lapses,
+              state: row.state,
+              last_review: row.last_review ? new Date(row.last_review) : undefined,
+            } as Card,
+            item: itemData,
+          });
+        }
+        return true;
+      }
+    } catch { /* Dexie unavailable — fall through to localStorage */ }
+    return this.loadFromStorage();
   }
 
   /**

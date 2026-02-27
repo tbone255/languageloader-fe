@@ -15,6 +15,7 @@ import { gamificationService } from '../services/gamificationService';
 import { useParticleAnimation } from '../contexts/AnimationContext';
 import { playComplete } from '../utils/soundUtils';
 import { trackEvent } from '../services/analyticsService';
+import { checkLessonBadges, checkStreakBadges, checkXPBadges } from '../services/badgeService';
 import type { Lesson, SRSItem } from '../types/lesson';
 
 import SentenceToImageMatch from '../components/exercises/SentenceToImageMatch';
@@ -48,6 +49,7 @@ export default function LessonPage() {
 
   const [lesson, setLesson] = useState<Lesson | null>(null);
   const [state, setState] = useState<LessonState>('loading');
+  const [sessionStartMs] = useState(() => Date.now());
 
   // Exercise queue — supports error requeue
   // Design decision: +7 re-insertion gap for within-session spacing.
@@ -138,6 +140,7 @@ export default function LessonPage() {
     const accuracyPct = originalLength > 0 ? finalCorrectCount / originalLength : 0;
     const result = gamificationService.recordLessonComplete(accuracyPct);
 
+    const durationMs = Date.now() - sessionStartMs;
     playComplete();
     trackEvent('lesson_completed', {
       lesson_id: lesson.lesson_id,
@@ -147,6 +150,17 @@ export default function LessonPage() {
     if (result.streakUpdated) {
       trackEvent('streak_updated', { new_streak: result.newStreak });
     }
+
+    // Badge checks (async, non-blocking)
+    const allProgress = Object.keys(localStorage).filter((k) => k.startsWith('ll_lesson_done_')).length + 1;
+    checkLessonBadges(allProgress, accuracyPct, durationMs).catch(() => {});
+    checkStreakBadges(result.newStreak).catch(() => {});
+    checkXPBadges(gamificationService.getState().xp).catch(() => {});
+
+    // Confetti on completion (dynamic import keeps bundle small)
+    import('canvas-confetti').then(({ default: confetti }) => {
+      confetti({ particleCount: 120, spread: 70, origin: { y: 0.6 } });
+    }).catch(() => {});
 
     setCompletionResult({
       ...result,
