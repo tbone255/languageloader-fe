@@ -220,7 +220,7 @@ export default function GapFill({
               onClick={() => handleChoiceClick(choice)}
               disabled={showFeedback}
               className={`
-                btn btn-lg h-auto py-4 text-xl
+                btn btn-lg h-auto py-4 text-xl gap-2
                 ${isSelected && !showFeedback ? 'btn-primary' : 'btn-outline'}
                 ${showCorrect ? 'btn-success' : ''}
                 ${showIncorrect ? 'btn-error' : ''}
@@ -228,6 +228,8 @@ export default function GapFill({
               dir="rtl"
               lang="ps"
             >
+              {showCorrect && <span aria-hidden>✓</span>}
+              {showIncorrect && <span aria-hidden>✗</span>}
               {choice}
             </button>
           );

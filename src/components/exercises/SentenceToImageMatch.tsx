@@ -95,7 +95,7 @@ export default function SentenceToImageMatch({
               onClick={() => handleImageClick(imageId)}
               disabled={showFeedback}
               className={`
-                card bg-base-100 shadow-md hover:shadow-lg transition-all cursor-pointer
+                card bg-base-100 shadow-md hover:shadow-lg transition-all cursor-pointer relative
                 ${isSelected ? 'ring-4' : ''}
                 ${showCorrect ? 'ring-success' : ''}
                 ${showIncorrect ? 'ring-error' : ''}
@@ -103,6 +103,13 @@ export default function SentenceToImageMatch({
                 ${showFeedback ? 'cursor-default' : ''}
               `}
             >
+              {/* Color-blind accessible result badge */}
+              {showCorrect && (
+                <div className="absolute top-2 right-2 z-10 badge badge-success badge-lg font-bold" aria-label="Correct">✓</div>
+              )}
+              {showIncorrect && (
+                <div className="absolute top-2 right-2 z-10 badge badge-error badge-lg font-bold" aria-label="Incorrect">✗</div>
+              )}
               <figure className="p-4 min-h-[200px] flex items-center justify-center bg-base-200 rounded-t-2xl">
                 <div className="text-6xl" role="img" aria-label={imageId.replace('img-', '').replace(/-/g, ' ')}>
                   {getImagePlaceholder(imageId)}

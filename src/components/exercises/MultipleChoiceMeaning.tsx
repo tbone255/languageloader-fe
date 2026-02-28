@@ -76,13 +76,15 @@ export default function MultipleChoiceMeaning({ exercise, onComplete }: Multiple
               onClick={() => handleChoice(choice)}
               disabled={showFeedback}
               className={`
-                btn btn-lg h-auto py-4 text-base
+                btn btn-lg h-auto py-4 text-base gap-2
                 ${!showFeedback && !isSelected ? 'btn-outline' : ''}
                 ${isSelected && !showFeedback ? 'btn-primary' : ''}
                 ${showCorrect ? 'btn-success' : ''}
                 ${showIncorrect ? 'btn-error' : ''}
               `}
             >
+              {showCorrect && <span aria-hidden>✓</span>}
+              {showIncorrect && <span aria-hidden>✗</span>}
               {choice}
             </button>
           );

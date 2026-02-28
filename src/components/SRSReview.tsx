@@ -24,6 +24,8 @@ export default function SRSReview() {
   const [showAnswer, setShowAnswer] = useState(false);
   const [isLoaded, setIsLoaded] = useState(false);
   const [sentences, setSentences] = useState<Map<string, Sentence>>(new Map());
+  // sentence_id → lesson_id, used to build AudioButton URLs on flip/cloze cards
+  const [sentenceLesson, setSentenceLesson] = useState<Map<string, string>>(new Map());
   const [sessionComplete, setSessionComplete] = useState(false);
   const [xpEarned, setXpEarned] = useState(0);
   const [sessionStartMs] = useState(() => Date.now());
@@ -41,14 +43,18 @@ export default function SRSReview() {
     // This only registers item data, doesn't create new cards
     const lessons = await getAllLessons();
     const sentenceMap = new Map<string, Sentence>();
+    const sentenceLessonMap = new Map<string, string>();
 
     for (const lesson of lessons) {
       srsItemService.registerItemData(lesson.srs);
-      // Build sentence lookup map
-      lesson.sentences.forEach((s) => sentenceMap.set(s.sentence_id, s));
+      lesson.sentences.forEach((s) => {
+        sentenceMap.set(s.sentence_id, s);
+        sentenceLessonMap.set(s.sentence_id, lesson.lesson_meta.lesson_id);
+      });
     }
 
     setSentences(sentenceMap);
+    setSentenceLesson(sentenceLessonMap);
 
     // Get due cards (only includes cards created when lessons were completed)
     // New cards are capped by daily limit based on goal tier
@@ -96,8 +102,17 @@ export default function SRSReview() {
 
   if (!isLoaded) {
     return (
-      <div className="flex items-center justify-center min-h-[400px]">
-        <span className="loading loading-spinner loading-lg"></span>
+      <div className="max-w-3xl mx-auto space-y-4 animate-pulse">
+        <div className="h-3 bg-base-300 rounded-full w-full" />
+        <div className="card bg-base-100 shadow-lg min-h-[400px]">
+          <div className="card-body flex flex-col items-center justify-center gap-6">
+            <div className="h-4 bg-base-300 rounded w-20" />
+            <div className="h-14 bg-base-300 rounded w-56" />
+            <div className="h-4 bg-base-300 rounded w-40" />
+            <div className="h-12 bg-base-300 rounded-xl w-48 mt-8" />
+          </div>
+        </div>
+        <div className="h-20 bg-base-200 rounded-xl w-full" />
       </div>
     );
   }
@@ -177,8 +192,8 @@ export default function SRSReview() {
       {/* Card */}
       <div className="card bg-base-100 shadow-lg min-h-[400px]">
         <div className="card-body flex flex-col justify-center items-center text-center">
-          {currentCard.item.srs_type === 'flip' && renderFlipCard(currentCard, showAnswer, sentences)}
-          {currentCard.item.srs_type === 'cloze' && renderClozeCard(currentCard, showAnswer, sentences)}
+          {currentCard.item.srs_type === 'flip' && renderFlipCard(currentCard, showAnswer, sentences, sentenceLesson)}
+          {currentCard.item.srs_type === 'cloze' && renderClozeCard(currentCard, showAnswer, sentences, sentenceLesson)}
           {currentCard.item.srs_type === 'flip_reverse' && renderFlipReverseCard(currentCard, showAnswer)}
           {currentCard.item.srs_type === 'audio_to_text' && renderAudioToTextCard(currentCard, showAnswer)}
           {currentCard.item.srs_type === 'pattern_prompt' && renderPatternPromptCard(currentCard, showAnswer)}
@@ -233,14 +248,18 @@ export default function SRSReview() {
   );
 }
 
-function renderFlipCard(card: SRSItemCard, showAnswer: boolean, sentences: Map<string, Sentence>) {
+function renderFlipCard(
+  card: SRSItemCard,
+  showAnswer: boolean,
+  sentences: Map<string, Sentence>,
+  sentenceLesson: Map<string, string>,
+) {
   const flip = card.item.flip;
   if (!flip) return null;
 
-  // Try to find the source sentence for interactive display
-  const sourceSentence = card.item.source_sentence_id
-    ? sentences.get(card.item.source_sentence_id)
-    : null;
+  const sourceId = card.item.source_sentence_id;
+  const sourceSentence = sourceId ? sentences.get(sourceId) : null;
+  const lessonId = sourceId ? sentenceLesson.get(sourceId) : null;
 
   // Check if the front is a single word (vocab card) vs full sentence
   const isSingleWord = !flip.front.includes(' ');
@@ -249,7 +268,12 @@ function renderFlipCard(card: SRSItemCard, showAnswer: boolean, sentences: Map<s
     <div className="w-full">
       {/* Front */}
       <div className="mb-6">
-        <p className="text-sm uppercase opacity-60 mb-2">Front</p>
+        <div className="flex items-center justify-center gap-3 mb-2">
+          <p className="text-sm uppercase opacity-60">Front</p>
+          {lessonId && sourceId && (
+            <AudioButton lessonId={lessonId} sentenceId={sourceId} size="sm" />
+          )}
+        </div>
         {isSingleWord ? (
           <p className="text-5xl" dir="rtl" lang="ps">
             {flip.front}
@@ -264,9 +288,7 @@ function renderFlipCard(card: SRSItemCard, showAnswer: boolean, sentences: Map<s
       </div>
 
       {/* Back */}
-      {showAnswer && (
-        <div className="divider"></div>
-      )}
+      {showAnswer && <div className="divider"></div>}
       {showAnswer && (
         <div>
           <p className="text-sm uppercase opacity-60 mb-2">Back</p>
@@ -283,7 +305,12 @@ function renderFlipCard(card: SRSItemCard, showAnswer: boolean, sentences: Map<s
   );
 }
 
-function renderClozeCard(card: SRSItemCard, showAnswer: boolean, _sentences: Map<string, Sentence>) {
+function renderClozeCard(
+  card: SRSItemCard,
+  showAnswer: boolean,
+  _sentences: Map<string, Sentence>,
+  sentenceLesson: Map<string, string>,
+) {
   const cloze = card.item.cloze;
   if (!cloze) return null;
 
@@ -306,10 +333,18 @@ function renderClozeCard(card: SRSItemCard, showAnswer: boolean, _sentences: Map
     return text;
   };
 
+  const sourceId = card.item.source_sentence_id;
+  const lessonId = sourceId ? sentenceLesson.get(sourceId) : null;
+
   return (
     <div className="w-full">
       <div className="mb-6">
-        <p className="text-sm uppercase opacity-60 mb-2">Complete the sentence</p>
+        <div className="flex items-center justify-center gap-3 mb-2">
+          <p className="text-sm uppercase opacity-60">Complete the sentence</p>
+          {lessonId && sourceId && (
+            <AudioButton lessonId={lessonId} sentenceId={sourceId} size="sm" />
+          )}
+        </div>
         <p className="text-4xl leading-relaxed" dir="rtl" lang="ps">
           {renderTemplate()}
         </p>

@@ -70,7 +70,7 @@ export default function PictureToSentence({ exercise, onComplete }: PictureToSen
               onClick={() => handleChoice(sentence)}
               disabled={showFeedback}
               className={`
-                btn btn-lg h-auto py-4 text-xl justify-start
+                btn btn-lg h-auto py-4 text-xl justify-start gap-2
                 ${!showFeedback && !isSelected ? 'btn-outline' : ''}
                 ${isSelected && !showFeedback ? 'btn-primary' : ''}
                 ${showCorrect ? 'btn-success' : ''}
@@ -79,6 +79,8 @@ export default function PictureToSentence({ exercise, onComplete }: PictureToSen
               dir="rtl"
               lang="ps"
             >
+              {showCorrect && <span aria-hidden>✓</span>}
+              {showIncorrect && <span aria-hidden>✗</span>}
               {sentence}
             </button>
           );

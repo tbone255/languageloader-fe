@@ -281,8 +281,18 @@ export default function LessonPage() {
 
   if (state === 'loading' || !lesson) {
     return (
-      <div className="flex items-center justify-center min-h-[400px]">
-        <span className="loading loading-spinner loading-lg"></span>
+      <div className="max-w-3xl mx-auto space-y-4 animate-pulse">
+        {/* Progress bar skeleton */}
+        <div className="h-3 bg-base-300 rounded-full w-full" />
+        {/* Card skeleton */}
+        <div className="card bg-base-100 shadow-lg min-h-[400px]">
+          <div className="card-body flex flex-col items-center justify-center gap-6">
+            <div className="h-4 bg-base-300 rounded w-24" />
+            <div className="h-12 bg-base-300 rounded w-64" />
+            <div className="h-4 bg-base-300 rounded w-48" />
+            <div className="h-12 bg-base-300 rounded-xl w-48 mt-8" />
+          </div>
+        </div>
       </div>
     );
   }
