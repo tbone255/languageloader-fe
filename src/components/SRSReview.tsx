@@ -15,6 +15,8 @@ import { gamificationService } from '../services/gamificationService';
 import { trackEvent, trackReviewSessionComplete, trackSrsCardReviewed } from '../services/analyticsService';
 import type { Sentence } from '../types/lesson';
 import TokenizedText from './TokenizedText';
+import AudioButton from './AudioButton';
+import Mascot from './Mascot';
 
 export default function SRSReview() {
   const [dueCards, setDueCards] = useState<SRSItemCard[]>([]);
@@ -25,6 +27,7 @@ export default function SRSReview() {
   const [sessionComplete, setSessionComplete] = useState(false);
   const [xpEarned, setXpEarned] = useState(0);
   const [sessionStartMs] = useState(() => Date.now());
+  const [newCardStats, setNewCardStats] = useState({ limit: 10, seenToday: 0, remaining: 10 });
 
   useEffect(() => {
     loadCardsAndData();
@@ -48,8 +51,10 @@ export default function SRSReview() {
     setSentences(sentenceMap);
 
     // Get due cards (only includes cards created when lessons were completed)
+    // New cards are capped by daily limit based on goal tier
     const due = srsItemService.getDueCards();
     setDueCards(due);
+    setNewCardStats(srsItemService.getNewCardStats());
     setIsLoaded(true);
   };
 
@@ -102,7 +107,9 @@ export default function SRSReview() {
       <div className="max-w-2xl mx-auto">
         <div className="card bg-base-100 shadow-lg">
           <div className="card-body text-center">
-            <div className="text-6xl mb-4">✅</div>
+            <div className="flex justify-center mb-4">
+              <Mascot expression="celebrating" size={100} />
+            </div>
             <h2 className="card-title text-3xl justify-center mb-4">Review Complete!</h2>
             <div className="stats shadow mb-6">
               <div className="stat">
@@ -132,10 +139,19 @@ export default function SRSReview() {
       <div className="max-w-2xl mx-auto">
         <div className="card bg-base-100 shadow-lg">
           <div className="card-body text-center">
-            <div className="text-6xl mb-4">✅</div>
+            <div className="flex justify-center mb-4">
+              <Mascot expression="happy" size={100} />
+            </div>
             <h2 className="card-title text-3xl justify-center mb-4">All Done!</h2>
             <p className="text-lg mb-6">You have no cards due for review right now.</p>
-            <p className="text-base-content/60">Complete more lessons to add new cards.</p>
+            {newCardStats.seenToday >= newCardStats.limit ? (
+              <p className="text-base-content/60 text-sm">
+                You've reached today's limit of {newCardStats.limit} new cards.
+                Review cards will reappear tomorrow.
+              </p>
+            ) : (
+              <p className="text-base-content/60">Complete more lessons to add new cards.</p>
+            )}
           </div>
         </div>
       </div>
@@ -163,6 +179,9 @@ export default function SRSReview() {
         <div className="card-body flex flex-col justify-center items-center text-center">
           {currentCard.item.srs_type === 'flip' && renderFlipCard(currentCard, showAnswer, sentences)}
           {currentCard.item.srs_type === 'cloze' && renderClozeCard(currentCard, showAnswer, sentences)}
+          {currentCard.item.srs_type === 'flip_reverse' && renderFlipReverseCard(currentCard, showAnswer)}
+          {currentCard.item.srs_type === 'audio_to_text' && renderAudioToTextCard(currentCard, showAnswer)}
+          {currentCard.item.srs_type === 'pattern_prompt' && renderPatternPromptCard(currentCard, showAnswer)}
 
           {/* Show Answer button */}
           {!showAnswer && (
@@ -205,8 +224,9 @@ export default function SRSReview() {
           <div className="stat-value text-2xl">{currentCardIndex}</div>
         </div>
         <div className="stat">
-          <div className="stat-title">Total Due</div>
-          <div className="stat-value text-2xl">{dueCards.length}</div>
+          <div className="stat-title">New Today</div>
+          <div className="stat-value text-2xl">{newCardStats.seenToday}/{newCardStats.limit}</div>
+          <div className="stat-desc">daily limit</div>
         </div>
       </div>
     </div>
@@ -302,6 +322,106 @@ function renderClozeCard(card: SRSItemCard, showAnswer: boolean, _sentences: Map
         <div>
           <p className="text-sm uppercase opacity-60 mb-2">Translation</p>
           <p className="text-2xl">{cloze.translation_en}</p>
+        </div>
+      )}
+    </div>
+  );
+}
+
+/** Reverse flip: English prompt → recall Pashto. */
+function renderFlipReverseCard(card: SRSItemCard, showAnswer: boolean) {
+  const fr = card.item.flip_reverse;
+  if (!fr) return null;
+
+  return (
+    <div className="w-full">
+      {/* Front: English prompt */}
+      <div className="mb-6">
+        <p className="text-sm uppercase opacity-60 mb-2">Translate to Pashto</p>
+        <p className="text-4xl font-semibold">{fr.front}</p>
+      </div>
+
+      {showAnswer && <div className="divider"></div>}
+      {showAnswer && (
+        <div>
+          <p className="text-sm uppercase opacity-60 mb-2">Answer</p>
+          <p className="text-5xl" dir="rtl" lang="ps">
+            {fr.correct_target}
+          </p>
+          {fr.choices && fr.choices.length > 0 && (
+            <p className="text-xs opacity-40 mt-3">
+              Other options: {fr.choices.filter((c) => c !== fr.correct_target).join(', ')}
+            </p>
+          )}
+        </div>
+      )}
+    </div>
+  );
+}
+
+/** Audio → text: play audio, recall meaning. */
+function renderAudioToTextCard(card: SRSItemCard, showAnswer: boolean) {
+  const at = card.item.audio_to_text;
+  if (!at) return null;
+
+  return (
+    <div className="w-full">
+      {/* Prompt: audio play button */}
+      <div className="mb-6">
+        <p className="text-sm uppercase opacity-60 mb-4">Listen and recall</p>
+        <div className="flex justify-center">
+          <AudioButton lessonId={at.lesson_id} sentenceId={at.audio_sentence_id} size="lg" />
+        </div>
+        <p className="text-xs opacity-40 mt-3">Tap to play — what does it mean?</p>
+      </div>
+
+      {showAnswer && <div className="divider"></div>}
+      {showAnswer && (
+        <div className="space-y-3">
+          <div>
+            <p className="text-sm uppercase opacity-60 mb-1">Pashto</p>
+            <p className="text-4xl" dir="rtl" lang="ps">
+              {at.correct_text}
+            </p>
+          </div>
+          <div>
+            <p className="text-sm uppercase opacity-60 mb-1">English</p>
+            <p className="text-2xl">{at.translation_en}</p>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+/** Pattern prompt: given instruction + source word, recall the target form. */
+function renderPatternPromptCard(card: SRSItemCard, showAnswer: boolean) {
+  const pp = card.item.pattern_prompt;
+  if (!pp) return null;
+
+  return (
+    <div className="w-full">
+      {/* Prompt */}
+      <div className="mb-6">
+        <p className="text-sm uppercase opacity-60 mb-2">{pp.instruction}</p>
+        <p className="text-5xl" dir="rtl" lang="ps">
+          {pp.source_word}
+        </p>
+        <p className="text-lg opacity-60 mt-2">{pp.source_translation}</p>
+      </div>
+
+      {showAnswer && <div className="divider"></div>}
+      {showAnswer && (
+        <div>
+          <p className="text-sm uppercase opacity-60 mb-2">Answer</p>
+          <p className="text-5xl font-bold" dir="rtl" lang="ps">
+            {pp.correct_form}
+          </p>
+          {pp.choices && pp.choices.length > 0 && (
+            <p className="text-xs opacity-40 mt-3">
+              Other options: {pp.choices.filter((c) => c !== pp.correct_form).join(', ')}
+            </p>
+          )}
         </div>
       )}
     </div>

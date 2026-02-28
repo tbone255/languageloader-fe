@@ -3,6 +3,7 @@
  *
  * Renders DaisyUI alert-success or alert-error with standard icon,
  * title, and optional correct-answer display.
+ * Applies animate-correctPulse on correct and animate-slideUp on wrong.
  */
 
 interface FeedbackAlertProps {
@@ -19,7 +20,9 @@ export default function FeedbackAlert({
   children,
 }: FeedbackAlertProps) {
   return (
-    <div className={`alert ${isCorrect ? 'alert-success' : 'alert-error'}`}>
+    <div
+      className={`alert ${isCorrect ? 'alert-success animate-correctPulse' : 'alert-error animate-slideUp'}`}
+    >
       <svg
         xmlns="http://www.w3.org/2000/svg"
         className="stroke-current shrink-0 h-6 w-6"

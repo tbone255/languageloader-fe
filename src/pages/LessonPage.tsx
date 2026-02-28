@@ -42,6 +42,7 @@ import ContrastPairs from '../components/exercises/ContrastPairs';
 import AudioTextMatching from '../components/exercises/AudioTextMatching';
 import GrammarHintCard from '../components/exercises/GrammarHintCard';
 import TokenizedText from '../components/TokenizedText';
+import Mascot from '../components/Mascot';
 
 type LessonState = 'loading' | 'intro' | 'warmup' | 'exercise' | 'completion';
 
@@ -612,7 +613,12 @@ export default function LessonPage() {
       <div className="max-w-2xl mx-auto">
         <div className="card bg-base-100 shadow-lg">
           <div className="card-body text-center">
-            <div className="text-6xl mb-4">🎉</div>
+            <div className="flex justify-center mb-4">
+              <Mascot
+                expression={accuracyDisplay >= 80 ? 'celebrating' : accuracyDisplay >= 60 ? 'happy' : 'thinking'}
+                size={100}
+              />
+            </div>
             <h1 className="card-title text-3xl justify-center mb-2">Lesson Complete!</h1>
             <p className="text-lg mb-6 text-base-content/70">{lesson.lesson_meta.title}</p>
 

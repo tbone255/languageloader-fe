@@ -16,6 +16,60 @@ export interface SRSItemCard {
 }
 
 const STORAGE_KEY = 'languageloader_srs_items_v1';
+const NEW_CARDS_TODAY_KEY = 'languageloader_new_cards_today';
+
+/**
+ * Daily new card limits by goal tier.
+ * Design decision: caps prevent cognitive overload for new learners while
+ * letting serious learners push harder. Matches research on optimal daily
+ * new card exposure (Karpicke & Roediger 2008; Anki community data).
+ */
+const NEW_CARD_LIMITS: Record<string, number> = {
+  casual:   5,
+  regular: 10,
+  serious: 20,
+};
+const DEFAULT_NEW_CARD_LIMIT = 10;
+
+interface NewCardsTodayRecord {
+  date: string; // YYYY-MM-DD
+  count: number;
+}
+
+function getNewCardsTodayRecord(): NewCardsTodayRecord {
+  try {
+    const raw = localStorage.getItem(NEW_CARDS_TODAY_KEY);
+    if (raw) return JSON.parse(raw);
+  } catch { /* ignore */ }
+  return { date: '', count: 0 };
+}
+
+function incrementNewCardsToday(): void {
+  const today = new Date().toISOString().slice(0, 10);
+  const rec = getNewCardsTodayRecord();
+  const count = rec.date === today ? rec.count + 1 : 1;
+  try {
+    localStorage.setItem(NEW_CARDS_TODAY_KEY, JSON.stringify({ date: today, count }));
+  } catch { /* ignore */ }
+}
+
+function getDailyNewCardLimit(): number {
+  try {
+    const raw = localStorage.getItem('languageloader_gamification_v1');
+    if (raw) {
+      const state = JSON.parse(raw);
+      const tier: string = state.dailyGoal ?? 'regular';
+      return NEW_CARD_LIMITS[tier] ?? DEFAULT_NEW_CARD_LIMIT;
+    }
+  } catch { /* ignore */ }
+  return DEFAULT_NEW_CARD_LIMIT;
+}
+
+function getNewCardsSeenToday(): number {
+  const today = new Date().toISOString().slice(0, 10);
+  const rec = getNewCardsTodayRecord();
+  return rec.date === today ? rec.count : 0;
+}
 
 /**
  * Serializable version for localStorage
@@ -196,13 +250,34 @@ export class SRSItemService {
   }
 
   /**
-   * Get cards due for review.
+   * Get cards due for review, applying the daily new card limit.
+   *
+   * New cards (state=0) are capped based on the user's daily goal tier
+   * to prevent cognitive overload. Review and relearning cards are always
+   * included regardless of the cap.
    */
   getDueCards(): SRSItemCard[] {
     const now = new Date();
-    return Array.from(this.cards.values()).filter((c) => {
-      return c.card.state === 0 || c.card.due <= now;
-    });
+    const allCards = Array.from(this.cards.values());
+
+    // Separate new cards from review/relearning cards
+    const dueReviewCards = allCards.filter((c) => c.card.state !== 0 && c.card.due <= now);
+    const newCards = allCards.filter((c) => c.card.state === 0);
+
+    // Apply daily new card cap
+    const limit = getDailyNewCardLimit();
+    const seenToday = getNewCardsSeenToday();
+    const remaining = Math.max(0, limit - seenToday);
+    const allowedNewCards = newCards.slice(0, remaining);
+
+    return [...dueReviewCards, ...allowedNewCards];
+  }
+
+  /** Get daily new card stats for display in UI. */
+  getNewCardStats(): { limit: number; seenToday: number; remaining: number } {
+    const limit = getDailyNewCardLimit();
+    const seenToday = getNewCardsSeenToday();
+    return { limit, seenToday, remaining: Math.max(0, limit - seenToday) };
   }
 
   /**
@@ -211,6 +286,11 @@ export class SRSItemService {
   gradeCard(srs_id: string, rating: Rating): Card | null {
     const srsCard = this.cards.get(srs_id);
     if (!srsCard) return null;
+
+    // Track new card exposure for daily cap
+    if (srsCard.card.state === 0) {
+      incrementNewCardsToday();
+    }
 
     const now = new Date();
     const schedulingCards = this.fsrs.repeat(srsCard.card, now);
