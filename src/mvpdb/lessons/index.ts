@@ -6,7 +6,9 @@
  */
 
 import type { Lesson } from '../../types/lesson';
-import lesson1 from './lesson-1-pashto.json';
+// <ll:generated-imports:start> managed by languageloader-be/scripts/sync_frontend.py — do not edit by hand
+import lessonPus001 from './pus-001.json';
+// <ll:generated-imports:end>
 import lesson2 from './lesson-2-pashto.json';
 import lesson3 from './lesson-3-pashto.json';
 
@@ -45,15 +47,17 @@ export const UNIT_REGISTRY: UnitMeta[] = [
  * All available lessons in the system, ordered by sequence.
  */
 export const LESSON_REGISTRY: LessonRegistryEntry[] = [
+  // Pipeline-generated lessons: tsc infers overly-narrow literal types from JSON,
+  // so entries go through unknown to satisfy the structural cast.
+  // <ll:generated-entries:start> managed by languageloader-be/scripts/sync_frontend.py — do not edit by hand
   {
     lesson_id: 'pus-001',
     order: 1,
     unit: 1,
-    title: 'Deixis + Singular Nouns',
-    // Pipeline-generated: tsc infers overly-narrow literal types from JSON,
-    // so we go through unknown to satisfy the structural cast.
-    data: lesson1 as unknown as Lesson,
+    title: 'Demonstratives + Singular Nouns',
+    data: lessonPus001 as unknown as Lesson,
   },
+  // <ll:generated-entries:end>
   {
     // TODO: replace with pipeline-generated pus-002 once lesson 2 is wired
     lesson_id: 'b2c3d4e5-f6a7-4b8c-9d0e-1f2a3b4c5d6e',

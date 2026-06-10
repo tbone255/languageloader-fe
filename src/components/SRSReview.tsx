@@ -49,7 +49,7 @@ export default function SRSReview() {
       srsItemService.registerItemData(lesson.srs);
       lesson.sentences.forEach((s) => {
         sentenceMap.set(s.sentence_id, s);
-        sentenceLessonMap.set(s.sentence_id, lesson.lesson_meta.lesson_id);
+        sentenceLessonMap.set(s.sentence_id, lesson.lesson_id);
       });
     }
 
