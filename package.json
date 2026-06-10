@@ -20,7 +20,6 @@
     "canvas-confetti": "^1.9.4",
     "daisyui": "^5.5.14",
     "dexie": "^4.3.0",
-    "posthog-js": "^1.354.3",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
     "react-router-dom": "^7.11.0",

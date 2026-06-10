@@ -802,9 +802,9 @@ on Replit → Deploy**. Specifics:
 - **Autoscale deployment** (not static hosting): build `npm ci && npm run
   build`, run `npm run start` (`serve -s dist` — the `-s` gives SPA fallback
   routing, replacing Cloudflare's `_redirects`).
-- **Secrets:** set `VITE_POSTHOG_KEY` in the deployment's environment (it is a
-  build-time variable; without it analytics silently no-op, which is fine for
-  previews).
+- **Secrets:** none required. (PostHog was removed 2026-06-10; `trackEvent`
+  instrumentation remains as a local stub until the §10 telemetry loop points
+  it at our own backend.)
 - **Redeploys are manual** (push to GitHub, then redeploy from the Replit UI)
   unless/until the Replit app is linked for auto-deploy.
 - **When the backend arrives**, replace `serve` with the API server process

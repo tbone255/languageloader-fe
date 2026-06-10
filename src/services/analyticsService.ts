@@ -1,11 +1,13 @@
 /**
- * Analytics Service — PostHog
+ * Analytics Service — stub
  *
- * Design decision: anonymous by default, no PII collected.
- * User IDs are random UUIDs generated on first load and stored in localStorage.
- * Events are batched and sent async — no impact on exercise UX timing.
+ * PostHog was removed (2026-06-10) — no third-party analytics for now.
+ * The trackEvent API and typed helpers are kept so the instrumentation at
+ * the call sites (lesson funnel, SRS reviews, gamification) stays in place;
+ * the future telemetry loop (docs/LIVE-TEXTBOOK.md §10) will point these at
+ * our own backend instead.
  *
- * Full event schema (issue #72):
+ * Event schema (issue #72):
  *
  * Lesson funnel:
  * - lesson_started          { lesson_id, lesson_order, session_mode }
@@ -37,50 +39,9 @@
  * - pro_waitlist_joined
  */
 
-const ANON_ID_KEY = 'languageloader_anon_id';
-
-function getAnonId(): string {
-  let id = localStorage.getItem(ANON_ID_KEY);
-  if (!id) {
-    id = crypto.randomUUID();
-    localStorage.setItem(ANON_ID_KEY, id);
-  }
-  return id;
-}
-
-let posthogLoaded = false;
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-let ph: any = null;
-
-/**
- * Call once at app startup (from main.tsx).
- * No-ops if VITE_POSTHOG_KEY is not set.
- */
-export async function initAnalytics(): Promise<void> {
-  const key = import.meta.env.VITE_POSTHOG_KEY as string | undefined;
-  if (!key) return;
-
-  try {
-    const posthog = await import('posthog-js');
-    ph = posthog.default;
-    ph.init(key, {
-      api_host: 'https://us.i.posthog.com',
-      person_profiles: 'never',
-      capture_pageview: true,
-    });
-    ph.identify(getAnonId());
-    posthogLoaded = true;
-  } catch {
-    // PostHog unavailable — fail silently
-  }
-}
-
 export function trackEvent(event: string, props?: Record<string, unknown>): void {
-  if (!posthogLoaded || !ph) return;
-  try {
-    ph.capture(event, props);
-  } catch {
-    // Fail silently
+  if (import.meta.env.DEV) {
+    console.debug('[analytics]', event, props ?? {});
   }
 }
 
