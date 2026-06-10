@@ -764,7 +764,7 @@ cd languageloader-be
 python scripts/run_pipeline.py --lang pus     # adapters → reconcile → generate → verify
 python scripts/sync_frontend.py --lang pus    # verified lessons → fe lesson DB + registry
 cd ../languageloader-fe
-git add -A && git commit && git push          # GitHub Actions → Cloudflare Pages
+git add -A && git commit && git push          # then redeploy on Replit
 ```
 
 `sync_frontend.py` is the egress gate: it only syncs lessons whose
@@ -784,28 +784,31 @@ re-run independently.
 |---|---|---|
 | Code (be + fe) | small | Git (GitHub) |
 | Lesson JSON, curriculum, LKB manifests/hashes | small | Git (fe/be repos) — deployable content is reviewable as diffs |
-| LKB snapshots, raw source dumps (kaikki ~GBs), OCR page images, audio | large | **Cloudflare R2** (S3-compatible, same account as Pages, zero egress fees to the site) |
+| LKB snapshots, raw source dumps (kaikki ~GBs), OCR page images, audio | large | **Object storage** (Cloudflare R2 or any S3-compatible bucket), referenced from git by content hash |
 
 Rule of thumb: anything a `git diff` should catch stays in git; anything
 measured in MB+ goes to R2, referenced from git by content hash. The laptop is
 the build machine, R2 is the warehouse, git is the shippable truth.
 
-### 14.3 Deployment
+### 14.3 Deployment: Replit
 
-**Frontend (the app):** stays on Cloudflare Pages — already automated
-(`.github/workflows/deploy.yml`: push → build → deploy), free, global CDN,
-SPA redirects configured. No change needed.
+*(Decision 2026-06-10: Cloudflare Pages retired — its project had been deleted
+and a backend is planned anyway, so the app moved to Replit, where the same
+Autoscale deployment can later host the sync/API server alongside the SPA.)*
 
-**Replit:** easy, yes — the app is a static Vite SPA, which is Replit's
-simplest deployment case (import repo → build → Static Deployment of `dist/`;
-if Replit's static host doesn't honor SPA fallback routing, a one-line
-`serve -s dist` on an Autoscale deployment does). But for *this* app it is a
-sidegrade: it would duplicate what Cloudflare Pages already does automatically,
-with a less generous free tier and no `_redirects` support. Where Replit
-*would* earn its place: hosting the future sync/API server (Supabase-adjacent
-review-event log, §PRODUCT_PLAN), or as a always-on preview environment.
-Recommendation: keep Pages as production; add Replit only when a server-side
-component exists.
+The repo carries a `.replit` config, so deployment is: **import the GitHub repo
+on Replit → Deploy**. Specifics:
+
+- **Autoscale deployment** (not static hosting): build `npm ci && npm run
+  build`, run `npm run start` (`serve -s dist` — the `-s` gives SPA fallback
+  routing, replacing Cloudflare's `_redirects`).
+- **Secrets:** set `VITE_POSTHOG_KEY` in the deployment's environment (it is a
+  build-time variable; without it analytics silently no-op, which is fine for
+  previews).
+- **Redeploys are manual** (push to GitHub, then redeploy from the Replit UI)
+  unless/until the Replit app is linked for auto-deploy.
+- **When the backend arrives**, replace `serve` with the API server process
+  serving `dist/` as static files — one deployment, one origin, no CORS.
 
 **The pipeline itself does not deploy.** Multi-GB source dumps, OCR batches,
 and LLM extraction runs belong on the laptop (or later, a CI batch job) — not

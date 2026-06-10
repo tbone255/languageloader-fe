@@ -1,0 +1,19 @@
+# Replit configuration — import this repo on Replit and the workspace +
+# deployment come preconfigured. See docs/LIVE-TEXTBOOK.md §14.3.
+
+# Workspace (dev) — runs Vite with --host so the Replit webview can reach it.
+run = ["sh", "-c", "npm run dev -- --host"]
+modules = ["nodejs-20"]
+hidden = [".config", "node_modules", "dist", "playwright-report", "test-results"]
+
+[deployment]
+# Autoscale chosen over static hosting deliberately: `serve -s` gives SPA
+# fallback routing (equivalent of the old Cloudflare _redirects), and the
+# same deployment can host the future backend/API alongside the app.
+deploymentTarget = "autoscale"
+build = ["sh", "-c", "npm ci && npm run build"]
+run = ["sh", "-c", "npm run start"]
+
+[[ports]]
+localPort = 3000
+externalPort = 80
