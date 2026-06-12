@@ -12,6 +12,8 @@
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import express from 'express';
+import helmet from 'helmet';
+import { rateLimit } from 'express-rate-limit';
 import { ensureSchema, isDbConfigured } from './db.js';
 import { setupAuth, isAuthConfigured } from './replitAuth.js';
 import { registerRoutes } from './routes.js';
@@ -20,6 +22,35 @@ const DIST_DIR = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..'
 
 async function main(): Promise<void> {
   const app = express();
+  // Replit's proxy terminates TLS; needed for secure cookies and req.ip.
+  app.set('trust proxy', 1);
+
+  app.use(
+    helmet({
+      contentSecurityPolicy: {
+        directives: {
+          defaultSrc: ["'self'"],
+          scriptSrc: ["'self'"],
+          // React style attributes need unsafe-inline; scripts do not.
+          styleSrc: ["'self'", "'unsafe-inline'"],
+          // https: for OIDC profile avatars (Google/GitHub CDNs)
+          imgSrc: ["'self'", 'data:', 'https:'],
+          connectSrc: ["'self'"],
+          mediaSrc: ["'self'"],
+          objectSrc: ["'none'"],
+          baseUri: ["'self'"],
+          frameAncestors: ["'none'"],
+        },
+      },
+    }),
+  );
+
+  // Per-instance in-memory limits — coarse abuse protection, not quota.
+  app.use(
+    '/api',
+    rateLimit({ windowMs: 5 * 60 * 1000, limit: 300, standardHeaders: true, legacyHeaders: false }),
+  );
+
   app.use(express.json({ limit: '1mb' }));
 
   await ensureSchema();

@@ -60,5 +60,11 @@ export function signIn(): void {
 
 // eslint-disable-next-line react-refresh/only-export-components
 export function signOut(): void {
-  window.location.href = '/api/logout';
+  // POST (CSRF-safe); server responds with the OIDC end-session URL
+  fetch('/api/logout', { method: 'POST', credentials: 'same-origin' })
+    .then(async (res) => {
+      const { redirect } = res.ok ? ((await res.json()) as { redirect?: string }) : {};
+      window.location.href = redirect ?? '/';
+    })
+    .catch(() => { window.location.href = '/'; });
 }

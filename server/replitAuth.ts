@@ -63,6 +63,7 @@ function getSessionMiddleware(): RequestHandler {
     cookie: {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax', // browser default, but don't rely on it: blocks cross-site POSTs
       maxAge: SESSION_TTL_MS,
     },
   });
@@ -80,11 +81,10 @@ function updateUserSession(
 }
 
 export async function setupAuth(app: Express): Promise<void> {
-  app.set('trust proxy', 1);
   app.use(getSessionMiddleware());
 
   if (!isAuthConfigured) {
-    app.get(['/api/login', '/api/callback', '/api/logout'], (_req, res) => {
+    app.all(['/api/login', '/api/callback', '/api/logout'], (_req, res) => {
       res.status(503).json({ error: 'auth_not_configured' });
     });
     return;
@@ -145,14 +145,17 @@ export async function setupAuth(app: Express): Promise<void> {
     })(req, res, next);
   });
 
-  app.get('/api/logout', (req, res) => {
+  // POST (not GET): a state change reachable by GET is CSRF-able via a
+  // simple <img> tag. SameSite=Lax keeps cross-site POSTs cookie-less.
+  // Returns the OIDC end-session URL for the client to navigate to.
+  app.post('/api/logout', (req, res) => {
     req.logout(() => {
-      res.redirect(
-        client.buildEndSessionUrl(config, {
+      res.json({
+        redirect: client.buildEndSessionUrl(config, {
           client_id: process.env.REPL_ID!,
           post_logout_redirect_uri: `${req.protocol}://${req.hostname}`,
         }).href,
-      );
+      });
     });
   });
 }

@@ -10,12 +10,24 @@
  */
 
 import type { Express, Request, Response } from 'express';
+import { rateLimit } from 'express-rate-limit';
 import { pool, isDbConfigured } from './db.js';
 import { isAuthConfigured, isAuthenticated, currentUserId, type SessionUser } from './replitAuth.js';
 
 const MAX_EVENTS_PER_PUSH = 500;
 const MAX_TELEMETRY_PER_POST = 50;
+const MAX_PROPS_BYTES = 2048;
 const PULL_LIMIT = 1000;
+
+// Telemetry is an unauthenticated DB write — the tightest limit in the app.
+// A real client flushes at most every 5s (analyticsService), so 60/5min is
+// the honest ceiling; anything past 100 is a script.
+const telemetryLimiter = rateLimit({
+  windowMs: 5 * 60 * 1000,
+  limit: 100,
+  standardHeaders: true,
+  legacyHeaders: false,
+});
 
 interface ReviewEventIn {
   id: string;
@@ -114,7 +126,7 @@ export function registerRoutes(app: Express): void {
     }
   });
 
-  app.post('/api/telemetry', async (req: Request, res: Response) => {
+  app.post('/api/telemetry', telemetryLimiter, async (req: Request, res: Response) => {
     // Never an error for the client — telemetry is best-effort by design.
     if (!isDbConfigured) {
       res.status(204).end();
@@ -133,10 +145,12 @@ export function registerRoutes(app: Express): void {
         const e = ev as Record<string, unknown>;
         if (typeof e?.event !== 'string' || e.event.length > 128) continue;
         const props = typeof e.props === 'object' && e.props !== null ? e.props : {};
+        const propsJson = JSON.stringify(props);
+        if (propsJson.length > MAX_PROPS_BYTES) continue;
         await pool!.query(
           `INSERT INTO telemetry_events (anon_id, user_id, event, props)
            VALUES ($1, $2, $3, $4)`,
-          [anonId, userId, e.event, JSON.stringify(props)],
+          [anonId, userId, e.event, propsJson],
         );
       }
     } catch {
