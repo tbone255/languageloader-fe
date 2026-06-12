@@ -1,0 +1,99 @@
+/**
+ * Postgres access — Replit Database (DATABASE_URL provided by Replit).
+ *
+ * When DATABASE_URL is unset (local dev without a DB), `pool` is null and
+ * every API route that needs storage responds 503; the SPA runs guest-only.
+ */
+
+import pg from 'pg';
+
+export const pool: pg.Pool | null = process.env.DATABASE_URL
+  ? new pg.Pool({ connectionString: process.env.DATABASE_URL })
+  : null;
+
+export const isDbConfigured = pool !== null;
+
+// Idempotent DDL, applied on boot. Additive changes only — destructive
+// migrations get their own script.
+const SCHEMA: string[] = [
+  `CREATE TABLE IF NOT EXISTS users (
+    id varchar PRIMARY KEY,
+    email text,
+    first_name text,
+    last_name text,
+    profile_image_url text,
+    created_at timestamptz NOT NULL DEFAULT now(),
+    updated_at timestamptz NOT NULL DEFAULT now()
+  )`,
+  // Shape required by connect-pg-simple (createTableIfMissing is off so the
+  // schema lives in one place).
+  `CREATE TABLE IF NOT EXISTS sessions (
+    sid varchar PRIMARY KEY,
+    sess jsonb NOT NULL,
+    expire timestamp(6) NOT NULL
+  )`,
+  `CREATE INDEX IF NOT EXISTS idx_sessions_expire ON sessions (expire)`,
+  // Append-only review event log — the durable source of truth for SRS
+  // state; clients replay it (product plan §18.3).
+  `CREATE TABLE IF NOT EXISTS review_events (
+    id uuid PRIMARY KEY,
+    user_id varchar NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    srs_id text NOT NULL,
+    rating smallint NOT NULL CHECK (rating BETWEEN 1 AND 4),
+    reviewed_at timestamptz NOT NULL,
+    device_id text NOT NULL,
+    created_at timestamptz NOT NULL DEFAULT now()
+  )`,
+  `CREATE INDEX IF NOT EXISTS idx_review_events_user_time
+     ON review_events (user_id, reviewed_at)`,
+  `CREATE TABLE IF NOT EXISTS lesson_progress (
+    user_id varchar NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    lesson_id text NOT NULL,
+    completed boolean NOT NULL DEFAULT false,
+    completed_at timestamptz,
+    exercises_completed jsonb NOT NULL DEFAULT '[]',
+    PRIMARY KEY (user_id, lesson_id)
+  )`,
+  // Telemetry feed for the content quarantine loop (LIVE-TEXTBOOK §10).
+  // Accepts anonymous events; user_id attached when a session exists.
+  `CREATE TABLE IF NOT EXISTS telemetry_events (
+    id bigint GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    anon_id text NOT NULL,
+    user_id varchar,
+    event text NOT NULL,
+    props jsonb NOT NULL DEFAULT '{}',
+    created_at timestamptz NOT NULL DEFAULT now()
+  )`,
+  `CREATE INDEX IF NOT EXISTS idx_telemetry_events_event_time
+     ON telemetry_events (event, created_at)`,
+];
+
+export async function ensureSchema(): Promise<void> {
+  if (!pool) return;
+  for (const stmt of SCHEMA) {
+    await pool.query(stmt);
+  }
+}
+
+export interface UpsertUserInput {
+  id: string;
+  email?: string | null;
+  firstName?: string | null;
+  lastName?: string | null;
+  profileImageUrl?: string | null;
+}
+
+export async function upsertUser(u: UpsertUserInput): Promise<void> {
+  if (!pool) return;
+  await pool.query(
+    `INSERT INTO users (id, email, first_name, last_name, profile_image_url)
+     VALUES ($1, $2, $3, $4, $5)
+     ON CONFLICT (id) DO UPDATE SET
+       email = EXCLUDED.email,
+       first_name = EXCLUDED.first_name,
+       last_name = EXCLUDED.last_name,
+       profile_image_url = EXCLUDED.profile_image_url,
+       updated_at = now()`,
+    [u.id, u.email ?? null, u.firstName ?? null, u.lastName ?? null, u.profileImageUrl ?? null],
+  );
+}

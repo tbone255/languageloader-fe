@@ -1,6 +1,5 @@
 import './App.css';
 import { BrowserRouter, Route, Routes, useLocation } from 'react-router-dom';
-import { ClerkProvider, SignIn, SignUp, useUser } from '@clerk/clerk-react';
 import { useEffect, useState } from 'react';
 
 import AppLayout from './components/AppLayout';
@@ -20,15 +19,20 @@ import DebugPage from './pages/DebugPage';
 import Demo from './pages/Demo';
 import { isOnboardingComplete } from './services/onboardingService';
 import { syncNow } from './services/syncService';
+import { AuthProvider, useAuth, signIn } from './hooks/useAuth';
 
-const CLERK_KEY = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY as string | undefined;
-
-/** Syncs Supabase when Clerk user is available. */
+/** Kicks off a sync once the server session is confirmed. */
 function AuthSyncEffect() {
-  const { isSignedIn } = useUser();
+  const { user } = useAuth();
   useEffect(() => {
-    if (isSignedIn) syncNow().catch(() => {});
-  }, [isSignedIn]);
+    if (user) syncNow().catch(() => {});
+  }, [user]);
+  return null;
+}
+
+/** /sign-in is now a redirect through the server's OIDC login route. */
+function SignInRedirect() {
+  useEffect(() => { signIn(); }, []);
   return null;
 }
 
@@ -73,14 +77,8 @@ function AppRoutes() {
           <Route path="/pro" element={<ProPage />} />
           <Route path="/debug" element={<DebugPage />} />
           <Route path="/demo" element={<Demo />} />
-          <Route
-            path="/sign-in"
-            element={<div className="flex justify-center mt-12"><SignIn routing="path" path="/sign-in" /></div>}
-          />
-          <Route
-            path="/sign-up"
-            element={<div className="flex justify-center mt-12"><SignUp routing="path" path="/sign-up" /></div>}
-          />
+          <Route path="/sign-in" element={<SignInRedirect />} />
+          <Route path="/sign-up" element={<SignInRedirect />} />
         </Routes>
       </AppLayout>
     </OnboardingGuard>
@@ -88,24 +86,14 @@ function AppRoutes() {
 }
 
 function App() {
-  const router = (
-    // basename="" for Cloudflare Pages (served at root, not a subdirectory)
-    <BrowserRouter>
-      <AppRoutes />
-    </BrowserRouter>
+  return (
+    <AuthProvider>
+      <AuthSyncEffect />
+      <BrowserRouter>
+        <AppRoutes />
+      </BrowserRouter>
+    </AuthProvider>
   );
-
-  if (CLERK_KEY) {
-    return (
-      <ClerkProvider publishableKey={CLERK_KEY}>
-        <AuthSyncEffect />
-        {router}
-      </ClerkProvider>
-    );
-  }
-
-  // Clerk not configured — run without auth (guest-only mode)
-  return router;
 }
 
 export default App;

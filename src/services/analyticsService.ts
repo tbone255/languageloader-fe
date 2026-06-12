@@ -1,11 +1,12 @@
 /**
- * Analytics Service — stub
+ * Analytics Service — first-party telemetry.
  *
- * PostHog was removed (2026-06-10) — no third-party analytics for now.
- * The trackEvent API and typed helpers are kept so the instrumentation at
- * the call sites (lesson funnel, SRS reviews, gamification) stays in place;
- * the future telemetry loop (docs/LIVE-TEXTBOOK.md §10) will point these at
- * our own backend instead.
+ * No third-party analytics (PostHog removed 2026-06-10). Events batch to
+ * our own POST /api/telemetry (anonymous anon_id; the server attaches
+ * user_id when a session exists) and feed the content quarantine loop
+ * (docs/LIVE-TEXTBOOK.md §10). Best-effort by design: the server may not
+ * have a database (local dev) and the request may never land — the app
+ * never waits on or reacts to telemetry.
  *
  * Event schema (issue #72):
  *
@@ -39,9 +40,57 @@
  * - pro_waitlist_joined
  */
 
+const ANON_ID_KEY = 'languageloader_anon_id';
+
+function getAnonId(): string {
+  let id = localStorage.getItem(ANON_ID_KEY);
+  if (!id) {
+    id = crypto.randomUUID();
+    localStorage.setItem(ANON_ID_KEY, id);
+  }
+  return id;
+}
+
+const FLUSH_INTERVAL_MS = 5000;
+const FLUSH_BATCH_SIZE = 20;
+const MAX_PER_POST = 50; // server-enforced cap
+
+let queue: Array<{ event: string; props: Record<string, unknown> }> = [];
+let flushTimer: number | null = null;
+
+function flush(): void {
+  if (flushTimer !== null) {
+    clearTimeout(flushTimer);
+    flushTimer = null;
+  }
+  if (queue.length === 0) return;
+  const batch = queue.slice(0, MAX_PER_POST);
+  queue = queue.slice(MAX_PER_POST);
+  fetch('/api/telemetry', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    credentials: 'same-origin',
+    body: JSON.stringify({ anon_id: getAnonId(), events: batch }),
+    keepalive: true, // survives page unload
+  }).catch(() => {});
+  if (queue.length > 0) flush();
+}
+
+if (typeof document !== 'undefined') {
+  document.addEventListener('visibilitychange', () => {
+    if (document.hidden) flush();
+  });
+}
+
 export function trackEvent(event: string, props?: Record<string, unknown>): void {
   if (import.meta.env.DEV) {
     console.debug('[analytics]', event, props ?? {});
+  }
+  queue.push({ event, props: props ?? {} });
+  if (queue.length >= FLUSH_BATCH_SIZE) {
+    flush();
+  } else if (flushTimer === null) {
+    flushTimer = window.setTimeout(flush, FLUSH_INTERVAL_MS);
   }
 }
 

@@ -9,7 +9,7 @@ import { Link } from 'react-router-dom';
 import { gamificationService, DAILY_GOAL_XP } from '../services/gamificationService';
 import { srsItemService } from '../services/srsItemService';
 import { ALL_BADGES, getEarnedBadgeIds } from '../services/badgeService';
-import { supabase, isSupabaseConfigured } from '../services/supabaseClient';
+import { useAuth, signIn, signOut } from '../hooks/useAuth';
 import { syncNow } from '../services/syncService';
 
 export default function ProfilePage() {
@@ -18,49 +18,13 @@ export default function ProfilePage() {
   const [earnedIds, setEarnedIds] = useState<Set<string>>(new Set());
   const { xpToday, goalXp, pct: goalPct } = gamificationService.getDailyGoalProgress();
 
-  // Auth / migration state
-  const [signedIn, setSignedIn] = useState(false);
-  const [userEmail, setUserEmail] = useState('');
-  const [magicEmail, setMagicEmail] = useState('');
-  const [magicSent, setMagicSent] = useState(false);
+  const { user, authAvailable } = useAuth();
   const [migrating, setMigrating] = useState(false);
   const [migrated, setMigrated] = useState(false);
-  const [authError, setAuthError] = useState('');
 
   useEffect(() => {
     getEarnedBadgeIds().then(setEarnedIds);
-
-    // Check existing Supabase session
-    if (isSupabaseConfigured() && supabase) {
-      supabase.auth.getSession().then(({ data: { session } }) => {
-        if (session?.user) {
-          setSignedIn(true);
-          setUserEmail(session.user.email ?? '');
-        }
-      });
-      // Listen for auth state changes (e.g. magic link redirect)
-      const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-        if (session?.user) {
-          setSignedIn(true);
-          setUserEmail(session.user.email ?? '');
-          // Auto-migrate guest data on first sign-in
-          handleMigrate();
-        }
-      });
-      return () => subscription.unsubscribe();
-    }
   }, []);
-
-  const handleSendMagicLink = async () => {
-    if (!supabase || !magicEmail.trim()) return;
-    setAuthError('');
-    const { error } = await supabase.auth.signInWithOtp({
-      email: magicEmail.trim(),
-      options: { emailRedirectTo: window.location.href },
-    });
-    if (error) setAuthError(error.message);
-    else setMagicSent(true);
-  };
 
   const handleMigrate = async () => {
     setMigrating(true);
@@ -69,13 +33,6 @@ export default function ProfilePage() {
       setMigrated(true);
     } catch { /* ignore */ }
     setMigrating(false);
-  };
-
-  const handleSignOut = async () => {
-    if (!supabase) return;
-    await supabase.auth.signOut();
-    setSignedIn(false);
-    setUserEmail('');
   };
 
   const handleReset = () => {
@@ -195,16 +152,18 @@ export default function ProfilePage() {
       <div className="card bg-base-100 shadow-md">
         <div className="card-body">
           <h2 className="card-title text-lg mb-1">Sync Progress</h2>
-          {!isSupabaseConfigured() ? (
+          {!authAvailable ? (
             <div>
               <p className="text-sm opacity-60 mb-3">
                 Sign in to back up your progress and sync across devices.
               </p>
               <div className="badge badge-outline">Coming soon</div>
             </div>
-          ) : signedIn ? (
+          ) : user ? (
             <div className="space-y-3">
-              <p className="text-sm opacity-70">Signed in as <span className="font-semibold">{userEmail}</span></p>
+              <p className="text-sm opacity-70">
+                Signed in as <span className="font-semibold">{user.email ?? ([user.firstName, user.lastName].filter(Boolean).join(' ') || user.id)}</span>
+              </p>
               {!migrated ? (
                 <button
                   className={`btn btn-primary btn-sm ${migrating ? 'loading' : ''}`}
@@ -216,35 +175,17 @@ export default function ProfilePage() {
               ) : (
                 <div className="alert alert-success py-2 text-sm">Progress synced successfully.</div>
               )}
-              <button className="btn btn-ghost btn-sm" onClick={handleSignOut}>Sign out</button>
-            </div>
-          ) : magicSent ? (
-            <div>
-              <div className="alert alert-info py-2 text-sm mb-3">
-                Check your email for a sign-in link. Click it to sign in and sync your progress.
-              </div>
-              <button className="btn btn-ghost btn-sm" onClick={() => setMagicSent(false)}>Use different email</button>
+              <button className="btn btn-ghost btn-sm" onClick={() => signOut()}>Sign out</button>
             </div>
           ) : (
             <div className="space-y-3">
               <p className="text-sm opacity-60">
-                Sign in with your email to save progress to the cloud and sync across devices.
+                Sign in to save progress to the cloud and sync across devices.
                 Your local progress will be preserved.
               </p>
-              <div className="flex gap-2">
-                <input
-                  type="email"
-                  className="input input-bordered input-sm flex-1"
-                  placeholder="you@example.com"
-                  value={magicEmail}
-                  onChange={(e) => setMagicEmail(e.target.value)}
-                  onKeyDown={(e) => e.key === 'Enter' && handleSendMagicLink()}
-                />
-                <button className="btn btn-primary btn-sm" onClick={handleSendMagicLink}>
-                  Send link
-                </button>
-              </div>
-              {authError && <p className="text-error text-xs">{authError}</p>}
+              <button className="btn btn-primary btn-sm w-fit" onClick={() => signIn()}>
+                Sign in
+              </button>
             </div>
           )}
         </div>

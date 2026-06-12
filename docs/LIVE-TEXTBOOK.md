@@ -800,15 +800,25 @@ The repo carries a `.replit` config, so deployment is: **import the GitHub repo
 on Replit → Deploy**. Specifics:
 
 - **Autoscale deployment** (not static hosting): build `npm ci && npm run
-  build`, run `npm run start` (`serve -s dist` — the `-s` gives SPA fallback
-  routing, replacing Cloudflare's `_redirects`).
-- **Secrets:** none required. (PostHog was removed 2026-06-10; `trackEvent`
-  instrumentation remains as a local stub until the §10 telemetry loop points
-  it at our own backend.)
+  build`, run `npm run start` — the Express server (`server/index.ts`, via
+  tsx) serves `dist/` with SPA fallback **and** the `/api` routes: Replit
+  Auth (OIDC), review-event sync, and the §10 telemetry sink. One deployment,
+  one origin, no CORS.
+- **Database:** Replit Postgres, attached per app (`DATABASE_URL` is injected
+  automatically). Dev and production are *separate* databases — create the
+  production one when setting up the deployment. Schema is applied
+  idempotently at server boot (`server/db.ts`).
+- **Auth:** Replit Auth (OIDC at `replit.com/oidc`); `REPL_ID` and
+  `REPLIT_DOMAINS` are injected by the platform. End users sign in via
+  Google/GitHub/X/Apple/email through Replit's hosted flow.
+- **Secrets:** `SESSION_SECRET` (session-cookie signing) — set it as a
+  deployment secret. Everything else is platform-injected.
+- **Graceful degradation:** without `DATABASE_URL`/`REPL_ID` (e.g. local
+  `npm run start`) the server is a plain static host; auth endpoints return
+  503, the FE hides sign-in UI, and the app runs guest-only with all
+  progress local (Dexie) — review events queue until a sign-in succeeds.
 - **Redeploys are manual** (push to GitHub, then redeploy from the Replit UI)
   unless/until the Replit app is linked for auto-deploy.
-- **When the backend arrives**, replace `serve` with the API server process
-  serving `dist/` as static files — one deployment, one origin, no CORS.
 
 **The pipeline itself does not deploy.** Multi-GB source dumps, OCR batches,
 and LLM extraction runs belong on the laptop (or later, a CI batch job) — not

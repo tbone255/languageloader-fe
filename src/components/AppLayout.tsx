@@ -2,11 +2,11 @@
  * AppLayout
  *
  * Persistent navigation shell. Desktop: top navbar. Mobile: bottom tab bar.
- * Includes streak/XP display and auth button (Clerk-aware).
+ * Includes streak/XP display and auth button (Replit Auth via useAuth).
  */
 
 import { NavLink } from 'react-router-dom';
-import { useClerk, useUser } from '@clerk/clerk-react';
+import { useAuth, signOut } from '../hooks/useAuth';
 import ThemeSwitcher from './ThemeSwitcher';
 import StreakBar from './StreakBar';
 import BadgeToast from './BadgeToast';
@@ -18,44 +18,40 @@ interface AppLayoutProps {
 }
 
 function AuthButton() {
-  // Gracefully no-op if Clerk not configured
-  try {
-    // eslint-disable-next-line react-hooks/rules-of-hooks
-    const { isSignedIn, user } = useUser();
-    // eslint-disable-next-line react-hooks/rules-of-hooks
-    const { signOut } = useClerk();
+  const { user, authAvailable } = useAuth();
 
-    if (isSignedIn) {
-      return (
-        <div className="dropdown dropdown-end">
-          <div tabIndex={0} role="button" className="btn btn-ghost btn-circle avatar placeholder">
-            <div className="bg-primary text-primary-content rounded-full w-8">
-              <span className="text-sm">{user?.firstName?.[0] ?? user?.emailAddresses?.[0]?.emailAddress?.[0] ?? '?'}</span>
-            </div>
+  if (user) {
+    return (
+      <div className="dropdown dropdown-end">
+        <div tabIndex={0} role="button" className="btn btn-ghost btn-circle avatar placeholder">
+          <div className="bg-primary text-primary-content rounded-full w-8">
+            <span className="text-sm">{user.firstName?.[0] ?? user.email?.[0] ?? '?'}</span>
           </div>
-          <ul tabIndex={0} className="dropdown-content menu bg-base-100 rounded-box z-50 mt-3 w-48 p-2 shadow">
-            <li><NavLink to="/profile">Profile</NavLink></li>
-            <li><NavLink to="/settings">Settings</NavLink></li>
-            <li><NavLink to="/stats">Statistics</NavLink></li>
-            <li><button onClick={() => signOut()}>Sign out</button></li>
-          </ul>
         </div>
-      );
-    }
+        <ul tabIndex={0} className="dropdown-content menu bg-base-100 rounded-box z-50 mt-3 w-48 p-2 shadow">
+          <li><NavLink to="/profile">Profile</NavLink></li>
+          <li><NavLink to="/settings">Settings</NavLink></li>
+          <li><NavLink to="/stats">Statistics</NavLink></li>
+          <li><button onClick={() => signOut()}>Sign out</button></li>
+        </ul>
+      </div>
+    );
+  }
 
+  if (authAvailable) {
     return (
       <NavLink to="/sign-in" className="btn btn-primary btn-sm">
         Sign in
       </NavLink>
     );
-  } catch {
-    // Clerk not in context — show profile link only
-    return (
-      <NavLink to="/profile" className="btn btn-ghost btn-sm">
-        Profile
-      </NavLink>
-    );
   }
+
+  // No auth backend (guest-only) — show profile link only
+  return (
+    <NavLink to="/profile" className="btn btn-ghost btn-sm">
+      Profile
+    </NavLink>
+  );
 }
 
 export default function AppLayout({ children }: AppLayoutProps) {

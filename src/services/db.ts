@@ -3,7 +3,7 @@
  *
  * All persistent storage goes through this DB.
  * srsItemService uses the srs_cards table as its backing store.
- * syncService uses review_events to flush unsynced events to Supabase.
+ * syncService uses review_events to flush unsynced events to the server API.
  */
 
 import Dexie, { type Table } from 'dexie';
@@ -27,7 +27,7 @@ export interface ReviewEvent {
   rating: 1 | 2 | 3 | 4;
   reviewed_at: string;  // ISO timestamp
   device_id: string;
-  synced_at?: string;   // undefined until confirmed synced to Supabase
+  synced_at?: string;   // undefined until confirmed synced to the server
 }
 
 export interface DBLessonProgress {

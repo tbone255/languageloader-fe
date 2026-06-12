@@ -39,7 +39,7 @@ export default function ProPage() {
   const handleInterest = (e: React.FormEvent) => {
     e.preventDefault();
     if (!email) return;
-    // Store locally for now — will connect to Supabase waitlist table later
+    // Store locally for now — will connect to a server waitlist table later
     const list: string[] = JSON.parse(localStorage.getItem('ll_pro_waitlist') ?? '[]');
     if (!list.includes(email)) list.push(email);
     localStorage.setItem('ll_pro_waitlist', JSON.stringify(list));

@@ -5,8 +5,11 @@ import { VitePWA } from 'vite-plugin-pwa'
 
 // https://vite.dev/config/
 export default defineConfig({
-  // base: '/' for Cloudflare Pages (served at root, not a subdirectory)
   base: '/',
+  server: {
+    // Dev: the Express server (npm run dev:server) handles /api
+    proxy: { '/api': 'http://localhost:3000' },
+  },
   plugins: [
     react({
       babel: {
@@ -33,6 +36,9 @@ export default defineConfig({
       workbox: {
         // Cache lesson JSON files and app shell for offline use
         globPatterns: ['**/*.{js,css,html,ico,png,svg,json}'],
+        // /api must hit the server: auth redirects (/api/login) break if the
+        // service worker serves the app shell instead
+        navigateFallbackDenylist: [/^\/api\//],
         runtimeCaching: [
           {
             urlPattern: /\/audio\/.*/,
