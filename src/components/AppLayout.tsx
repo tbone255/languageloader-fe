@@ -61,7 +61,7 @@ export default function AppLayout({ children }: AppLayoutProps) {
         {/* Top navbar */}
         <div className="navbar bg-base-200 sticky top-0 z-40">
           <div className="navbar-start">
-            <NavLink to="/learn" className="btn btn-ghost text-lg font-bold">
+            <NavLink to="/languages" className="btn btn-ghost text-lg font-bold">
               LanguageLoader
             </NavLink>
           </div>
@@ -69,7 +69,7 @@ export default function AppLayout({ children }: AppLayoutProps) {
           {/* Desktop nav links */}
           <div className="navbar-center hidden md:flex">
             <ul className="menu menu-horizontal px-1">
-              <li><NavLink to="/learn" className={({ isActive }) => isActive ? 'active' : ''}>Learn</NavLink></li>
+              <li><NavLink to="/languages" className={({ isActive }) => isActive ? 'active' : ''}>Languages</NavLink></li>
               <li><NavLink to="/review" className={({ isActive }) => isActive ? 'active' : ''}>Review</NavLink></li>
               <li><NavLink to="/stats" className={({ isActive }) => isActive ? 'active' : ''}>Stats</NavLink></li>
               <li><NavLink to="/profile" className={({ isActive }) => isActive ? 'active' : ''}>Profile</NavLink></li>
@@ -91,14 +91,14 @@ export default function AppLayout({ children }: AppLayoutProps) {
         <div className="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-base-200 border-t border-base-300">
           <div className="flex justify-around items-center py-2">
             <NavLink
-              to="/learn"
+              to="/languages"
               className={({ isActive }) => `flex flex-col items-center gap-0.5 px-3 py-1 rounded-lg text-xs transition-colors
                 ${isActive ? 'text-primary font-semibold' : 'opacity-60'}`}
             >
               <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
               </svg>
-              Learn
+              Languages
             </NavLink>
             <NavLink
               to="/review"

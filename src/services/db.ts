@@ -50,6 +50,17 @@ export interface DBBadge {
   earned_at: string;    // ISO timestamp
 }
 
+/**
+ * Languages the user has added ("courses"). A separate concern from cards and
+ * lesson progress — kept in its own table so the core SRS tables stay free of
+ * a language dimension until real multi-language content exists.
+ */
+export interface DBUserLanguage {
+  code: string;         // language id, e.g. 'pus'
+  added_at: string;     // ISO timestamp
+  last_active_at: string; // ISO timestamp
+}
+
 let _deviceId: string | null = null;
 export function getDeviceId(): string {
   if (_deviceId) return _deviceId;
@@ -67,6 +78,7 @@ class LanguageLoaderDB extends Dexie {
   lesson_progress!: Table<DBLessonProgress, string>;
   onboarding!: Table<DBOnboarding, string>;
   badges!: Table<DBBadge, string>;
+  user_languages!: Table<DBUserLanguage, string>;
 
   constructor() {
     super('LanguageLoaderDB');
@@ -76,6 +88,10 @@ class LanguageLoaderDB extends Dexie {
       lesson_progress: 'lesson_id',
       onboarding: 'key',
       badges: 'id',
+    });
+    // v2: enrolled languages. Additive — Dexie keeps existing stores intact.
+    this.version(2).stores({
+      user_languages: 'code, last_active_at',
     });
   }
 }

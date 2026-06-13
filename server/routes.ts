@@ -11,13 +11,17 @@
 
 import type { Express, Request, Response } from 'express';
 import { rateLimit } from 'express-rate-limit';
-import { pool, isDbConfigured } from './db.js';
+import { pool, isDbConfigured, getUserLanguages, upsertUserLanguage } from './db.js';
 import { isAuthConfigured, isAuthenticated, currentUserId, type SessionUser } from './replitAuth.js';
 
 const MAX_EVENTS_PER_PUSH = 500;
 const MAX_TELEMETRY_PER_POST = 50;
 const MAX_PROPS_BYTES = 2048;
 const PULL_LIMIT = 1000;
+
+// Mirrors src/data/languages.ts LANGUAGE_CATALOG codes. Kept here so the
+// server validates enrollment writes without importing frontend code.
+const VALID_LANGUAGE_CODES = new Set(['pus', 'fas', 'urd', 'ara', 'tur', 'hin', 'spa', 'fra']);
 
 // Telemetry is an unauthenticated DB write — the tightest limit in the app.
 // A real client flushes at most every 5s (analyticsService), so 60/5min is
@@ -123,6 +127,37 @@ export function registerRoutes(app: Express): void {
       res.json({ events: rows });
     } catch {
       res.status(500).json({ error: 'sync_failed' });
+    }
+  });
+
+  app.get('/api/languages', isAuthenticated, async (req: Request, res: Response) => {
+    if (!requireDb(res)) return;
+    const userId = currentUserId(req)!;
+    try {
+      const languages = await getUserLanguages(userId);
+      res.json({ languages });
+    } catch {
+      res.status(500).json({ error: 'languages_failed' });
+    }
+  });
+
+  app.put('/api/languages/:code', isAuthenticated, async (req: Request, res: Response) => {
+    if (!requireDb(res)) return;
+    const userId = currentUserId(req)!;
+    const code = String(req.params.code);
+    if (!VALID_LANGUAGE_CODES.has(code)) {
+      res.status(400).json({ error: 'unknown_language' });
+      return;
+    }
+    const body = req.body as Record<string, unknown> | undefined;
+    const addedAt = typeof body?.added_at === 'string' && !Number.isNaN(Date.parse(body.added_at)) ? body.added_at : null;
+    const lastActiveAt =
+      typeof body?.last_active_at === 'string' && !Number.isNaN(Date.parse(body.last_active_at)) ? body.last_active_at : null;
+    try {
+      await upsertUserLanguage(userId, code, addedAt, lastActiveAt);
+      res.json({ ok: true });
+    } catch {
+      res.status(500).json({ error: 'languages_failed' });
     }
   });
 

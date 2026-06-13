@@ -13,6 +13,8 @@ import { gamificationService } from '../services/gamificationService';
 import { UNIT_REGISTRY } from '../mvpdb/lessons';
 import type { LessonRegistryEntry } from '../mvpdb/lessons';
 import type { LessonProgress } from '../services/lessonService';
+import { getActiveLanguage } from '../services/userLanguagesService';
+import { getLanguage } from '../data/languages';
 
 const CEFR_COLORS: Record<string, string> = {
   'A1': 'badge-success',
@@ -34,6 +36,7 @@ export default function LearnHomePage() {
 
   const { xpToday, goalXp } = gamificationService.getDailyGoalProgress();
   const gamState = gamificationService.getState();
+  const activeLanguage = getLanguage(getActiveLanguage());
 
   // Group lessons by unit
   const lessonsByUnit = new Map<number, LessonRegistryEntry[]>();
@@ -44,10 +47,17 @@ export default function LearnHomePage() {
 
   return (
     <div className="max-w-4xl mx-auto">
+      <div className="mb-2">
+        <Link to="/languages" className="btn btn-ghost btn-xs gap-1 -ml-2">
+          ← Languages
+        </Link>
+      </div>
       <div className="flex items-start justify-between mb-6">
         <div>
-          <h1 className="text-3xl font-bold">Learn Pashto</h1>
-          <p className="text-base-content/70 text-sm mt-1">Kandahari dialect</p>
+          <h1 className="text-3xl font-bold">Learn {activeLanguage?.name ?? 'Pashto'}</h1>
+          {activeLanguage?.dialect && (
+            <p className="text-base-content/70 text-sm mt-1">{activeLanguage.dialect} dialect</p>
+          )}
         </div>
         <Link to="/placement" className="btn btn-ghost btn-sm">
           Placement quiz

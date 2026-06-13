@@ -1,10 +1,18 @@
 // RedirectPage
-// Purpose: Entry point that redirects to /learn
+// Entry point at "/". Onboarded users go to the language dashboard; everyone
+// else sees the landing page (which routes into onboarding).
 
+import { useEffect, useState } from 'react';
 import { Navigate } from 'react-router-dom';
+import { isOnboardingComplete } from '../services/onboardingService';
 
-const RedirectPage = () => {
-  return <Navigate to="/learn" replace />;
-};
+export default function RedirectPage() {
+  const [target, setTarget] = useState<string | null>(null);
 
-export default RedirectPage;
+  useEffect(() => {
+    isOnboardingComplete().then((done) => setTarget(done ? '/languages' : '/welcome'));
+  }, []);
+
+  if (!target) return null;
+  return <Navigate to={target} replace />;
+}

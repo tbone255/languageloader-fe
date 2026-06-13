@@ -11,6 +11,8 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { completeOnboarding } from '../services/onboardingService';
+import { addLanguage, setActiveLanguage } from '../services/userLanguagesService';
+import { DEFAULT_LANGUAGE } from '../data/languages';
 import { gamificationService } from '../services/gamificationService';
 import type { DailyGoalTier } from '../services/gamificationService';
 
@@ -58,10 +60,14 @@ export default function OnboardingPage() {
     gamificationService.setDailyGoal(dailyGoalTier);
     localStorage.setItem('languageloader_motivation', motivation);
 
+    // Enroll the one available language so it appears under "My languages".
+    await addLanguage(DEFAULT_LANGUAGE);
+    await setActiveLanguage(DEFAULT_LANGUAGE);
+
     if (experience === 'intermediate') {
       navigate('/placement');
     } else {
-      navigate('/learn');
+      navigate('/languages');
     }
   };
 

@@ -54,6 +54,17 @@ const SCHEMA: string[] = [
     exercises_completed jsonb NOT NULL DEFAULT '[]',
     PRIMARY KEY (user_id, lesson_id)
   )`,
+  // Which languages a user is learning. Separate table on purpose: keeps the
+  // language dimension out of review_events/lesson_progress until real
+  // multi-language content exists (then: add language_code there, backfill
+  // existing = 'pus', join). See docs/LIVE-TEXTBOOK §14 + product scaffolding.
+  `CREATE TABLE IF NOT EXISTS user_languages (
+    user_id varchar NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    language_code text NOT NULL,
+    added_at timestamptz NOT NULL DEFAULT now(),
+    last_active_at timestamptz NOT NULL DEFAULT now(),
+    PRIMARY KEY (user_id, language_code)
+  )`,
   // Telemetry feed for the content quarantine loop (LIVE-TEXTBOOK §10).
   // Accepts anonymous events; user_id attached when a session exists.
   `CREATE TABLE IF NOT EXISTS telemetry_events (
@@ -95,5 +106,39 @@ export async function upsertUser(u: UpsertUserInput): Promise<void> {
        profile_image_url = EXCLUDED.profile_image_url,
        updated_at = now()`,
     [u.id, u.email ?? null, u.firstName ?? null, u.lastName ?? null, u.profileImageUrl ?? null],
+  );
+}
+
+export interface UserLanguageRow {
+  language_code: string;
+  added_at: string;
+  last_active_at: string;
+}
+
+export async function getUserLanguages(userId: string): Promise<UserLanguageRow[]> {
+  if (!pool) return [];
+  const { rows } = await pool.query(
+    `SELECT language_code, added_at, last_active_at
+       FROM user_languages
+      WHERE user_id = $1
+      ORDER BY last_active_at DESC`,
+    [userId],
+  );
+  return rows as UserLanguageRow[];
+}
+
+export async function upsertUserLanguage(
+  userId: string,
+  code: string,
+  addedAt: string | null,
+  lastActiveAt: string | null,
+): Promise<void> {
+  if (!pool) return;
+  await pool.query(
+    `INSERT INTO user_languages (user_id, language_code, added_at, last_active_at)
+     VALUES ($1, $2, COALESCE($3::timestamptz, now()), COALESCE($4::timestamptz, now()))
+     ON CONFLICT (user_id, language_code) DO UPDATE SET
+       last_active_at = GREATEST(user_languages.last_active_at, EXCLUDED.last_active_at)`,
+    [userId, code, addedAt, lastActiveAt],
   );
 }
