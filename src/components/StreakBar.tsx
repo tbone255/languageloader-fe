@@ -4,11 +4,13 @@
  */
 
 import { useEffect, useState } from 'react';
+import { useLocation } from 'react-router-dom';
 import { gamificationService, type GamificationState } from '../services/gamificationService';
 
 const GOAL_XP_PER_MIN = 5; // rough estimate
 
 export default function StreakBar() {
+  const location = useLocation();
   const [state, setState] = useState<GamificationState>(() => gamificationService.getState());
   const [goalMinutes] = useState(() => {
     try {
@@ -17,10 +19,12 @@ export default function StreakBar() {
     } catch { return 10; }
   });
 
-  // Refresh every time the component is shown (navigation)
+  // Refresh on navigation. NB: getState() returns a fresh object each call, so
+  // this MUST stay keyed to location — a bare useEffect (no deps) re-sets state
+  // every render and infinite-loops, which throttles React and freezes routing.
   useEffect(() => {
     setState(gamificationService.getState());
-  });
+  }, [location.pathname]);
 
   const goalXP = goalMinutes * GOAL_XP_PER_MIN;
   const progress = Math.min(state.xpToday / goalXP, 1);
