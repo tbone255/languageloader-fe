@@ -18,7 +18,7 @@ import passport from 'passport';
 import session from 'express-session';
 import connectPg from 'connect-pg-simple';
 import type { Express, RequestHandler } from 'express';
-import { pool, isDbConfigured, upsertUser } from './db.js';
+import { pool, dbReady, isDbConfigured, upsertUser } from './db.js';
 
 const SESSION_TTL_MS = 7 * 24 * 60 * 60 * 1000;
 
@@ -55,9 +55,11 @@ function getSessionMiddleware(): RequestHandler {
   const PgStore = connectPg(session);
   return session({
     secret: process.env.SESSION_SECRET ?? crypto.randomBytes(32).toString('hex'),
-    store: pool
+    // Only use the pg session store when the DB is actually reachable;
+    // otherwise fall back to MemoryStore so a dead pool can't break sessions.
+    store: pool && dbReady
       ? new PgStore({ pool, tableName: 'sessions', createTableIfMissing: false, ttl: SESSION_TTL_MS / 1000 })
-      : undefined, // MemoryStore — dev only
+      : undefined, // MemoryStore — dev / no-DB
     resave: false,
     saveUninitialized: false,
     cookie: {
@@ -83,7 +85,10 @@ function updateUserSession(
 export async function setupAuth(app: Express): Promise<void> {
   app.use(getSessionMiddleware());
 
-  if (!isAuthConfigured) {
+  // Auth needs a reachable DB (to persist users + sessions). If it's missing
+  // or unreachable, expose login/callback/logout as 503 so the frontend stays
+  // in guest mode instead of offering a sign-in that can't complete.
+  if (!isAuthConfigured || !dbReady) {
     app.all(['/api/login', '/api/callback', '/api/logout'], (_req, res) => {
       res.status(503).json({ error: 'auth_not_configured' });
     });
@@ -162,7 +167,7 @@ export async function setupAuth(app: Express): Promise<void> {
 
 /** Gate for API routes. Refreshes the access token when expired. */
 export const isAuthenticated: RequestHandler = async (req, res, next) => {
-  if (!isAuthConfigured) {
+  if (!isAuthConfigured || !dbReady) {
     res.status(503).json({ error: 'auth_not_configured' });
     return;
   }

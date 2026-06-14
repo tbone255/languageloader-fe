@@ -8,10 +8,26 @@
 import pg from 'pg';
 
 export const pool: pg.Pool | null = process.env.DATABASE_URL
-  ? new pg.Pool({ connectionString: process.env.DATABASE_URL })
+  ? new pg.Pool({
+      connectionString: process.env.DATABASE_URL,
+      // Fail fast on an unreachable host so boot (and the deploy healthcheck)
+      // isn't blocked waiting on a DB that will never answer.
+      connectionTimeoutMillis: 5000,
+    })
   : null;
 
 export const isDbConfigured = pool !== null;
+
+// True once the schema has been applied against a reachable DB. A DATABASE_URL
+// can be *set* but unreachable (e.g. a deployment handed the dev database's
+// in-workspace host) — in that case we run as if there were no DB.
+export let dbReady = false;
+
+// An unreachable DB or a dropped idle connection emits 'error' on the pool;
+// with no listener Node would crash the whole process. Log and carry on.
+pool?.on('error', (err) => {
+  console.error('[db] pool error:', err.message);
+});
 
 // Idempotent DDL, applied on boot. Additive changes only — destructive
 // migrations get their own script.
@@ -84,6 +100,7 @@ export async function ensureSchema(): Promise<void> {
   for (const stmt of SCHEMA) {
     await pool.query(stmt);
   }
+  dbReady = true;
 }
 
 export interface UpsertUserInput {

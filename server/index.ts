@@ -14,7 +14,7 @@ import { fileURLToPath } from 'node:url';
 import express from 'express';
 import helmet from 'helmet';
 import { rateLimit } from 'express-rate-limit';
-import { ensureSchema, isDbConfigured } from './db.js';
+import { ensureSchema, dbReady } from './db.js';
 import { setupAuth, isAuthConfigured } from './replitAuth.js';
 import { registerRoutes } from './routes.js';
 
@@ -53,7 +53,16 @@ async function main(): Promise<void> {
 
   app.use(express.json({ limit: '1mb' }));
 
-  await ensureSchema();
+  // Best-effort: a configured-but-unreachable DB must not take the whole site
+  // down. If schema init fails, log it and keep serving (static SPA + guest
+  // mode); DB-backed routes will report unavailable until a reachable DB
+  // exists. This is also what breaks the deploy chicken-and-egg when the only
+  // DATABASE_URL on hand is the unreachable dev one.
+  try {
+    await ensureSchema();
+  } catch (err) {
+    console.error('[server] DB unreachable; starting without it:', (err as Error).message);
+  }
   await setupAuth(app);
   registerRoutes(app);
 
@@ -67,7 +76,7 @@ async function main(): Promise<void> {
   const port = Number(process.env.PORT ?? 3000);
   app.listen(port, '0.0.0.0', () => {
     console.log(
-      `[server] listening on :${port} (db=${isDbConfigured ? 'on' : 'off'}, auth=${isAuthConfigured ? 'on' : 'off'})`,
+      `[server] listening on :${port} (db=${dbReady ? 'on' : 'off'}, auth=${isAuthConfigured && dbReady ? 'on' : 'off'})`,
     );
   });
 }

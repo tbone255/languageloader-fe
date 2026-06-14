@@ -11,7 +11,7 @@
 
 import type { Express, Request, Response } from 'express';
 import { rateLimit } from 'express-rate-limit';
-import { pool, isDbConfigured, getUserLanguages, upsertUserLanguage } from './db.js';
+import { pool, dbReady, getUserLanguages, upsertUserLanguage } from './db.js';
 import { isAuthConfigured, isAuthenticated, currentUserId, type SessionUser } from './replitAuth.js';
 
 const MAX_EVENTS_PER_PUSH = 500;
@@ -55,8 +55,8 @@ function isValidReviewEvent(e: unknown): e is ReviewEventIn {
 }
 
 function requireDb(res: Response): boolean {
-  if (!isDbConfigured) {
-    res.status(503).json({ error: 'database_not_configured' });
+  if (!dbReady) {
+    res.status(503).json({ error: 'database_unavailable' });
     return false;
   }
   return true;
@@ -64,7 +64,7 @@ function requireDb(res: Response): boolean {
 
 export function registerRoutes(app: Express): void {
   app.get('/api/health', (_req, res) => {
-    res.json({ ok: true, db: isDbConfigured, auth: isAuthConfigured });
+    res.json({ ok: true, db: dbReady, auth: isAuthConfigured && dbReady });
   });
 
   app.get('/api/auth/user', isAuthenticated, (req, res) => {
@@ -163,7 +163,7 @@ export function registerRoutes(app: Express): void {
 
   app.post('/api/telemetry', telemetryLimiter, async (req: Request, res: Response) => {
     // Never an error for the client — telemetry is best-effort by design.
-    if (!isDbConfigured) {
+    if (!dbReady) {
       res.status(204).end();
       return;
     }
