@@ -22,8 +22,20 @@ const DIST_DIR = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..'
 
 async function main(): Promise<void> {
   const app = express();
-  // Replit's proxy terminates TLS; needed for secure cookies and req.ip.
+  // The platform proxy terminates TLS; needed for secure cookies and req.ip.
   app.set('trust proxy', 1);
+
+  // The browser talks to Supabase directly for auth, so its origin must be
+  // allowed in connect-src (+ wss for any realtime). Derived from env so it's
+  // never hardcoded.
+  const supabaseUrl = process.env.SUPABASE_URL ?? process.env.VITE_SUPABASE_URL;
+  const connectSrc = ["'self'"];
+  if (supabaseUrl) {
+    try {
+      const { origin, host } = new URL(supabaseUrl);
+      connectSrc.push(origin, `wss://${host}`);
+    } catch { /* malformed URL — leave connect-src as self only */ }
+  }
 
   app.use(
     helmet({
@@ -33,9 +45,8 @@ async function main(): Promise<void> {
           scriptSrc: ["'self'"],
           // React style attributes need unsafe-inline; scripts do not.
           styleSrc: ["'self'", "'unsafe-inline'"],
-          // https: for OIDC profile avatars (Google/GitHub CDNs)
           imgSrc: ["'self'", 'data:', 'https:'],
-          connectSrc: ["'self'"],
+          connectSrc,
           mediaSrc: ["'self'"],
           objectSrc: ["'none'"],
           baseUri: ["'self'"],
