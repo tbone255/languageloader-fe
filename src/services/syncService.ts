@@ -19,8 +19,15 @@
  */
 
 import { db, type ReviewEvent, getDeviceId } from './db';
+import { getAccessToken } from './supabaseClient';
 
 const LAST_SYNC_KEY = 'languageloader_last_sync';
+
+/** Authorization header for the signed-in user, or empty (guest). */
+async function authHeaders(): Promise<Record<string, string>> {
+  const token = await getAccessToken();
+  return token ? { Authorization: `Bearer ${token}` } : {};
+}
 
 interface RemoteReviewEvent {
   id: string;
@@ -55,7 +62,7 @@ export async function syncNow(): Promise<void> {
   if (unsynced.length > 0) {
     const res = await fetch('/api/sync/review-events', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json', ...(await authHeaders()) },
       credentials: 'same-origin',
       body: JSON.stringify({
         events: unsynced.map((e) => ({
@@ -83,6 +90,7 @@ export async function syncNow(): Promise<void> {
     exclude_device: getDeviceId(),
   });
   const res = await fetch(`/api/sync/review-events?${params}`, {
+    headers: { ...(await authHeaders()) },
     credentials: 'same-origin',
   });
   if (!res.ok) return;

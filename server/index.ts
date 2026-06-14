@@ -15,7 +15,7 @@ import express from 'express';
 import helmet from 'helmet';
 import { rateLimit } from 'express-rate-limit';
 import { ensureSchema, dbReady } from './db.js';
-import { setupAuth, isAuthConfigured } from './replitAuth.js';
+import { isAuthConfigured } from './auth.js';
 import { registerRoutes } from './routes.js';
 
 const DIST_DIR = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..', 'dist');
@@ -63,7 +63,6 @@ async function main(): Promise<void> {
   } catch (err) {
     console.error('[server] DB unreachable; starting without it:', (err as Error).message);
   }
-  await setupAuth(app);
   registerRoutes(app);
 
   app.use(express.static(DIST_DIR));
@@ -76,7 +75,7 @@ async function main(): Promise<void> {
   const port = Number(process.env.PORT ?? 3000);
   app.listen(port, '0.0.0.0', () => {
     console.log(
-      `[server] listening on :${port} (db=${dbReady ? 'on' : 'off'}, auth=${isAuthConfigured && dbReady ? 'on' : 'off'})`,
+      `[server] listening on :${port} (db=${dbReady ? 'on' : 'off'}, auth=${isAuthConfigured ? 'on' : 'off'})`,
     );
   });
 }

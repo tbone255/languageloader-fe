@@ -5,6 +5,8 @@ import { useEffect, useState } from 'react';
 import AppLayout from './components/AppLayout';
 import RedirectPage from './pages/RedirectPage';
 import LandingPage from './pages/LandingPage';
+import LoginPage from './pages/LoginPage';
+import ResetPasswordPage from './pages/ResetPasswordPage';
 import LanguagesPage from './pages/LanguagesPage';
 import LearnHomePage from './pages/LearnHomePage';
 import LessonPage from './pages/LessonPage';
@@ -22,7 +24,7 @@ import Demo from './pages/Demo';
 import { isOnboardingComplete } from './services/onboardingService';
 import { syncNow } from './services/syncService';
 import { syncLanguages } from './services/userLanguagesService';
-import { AuthProvider, useAuth, signIn } from './hooks/useAuth';
+import { AuthProvider, useAuth } from './hooks/useAuth';
 
 /** Kicks off sync once the server session is confirmed. */
 function AuthSyncEffect() {
@@ -33,12 +35,6 @@ function AuthSyncEffect() {
       syncLanguages().catch(() => {});
     }
   }, [user]);
-  return null;
-}
-
-/** /sign-in is now a redirect through the server's OIDC login route. */
-function SignInRedirect() {
-  useEffect(() => { signIn(); }, []);
   return null;
 }
 
@@ -68,6 +64,8 @@ function AppRoutes() {
       {/* No-chrome routes (own full-screen layout) */}
       <Route path="/" element={<RedirectPage />} />
       <Route path="/welcome" element={<LandingPage />} />
+      <Route path="/login" element={<LoginPage />} />
+      <Route path="/reset-password" element={<ResetPasswordPage />} />
       <Route path="/onboarding" element={<OnboardingPage />} />
 
       {/* App shell */}
@@ -85,8 +83,8 @@ function AppRoutes() {
         <Route path="/pro" element={<ProPage />} />
         <Route path="/debug" element={<DebugPage />} />
         <Route path="/demo" element={<Demo />} />
-        <Route path="/sign-in" element={<SignInRedirect />} />
-        <Route path="/sign-up" element={<SignInRedirect />} />
+        <Route path="/sign-in" element={<Navigate to="/login" replace />} />
+        <Route path="/sign-up" element={<Navigate to="/login" replace />} />
       </Route>
     </Routes>
   );

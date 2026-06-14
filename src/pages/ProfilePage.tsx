@@ -162,7 +162,7 @@ export default function ProfilePage() {
           ) : user ? (
             <div className="space-y-3">
               <p className="text-sm opacity-70">
-                Signed in as <span className="font-semibold">{user.email ?? ([user.firstName, user.lastName].filter(Boolean).join(' ') || user.id)}</span>
+                Signed in as <span className="font-semibold">{user.email ?? user.id}</span>
               </p>
               {!migrated ? (
                 <button

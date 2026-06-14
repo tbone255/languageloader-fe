@@ -25,7 +25,7 @@ function AuthButton() {
       <div className="dropdown dropdown-end">
         <div tabIndex={0} role="button" className="btn btn-ghost btn-circle avatar placeholder">
           <div className="bg-primary text-primary-content rounded-full w-8">
-            <span className="text-sm">{user.firstName?.[0] ?? user.email?.[0] ?? '?'}</span>
+            <span className="text-sm">{user.email?.[0]?.toUpperCase() ?? '?'}</span>
           </div>
         </div>
         <ul tabIndex={0} className="dropdown-content menu bg-base-100 rounded-box z-50 mt-3 w-48 p-2 shadow">
@@ -40,7 +40,7 @@ function AuthButton() {
 
   if (authAvailable) {
     return (
-      <NavLink to="/sign-in" className="btn btn-primary btn-sm">
+      <NavLink to="/login" className="btn btn-primary btn-sm">
         Sign in
       </NavLink>
     );

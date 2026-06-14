@@ -703,7 +703,7 @@ export default function LessonPage() {
             {/* Guest prompt to sign up */}
             <div className="alert alert-ghost border border-base-300 mb-4 text-sm">
               <span>Sign in to sync progress across devices</span>
-              <Link to="/sign-in" className="btn btn-xs btn-primary ml-auto">Sign in</Link>
+              <Link to="/login" className="btn btn-xs btn-primary ml-auto">Sign in</Link>
             </div>
 
             <div className="card-actions justify-center gap-4">

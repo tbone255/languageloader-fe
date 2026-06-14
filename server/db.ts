@@ -55,14 +55,6 @@ const SCHEMA: string[] = [
     created_at timestamptz NOT NULL DEFAULT now(),
     updated_at timestamptz NOT NULL DEFAULT now()
   )`,
-  // Shape required by connect-pg-simple (createTableIfMissing is off so the
-  // schema lives in one place).
-  `CREATE TABLE IF NOT EXISTS sessions (
-    sid varchar PRIMARY KEY,
-    sess jsonb NOT NULL,
-    expire timestamp(6) NOT NULL
-  )`,
-  `CREATE INDEX IF NOT EXISTS idx_sessions_expire ON sessions (expire)`,
   // Append-only review event log — the durable source of truth for SRS
   // state; clients replay it (product plan §18.3).
   `CREATE TABLE IF NOT EXISTS review_events (

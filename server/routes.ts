@@ -11,8 +11,8 @@
 
 import type { Express, Request, Response } from 'express';
 import { rateLimit } from 'express-rate-limit';
-import { pool, dbReady, getUserLanguages, upsertUserLanguage } from './db.js';
-import { isAuthConfigured, isAuthenticated, currentUserId, type SessionUser } from './replitAuth.js';
+import { pool, dbReady, getUserLanguages, upsertUserLanguage, upsertUser } from './db.js';
+import { isAuthConfigured, isAuthenticated, currentUser, currentUserId } from './auth.js';
 
 const MAX_EVENTS_PER_PUSH = 500;
 const MAX_TELEMETRY_PER_POST = 50;
@@ -64,18 +64,12 @@ function requireDb(res: Response): boolean {
 
 export function registerRoutes(app: Express): void {
   app.get('/api/health', (_req, res) => {
-    res.json({ ok: true, db: dbReady, auth: isAuthConfigured && dbReady });
+    res.json({ ok: true, db: dbReady, auth: isAuthConfigured });
   });
 
   app.get('/api/auth/user', isAuthenticated, (req, res) => {
-    const c = (req.user as SessionUser).claims!;
-    res.json({
-      id: c.sub,
-      email: c.email ?? null,
-      firstName: c.first_name ?? null,
-      lastName: c.last_name ?? null,
-      profileImageUrl: c.profile_image_url ?? null,
-    });
+    const u = currentUser(req)!;
+    res.json({ id: u.id, email: u.email });
   });
 
   app.post('/api/sync/review-events', isAuthenticated, async (req: Request, res: Response) => {
@@ -92,6 +86,9 @@ export function registerRoutes(app: Express): void {
       return;
     }
     try {
+      // Supabase owns auth; mirror the user into our users table so the
+      // review_events FK resolves (idempotent).
+      await upsertUser({ id: userId, email: currentUser(req)?.email ?? null });
       // Idempotent: client retries after flaky networks re-send the same ids.
       for (const e of valid) {
         await pool!.query(

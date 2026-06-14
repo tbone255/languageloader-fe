@@ -14,8 +14,14 @@
 
 import { db, type DBUserLanguage } from './db';
 import { DEFAULT_LANGUAGE, getLanguage } from '../data/languages';
+import { getAccessToken } from './supabaseClient';
 
 const ACTIVE_KEY = 'languageloader_active_language';
+
+async function authHeaders(): Promise<Record<string, string>> {
+  const token = await getAccessToken();
+  return token ? { Authorization: `Bearer ${token}` } : {};
+}
 
 /** Enrolled languages, most-recently-active first. */
 export async function getMyLanguages(): Promise<DBUserLanguage[]> {
@@ -70,7 +76,7 @@ export async function syncLanguages(): Promise<void> {
     try {
       const res = await fetch(`/api/languages/${encodeURIComponent(lang.code)}`, {
         method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', ...(await authHeaders()) },
         credentials: 'same-origin',
         body: JSON.stringify({ added_at: lang.added_at, last_active_at: lang.last_active_at }),
       });
@@ -82,7 +88,10 @@ export async function syncLanguages(): Promise<void> {
 
   // Pull + merge
   try {
-    const res = await fetch('/api/languages', { credentials: 'same-origin' });
+    const res = await fetch('/api/languages', {
+      headers: { ...(await authHeaders()) },
+      credentials: 'same-origin',
+    });
     if (!res.ok) return;
     const { languages } = (await res.json()) as {
       languages: Array<{ language_code: string; added_at: string; last_active_at: string }>;
