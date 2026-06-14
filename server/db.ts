@@ -1,5 +1,5 @@
 /**
- * Postgres access — Replit Database (DATABASE_URL provided by Replit).
+ * Postgres access via DATABASE_URL (Render managed Postgres, or any Postgres).
  *
  * When DATABASE_URL is unset (local dev without a DB), `pool` is null and
  * every API route that needs storage responds 503; the SPA runs guest-only.
@@ -7,12 +7,26 @@
 
 import pg from 'pg';
 
-export const pool: pg.Pool | null = process.env.DATABASE_URL
+const CONNECTION_STRING = process.env.DATABASE_URL;
+
+// Managed Postgres reached over the public internet needs TLS. Render's
+// *internal* URL doesn't (same private network); its *external* URL
+// (*.render.com) does, with a cert chain Node won't validate by default.
+// Enable TLS for sslmode=require, an external Render host, or an explicit
+// DATABASE_SSL=true override; leave it off for internal/local connections.
+const useSsl =
+  !!CONNECTION_STRING &&
+  (/sslmode=require/i.test(CONNECTION_STRING) ||
+    /\.render\.com/i.test(CONNECTION_STRING) ||
+    process.env.DATABASE_SSL === 'true');
+
+export const pool: pg.Pool | null = CONNECTION_STRING
   ? new pg.Pool({
-      connectionString: process.env.DATABASE_URL,
+      connectionString: CONNECTION_STRING,
       // Fail fast on an unreachable host so boot (and the deploy healthcheck)
       // isn't blocked waiting on a DB that will never answer.
       connectionTimeoutMillis: 5000,
+      ssl: useSsl ? { rejectUnauthorized: false } : undefined,
     })
   : null;
 

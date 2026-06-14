@@ -1,0 +1,35 @@
+# Render Blueprint — provisions the web service + managed Postgres for
+# LanguageLoader. In Render: New + → Blueprint → pick this repo (Render reads
+# this file). The Express server (server/index.ts) serves the built SPA and
+# the /api routes. See docs/LIVE-TEXTBOOK §14.
+#
+# Auth note: Replit Auth (OIDC) is Replit-only and stays dark here — the app
+# runs db-on / auth-off (guest mode + sync schema) until a Render-compatible
+# provider (Google/GitHub OAuth) is wired in.
+
+services:
+  - type: web
+    name: languageloader
+    runtime: node
+    region: oregon          # keep web + db in the same region for the private DB URL
+    plan: free              # free spins down when idle; bump to "starter" for always-on
+    buildCommand: npm ci && npm run build
+    startCommand: npm run start
+    healthCheckPath: /api/health
+    envVars:
+      - key: NODE_VERSION
+        value: "22"
+      - key: NODE_ENV
+        value: production
+      - key: SESSION_SECRET
+        generateValue: true       # Render generates + persists a random secret
+      - key: DATABASE_URL
+        fromDatabase:
+          name: languageloader-db
+          property: connectionString   # internal URL (no public egress, no TLS needed)
+
+databases:
+  - name: languageloader-db
+    plan: free              # free Postgres is deleted after ~30 days — upgrade before then
+    databaseName: languageloader
+    region: oregon
