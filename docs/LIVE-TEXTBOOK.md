@@ -1,3 +1,5 @@
+> **Implementation update — 2026-10-10:** Phase 1's new source workshop is implemented in `languageloader-be`: Python-served HTML/CSS/JS admin UI, image-only PDF OCR, versioned semantic HTML, model comparison, and independently versioned source-linked domain interpretation. See [the backend operator guide](../../languageloader-be/docs/PHASE1-PIPELINE.md) for startup, verification and the missing real-source/provider demonstration. Curriculum, learner delivery, Next.js migration and final legacy cutover remain later phases. The historical design below is not a claim that those features are implemented; the root Implementation Spec v3.4 governs current work.
+
 # The Live Textbook: Full Pipeline & Pedagogy Design
 
 *Supersedes GEN-VERIFY-V3.md where they conflict. V3's adapter/LDP/verifier architecture
