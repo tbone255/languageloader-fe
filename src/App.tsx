@@ -1,4 +1,5 @@
 import './App.css';
+import SourceLessonsPage from './pages/SourceLessonsPage';
 import { BrowserRouter, Navigate, Outlet, Route, Routes } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 
@@ -72,6 +73,7 @@ function AppRoutes() {
       <Route element={<ShellLayout />}>
         <Route path="/languages" element={<LanguagesPage />} />
         <Route path="/learn" element={<LearnHomePage />} />
+        <Route path="/source-lessons" element={<SourceLessonsPage />} />
         <Route path="/lesson/:lessonId" element={<LessonPage />} />
         <Route path="/review" element={<ReviewPage />} />
         <Route path="/review/browse" element={<ReviewBrowsePage />} />

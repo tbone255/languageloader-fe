@@ -64,6 +64,8 @@ export default function LearnHomePage() {
         </Link>
       </div>
 
+      <Link to="/source-lessons" className="btn btn-outline btn-sm mb-4">Source-backed textbook lessons</Link>
+
       {/* Daily goal + streak bar */}
       <div className="card bg-base-100 shadow-sm mb-6">
         <div className="card-body py-4">

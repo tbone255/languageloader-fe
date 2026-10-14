@@ -17,6 +17,7 @@ import { rateLimit } from 'express-rate-limit';
 import { ensureSchema, dbReady } from './db.js';
 import { isAuthConfigured } from './auth.js';
 import { registerRoutes } from './routes.js';
+import { registerSourceLessons } from './sourceLessons.js';
 
 const DIST_DIR = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..', 'dist');
 
@@ -74,6 +75,7 @@ async function main(): Promise<void> {
   } catch (err) {
     console.error('[server] DB unreachable; starting without it:', (err as Error).message);
   }
+  registerSourceLessons(app);
   registerRoutes(app);
 
   app.use(express.static(DIST_DIR));

@@ -260,3 +260,16 @@ export default defineConfig([
   },
 ])
 ```
+
+### Source-backed textbook lessons
+
+`/source-lessons` renders immutable lessons published by the Python pipeline's
+Source lessons workspace. It uses the existing Supabase sign-in and a server-only
+allowlisted proxy. Configure `LL_PIPELINE_URL` and `LL_LEARNER_GATEWAY_KEY` on this
+server; configure the same gateway key on the Python server. Do not put the key
+in VITE variables. Use a private/TLS connection to the pipeline. Without this
+configuration, the page reports that source lessons are unavailable.
+
+Recognition is optional. Test mode hides the comparison until help/reveal;
+recall ratings are explicitly self-reported. Saved review items are currently
+unscheduled; this route does not claim to run the existing app's SRS scheduler.
