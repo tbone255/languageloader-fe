@@ -4,7 +4,7 @@ import { getAccessToken } from '../services/supabaseClient';
 import './SourceLessonsPage.css';
 
 type LessonSummary = { id: string; title: string; saved_for_review: boolean };
-type Row = { native_text: string; transliteration: string | null; number: string; gloss: string };
+type Row = { native_text: string; transliteration: string | null; number?: string; label?: string; gloss: string };
 type Activity = { id: string; kind: string; prompt: string; options: { id: string; text: string }[]; answer?: Row };
 type Session = { session_id: string; lesson_id: string; title: string; route: string; activities: Activity[];
   demonstration: Row[]; explanation: { statement: string; scope: string | null; conditions: string[]; exceptions: string[] }[];
@@ -20,8 +20,8 @@ async function api<T>(path: string, body?: unknown): Promise<T> {
   return result;
 }
 function Comparison({ rows, transliteration }: { rows: Row[]; transliteration: boolean }) {
-  return <div className="source-table-wrap"><table><thead><tr><th>Number</th><th>Form</th>{transliteration && <th>Transliteration</th>}<th>Meaning</th></tr></thead>
-    <tbody>{rows.map((r, i) => <tr key={i}><td>{r.number}</td><td className="source-form" dir="auto">{r.native_text}</td>
+  return <div className="source-table-wrap"><table><thead><tr><th>Contrast</th><th>Source text</th>{transliteration && <th>Transliteration</th>}<th>Meaning</th></tr></thead>
+    <tbody>{rows.map((r, i) => <tr key={i}><td>{r.label || r.number}</td><td className="source-form" dir="auto">{r.native_text}</td>
       {transliteration && <td dir="ltr">{r.transliteration?.includes('+') ? <>{r.transliteration.split('+')[0]}+<strong>{r.transliteration.split('+').slice(1).join('+')}</strong></> : r.transliteration || 'Not supplied'}</td>}<td>{r.gloss}</td></tr>)}</tbody></table></div>;
 }
 export default function SourceLessonsPage() {
@@ -64,7 +64,7 @@ export default function SourceLessonsPage() {
         {feedback && <div aria-live="polite"><p>{feedback.feedback || feedback.result.replaceAll('_', ' ')}</p>{feedback.answer && <Comparison rows={[feedback.answer]} transliteration={transliteration} />}
           {activity.kind === 'reveal_recall' && feedback.result === 'revealed' && <><button disabled={busy} onClick={() => void event('self_rating', 'remembered')}>Remembered</button><button disabled={busy} onClick={() => void event('self_rating', 'needed_help')}>Needed help</button></>}
           {(activity.kind === 'select_form' || feedback.result.startsWith('self_reported')) && <button onClick={() => { setIndex(index + 1); setFeedback(null); setHelp([]); }}>Continue</button>}</div>}
-      </section> : <section><h2>Practice complete</h2><p>You practised the source’s number contrast. This does not establish mastery of all verb forms.</p><button disabled={busy} onClick={() => void perform(async () => { const result = await api<Feedback>(`lessons/${session.lesson_id}/review-enrollment`, {}); setFeedback(result); setLessons(await api<LessonSummary[]>('lessons')); })}>Save for review</button><p aria-live="polite">{feedback?.message}</p><p>Automatic spaced scheduling and audio practice are not enabled for these lessons.</p><button onClick={() => { setSession(null); setFeedback(null); }}>Return to lessons</button></section>}
+      </section> : <section><h2>Practice complete</h2><p>You practised this source-backed contrast. This does not establish mastery beyond the supplied examples.</p><button disabled={busy} onClick={() => void perform(async () => { const result = await api<Feedback>(`lessons/${session.lesson_id}/review-enrollment`, {}); setFeedback(result); setLessons(await api<LessonSummary[]>('lessons')); })}>Save for review</button><p aria-live="polite">{feedback?.message}</p><p>Automatic spaced scheduling and audio practice are not enabled for these lessons.</p><button onClick={() => { setSession(null); setFeedback(null); }}>Return to lessons</button></section>}
       <details><summary>Textbook sources</summary>{session.sources.map((s, i) => <p key={i}>{s.heading} · PDF page {s.pdf_page}</p>)}</details>
     </>}
   </main>;

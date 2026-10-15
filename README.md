@@ -273,3 +273,11 @@ configuration, the page reports that source lessons are unavailable.
 Recognition is optional. Test mode hides the comparison until help/reveal;
 recall ratings are explicitly self-reported. Saved review items are currently
 unscheduled; this route does not claim to run the existing app's SRS scheduler.
+
+Source lessons support verified number comparisons and complete verb-first /
+subject-first sentence comparisons. The comparison column shows the verified
+role or number label; recall and recognition use the original supplied text.
+Existing published lessons remain compatible. New sentence lessons require
+verified roles and teaching links, normally supplied through the Python admin's
+versioned enrichment workflow. Creating enrichment is free; starting it uses
+the configured provider.
