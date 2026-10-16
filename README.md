@@ -270,14 +270,15 @@ server; configure the same gateway key on the Python server. Do not put the key
 in VITE variables. Use a private/TLS connection to the pipeline. Without this
 configuration, the page reports that source lessons are unavailable.
 
-Recognition is optional. Test mode hides the comparison until help/reveal;
-recall ratings are explicitly self-reported. Saved review items are currently
-unscheduled; this route does not claim to run the existing app's SRS scheduler.
+The route now renders the v3 flexible lesson contract: explanation, example,
+comparison, reveal, recall, selection, matching and cloze, across multiple screens.
+All source language material is attested; a separate source-aware lesson verifier
+must approve the proposed lesson before the admin can publish it. Deliberately
+incorrect examples are clearly labelled. Interactive answers and feedback are held
+by the server until submission or reveal. Recall/cloze ratings are self-reported.
 
-Source lessons support verified number comparisons and complete verb-first /
-subject-first sentence comparisons. The comparison column shows the verified
-role or number label; recall and recognition use the original supplied text.
-Existing published lessons remain compatible. New sentence lessons require
-verified roles and teaching links, normally supplied through the Python admin's
-versioned enrichment workflow. Creating enrichment is free; starting it uses
-the configured provider.
+The Python backend retains older graph runs and v2 APIs. Those records are not
+silently converted into v3 lessons. New lessons use verified source annotation
+runs, not grammar-specific assembler templates or enrichment. Existing v2 lesson
+records remain stored, but are not listed on this v3 route. Automatic spaced review
+and audio are not implemented for v3 lessons.

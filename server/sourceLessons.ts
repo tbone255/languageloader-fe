@@ -9,10 +9,10 @@ export function registerSourceLessons(app: Express): void {
     if (!base || !key) { res.status(503).json({ detail: 'Source lessons are not connected to the pipeline yet.' }); return; }
     const path = req.path;
     const allowed = (req.method === 'GET' && (/^\/lessons$/.test(path) || /^\/sessions\/[a-f0-9]+$/.test(path))) ||
-      (req.method === 'POST' && (/^\/lessons\/[a-f0-9]+\/(sessions|review-enrollment)$/.test(path) || /^\/sessions\/[a-f0-9]+\/events$/.test(path)));
+      (req.method === 'POST' && (/^\/lessons\/[a-f0-9]+\/sessions$/.test(path) || /^\/sessions\/[a-f0-9]+\/events$/.test(path)));
     if (!allowed) { res.status(404).json({ detail: 'Unknown source-lesson action' }); return; }
     try {
-      const response = await fetch(`${base.replace(/\/$/, '')}/api/v2/learner${path}`, {
+      const response = await fetch(`${base.replace(/\/$/, '')}/api/v3/learner${path}`, {
         method: req.method,
         headers: { 'Content-Type': 'application/json', 'X-LL-Request': 'admin',
           'X-LL-Gateway-Key': key, 'X-LL-Learner': currentUserId(req)! },

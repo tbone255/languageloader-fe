@@ -1,15 +1,24 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { getAccessToken } from '../services/supabaseClient';
 import './SourceLessonsPage.css';
 
-type LessonSummary = { id: string; title: string; saved_for_review: boolean };
-type Row = { native_text: string; transliteration: string | null; number?: string; label?: string; gloss: string };
-type Activity = { id: string; kind: string; prompt: string; options: { id: string; text: string }[]; answer?: Row };
-type Session = { session_id: string; lesson_id: string; title: string; route: string; activities: Activity[];
-  demonstration: Row[]; explanation: { statement: string; scope: string | null; conditions: string[]; exceptions: string[] }[];
-  notice: string | null; sources: { heading: string; pdf_page: number }[]; transliteration: boolean };
-type Feedback = { result: string; feedback?: string; answer?: Row; rows?: Row[]; message?: string };
+type Evidence = { text: string; presentation: string; page: number };
+type Example = { source: Evidence; translation: Evidence | null; transliteration: Evidence | null };
+type Choice = { id: string; text: string };
+type Response = { feedback: string; correct?: boolean; answer?: string; selected?: string | Record<string, string>; answers?: Record<string, string>; rating?: string };
+type Component = { id: string } & (
+  { type: 'explanation'; text: string; citations: Evidence[] } |
+  { type: 'example'; example: Example } |
+  { type: 'comparison'; caption: string; items: { label: string; example: Example }[] } |
+  { type: 'selection'; prompt: string; options: Choice[]; response?: Response } |
+  { type: 'matching'; prompt: string; left: Choice[]; right: Choice[]; response?: Response } |
+  { type: 'cloze'; prompt: string; before: string; after: string; response?: Response } |
+  { type: 'reveal' | 'recall'; prompt: string; response?: Response }
+);
+type Screen = { id: string; title: string; components: Component[] };
+type Session = { id: string; lesson_id: string; title: string; objectives: string[]; screens: Screen[] };
+type Lesson = { id: string; title: string; objectives: string[]; screens: number };
 async function api<T>(path: string, body?: unknown): Promise<T> {
   const token = await getAccessToken();
   if (!token) throw new Error('Sign in to access source lessons.');
@@ -19,53 +28,68 @@ async function api<T>(path: string, body?: unknown): Promise<T> {
   if (!response.ok) throw new Error(result.detail || 'Could not load source lessons.');
   return result;
 }
-function Comparison({ rows, transliteration }: { rows: Row[]; transliteration: boolean }) {
-  return <div className="source-table-wrap"><table><thead><tr><th>Contrast</th><th>Source text</th>{transliteration && <th>Transliteration</th>}<th>Meaning</th></tr></thead>
-    <tbody>{rows.map((r, i) => <tr key={i}><td>{r.label || r.number}</td><td className="source-form" dir="auto">{r.native_text}</td>
-      {transliteration && <td dir="ltr">{r.transliteration?.includes('+') ? <>{r.transliteration.split('+')[0]}+<strong>{r.transliteration.split('+').slice(1).join('+')}</strong></> : r.transliteration || 'Not supplied'}</td>}<td>{r.gloss}</td></tr>)}</tbody></table></div>;
+function SourceText({ evidence, large = false }: { evidence: Evidence; large?: boolean }) {
+  return <div>{evidence.presentation === 'explicit_error' && <strong className="source-error">Deliberately incorrect textbook example</strong>}
+    <p dir="auto" className={large ? 'source-form' : ''}>{evidence.text}</p><small>PDF page {evidence.page}</small></div>;
+}
+function ExampleView({ example }: { example: Example }) {
+  return <><SourceText evidence={example.source} large />{example.translation && <SourceText evidence={example.translation} />}
+    {example.transliteration && <details><summary>Show transliteration</summary><SourceText evidence={example.transliteration} /></details>}</>;
+}
+function ComponentView({ component: c, sessionId, onPending }: { component: Component; sessionId: string; onPending: (delta: number) => void }) {
+  const [response, setResponse] = useState<Response | undefined>('response' in c ? c.response : undefined);
+  const [matches, setMatches] = useState<Record<string, string>>({});
+  const [busy, setBusy] = useState(false), [error, setError] = useState('');
+  // Keep the same event ID on an ambiguous network failure; the server replays it safely.
+  const pending = useRef<{ id: string; action: string; value?: string | Record<string, string> } | null>(null);
+  async function act(action: string, value?: string | Record<string, string>) {
+    setBusy(true); onPending(1); setError('');
+    if (!pending.current) pending.current = { id: crypto.randomUUID(), action, value };
+    const event = pending.current;
+    try { setResponse(await api<Response>(`sessions/${sessionId}/events`, { event_id: event.id, component_id: c.id, action: event.action, value: event.value })); pending.current = null; }
+    catch (err) { setError(err instanceof Error ? err.message : 'Could not save response'); }
+    finally { setBusy(false); onPending(-1); }
+  }
+  if (c.type === 'explanation') return <section><p>{c.text}</p><details><summary>Textbook evidence</summary>{c.citations.map((ref, i) => <SourceText key={i} evidence={ref} />)}</details></section>;
+  if (c.type === 'example') return <section><ExampleView example={c.example} /></section>;
+  if (c.type === 'comparison') return <section><p>{c.caption}</p><div className="source-comparison">{c.items.map((item, i) => <div key={i}><h3>{item.label}</h3><ExampleView example={item.example} /></div>)}</div></section>;
+  const locked = busy || Boolean(response) || Boolean(error);
+  return <section aria-label={c.prompt}><h3>{c.prompt}</h3>
+    {c.type === 'cloze' && <p className="source-form" dir="auto">{c.before}<span aria-label="missing text"> […] </span>{c.after}</p>}
+    {c.type === 'selection' && <div className="source-options">{c.options.map(option => <button key={option.id} dir="auto" disabled={locked} onClick={() => void act('answer', option.id)} aria-pressed={response?.selected === option.id}>{option.text}</button>)}</div>}
+    {c.type === 'matching' && <><div className="source-matching">{c.left.map(left => <label key={left.id}><span dir="auto">{left.text}</span><select value={matches[left.id] || ''} disabled={locked} onChange={event => setMatches({ ...matches, [left.id]: event.target.value })}>
+      <option value="">Choose a match</option>{c.right.map(right => <option key={right.id} value={right.id}>{right.text}</option>)}</select></label>)}</div><button disabled={locked || Object.keys(matches).length !== c.left.length || new Set(Object.values(matches)).size !== c.left.length || Object.values(matches).some(x => !x)} onClick={() => void act('answer', matches)}>Check matches</button></>}
+    {['recall', 'reveal', 'cloze'].includes(c.type) && <>{c.type !== 'reveal' && <p>Try answering before revealing. You’ll rate your own recall.</p>}<button disabled={locked} onClick={() => void act('reveal')}>Reveal answer</button></>}
+    {error && <p role="alert" className="source-error">{error} <button disabled={busy} onClick={() => void act(pending.current?.action || 'reveal')}>Retry saving response</button></p>}
+    {response && <div className="source-feedback" aria-live="polite">
+      {response.correct !== undefined && <strong>{response.correct ? 'Correct' : 'Compare with the supplied answer'}</strong>}
+      {response.answer && <p className="source-form" dir="auto">{response.answer}</p>}
+      {c.type === 'matching' && response.answers && c.left.map(left => <p key={left.id} dir="auto">{left.text} ↔ {c.right.find(right => right.id === response.answers?.[left.id])?.text}</p>)}
+      <p>{response.feedback}</p>
+      {['recall', 'cloze'].includes(c.type) && !response.rating && <><button disabled={busy || Boolean(error)} onClick={() => void act('rate', 'again')}>Needed help</button><button disabled={busy || Boolean(error)} onClick={() => void act('rate', 'remembered')}>Remembered</button></>}
+      {response.rating && <p>Self-rating saved: {response.rating === 'again' ? 'needed help' : 'remembered'}.</p>}
+    </div>}
+  </section>;
 }
 export default function SourceLessonsPage() {
-  const [lessons, setLessons] = useState<LessonSummary[]>([]);
-  const [session, setSession] = useState<Session | null>(null);
-  const [index, setIndex] = useState(-1);
-  const [feedback, setFeedback] = useState<Feedback | null>(null);
-  const [help, setHelp] = useState<Row[]>([]);
-  const [error, setError] = useState('');
-  const [busy, setBusy] = useState(false);
-  const [skip, setSkip] = useState(false);
-  const [transliteration, setTransliteration] = useState(false);
-  useEffect(() => { let mounted = true; api<LessonSummary[]>('lessons').then(x => { if (mounted) setLessons(x); }).catch(e => { if (mounted) setError(e.message); }); return () => { mounted = false; }; }, []);
-  async function perform(fn: () => Promise<void>) { setBusy(true); setError(''); try { await fn(); } catch (e) { setError(e instanceof Error ? e.message : 'Request failed'); } finally { setBusy(false); } }
-  function start(id: string, route: string) { void perform(async () => { const s = await api<Session>(`lessons/${id}/sessions`, { route, skip_recognition: skip }); setSession(s); setIndex(route === 'test' ? 0 : -1); setFeedback(null); setHelp([]); setTransliteration(s.transliteration); }); }
-  const activity = session?.activities[index];
-  async function event(action: string, value?: string | boolean) {
-    if (!session || !activity) return;
-    await perform(async () => {
-      const f = await api<Feedback>(`sessions/${session.session_id}/events`, { activity_id: activity.id, event_id: globalThis.crypto?.randomUUID?.() || `${Date.now()}-${Math.random().toString(36).slice(2)}`, action, value });
-      if (f.rows) setHelp(f.rows);
-      if (action === 'help') { /* comparison only */ }
-      else if (action === 'transliteration') setTransliteration(Boolean(value));
-      else setFeedback(f);
-    });
-  }
+  const [lessons, setLessons] = useState<Lesson[]>([]), [session, setSession] = useState<Session | null>(null);
+  const [index, setIndex] = useState(0), [error, setError] = useState(''), [busy, setBusy] = useState(false), [loaded, setLoaded] = useState(false);
+  const heading = useRef<HTMLHeadingElement>(null);
+  const [pendingCount, setPendingCount] = useState(0);
+  const onPending = useCallback((delta: number) => setPendingCount(count => count + delta), []);
+  useEffect(() => { let active = true; api<Lesson[]>('lessons').then(data => { if (active) setLessons(data); }).catch(err => { if (active) setError(err.message); }).finally(() => { if (active) setLoaded(true); }); return () => { active = false; }; }, []);
+  async function start(id: string) { setBusy(true); setError(''); try { const data = await api<Session>(`lessons/${id}/sessions`, {}); setSession(data); setIndex(0); } catch (err) { setError(err instanceof Error ? err.message : 'Could not start lesson'); } finally { setBusy(false); } }
+  async function navigate(next: number) { if (!session) return; setBusy(true); setError(''); try { setSession(await api<Session>(`sessions/${session.id}`)); setIndex(next); heading.current?.focus(); } catch (err) { setError(err instanceof Error ? err.message : 'Could not load progress'); } finally { setBusy(false); } }
+  const screen = session?.screens[index];
   return <main className="source-lessons"><Link to="/learn">Back to learning</Link><h1>{session?.title || 'Source lessons'}</h1>
-    <p>Learn from verified textbook examples. No invented language exercises.</p>
-    {error && <p role="alert" className="source-error">{error} <Link to="/login">Sign in</Link></p>}
-    {!session ? <><label><input type="checkbox" checked={skip} onChange={e => setSkip(e.target.checked)} /> Skip recognition questions</label>
-      {!lessons.length && !error && <p>No lessons have been published yet.</p>}
-      {lessons.map(l => <section key={l.id}><h2>{l.title}</h2>{l.saved_for_review && <p>Saved for manual review</p>}<button disabled={busy} onClick={() => start(l.id, 'teach')}>Teach me</button><button disabled={busy} onClick={() => start(l.id, 'test')}>{l.saved_for_review ? 'Review now' : 'Test me'}</button></section>)}</> : <>
-      {index < 0 ? <><p>{session.notice}</p>{session.explanation.map((x, i) => <section key={i}><p>{x.statement}</p>{x.scope && <p>Applies to: {x.scope}</p>}{x.conditions.length > 0 && <p>Conditions: {x.conditions.join('; ')}</p>}{x.exceptions.length > 0 && <p>Exceptions: {x.exceptions.join('; ')}</p>}</section>)}
-        <Comparison rows={session.demonstration} transliteration={true} /><p>Compare the forms and their labels. Where the source provides a plus sign, it separates the displayed transliteration into parts.</p><button onClick={() => setIndex(0)}>Practise</button></> : activity ? <section>
-        <p>Practice {index + 1} of {session.activities.length}</p><h2>{activity.prompt}</h2>
-        {activity.kind === 'select_form' ? <div className="source-options">{activity.options.map(o => <button key={o.id} dir="auto" disabled={busy || Boolean(feedback)} onClick={() => void event('answer', o.id)}>{o.text}</button>)}</div> : <><p>Say or write your answer before revealing it. Your rating is self-reported.</p><button disabled={busy || Boolean(feedback)} onClick={() => void event('reveal')}>Reveal answer</button></>}
-        <button disabled={busy} onClick={() => void event('help')}>Show comparison</button>
-        <label><input type="checkbox" checked={transliteration} disabled={busy} onChange={e => void event('transliteration', e.target.checked)} /> Show transliteration in feedback and comparison</label>
-        {help.length > 0 && <Comparison rows={help} transliteration={transliteration} />}
-        {feedback && <div aria-live="polite"><p>{feedback.feedback || feedback.result.replaceAll('_', ' ')}</p>{feedback.answer && <Comparison rows={[feedback.answer]} transliteration={transliteration} />}
-          {activity.kind === 'reveal_recall' && feedback.result === 'revealed' && <><button disabled={busy} onClick={() => void event('self_rating', 'remembered')}>Remembered</button><button disabled={busy} onClick={() => void event('self_rating', 'needed_help')}>Needed help</button></>}
-          {(activity.kind === 'select_form' || feedback.result.startsWith('self_reported')) && <button onClick={() => { setIndex(index + 1); setFeedback(null); setHelp([]); }}>Continue</button>}</div>}
-      </section> : <section><h2>Practice complete</h2><p>You practised this source-backed contrast. This does not establish mastery beyond the supplied examples.</p><button disabled={busy} onClick={() => void perform(async () => { const result = await api<Feedback>(`lessons/${session.lesson_id}/review-enrollment`, {}); setFeedback(result); setLessons(await api<LessonSummary[]>('lessons')); })}>Save for review</button><p aria-live="polite">{feedback?.message}</p><p>Automatic spaced scheduling and audio practice are not enabled for these lessons.</p><button onClick={() => { setSession(null); setFeedback(null); }}>Return to lessons</button></section>}
-      <details><summary>Textbook sources</summary>{session.sources.map((s, i) => <p key={i}>{s.heading} · PDF page {s.pdf_page}</p>)}</details>
-    </>}
+    {error && <p role="alert" className="source-error">{error}</p>}
+    {!session ? <><p>Lessons built from textbook explanations and examples.</p>{!loaded && <p>Loading lessons…</p>}{loaded && !lessons.length && !error && <p>No lessons have been published yet.</p>}
+      {lessons.map(lesson => <section key={lesson.id}><h2>{lesson.title}</h2><ul>{lesson.objectives.map((x, i) => <li key={i}>{x}</li>)}</ul><p>{lesson.screens} screens</p><button disabled={busy} onClick={() => void start(lesson.id)}>Start lesson</button></section>)}</> : screen ? <>
+      <p>Screen {index + 1} of {session.screens.length}</p><progress value={index + 1} max={session.screens.length} aria-label="Current lesson screen" />
+      <h2 ref={heading} tabIndex={-1}>{screen.title}</h2>
+      {index === 0 && <ul>{session.objectives.map((x, i) => <li key={i}>{x}</li>)}</ul>}
+      {screen.components.map(c => <ComponentView key={`${session.id}:${screen.id}:${c.id}`} component={c} sessionId={session.id} onPending={onPending} />)}
+      <nav aria-label="Lesson screens"><button disabled={busy || pendingCount > 0 || index === 0} onClick={() => void navigate(index - 1)}>Previous</button><button disabled={busy || pendingCount > 0} onClick={() => void navigate(index + 1)}>{index + 1 === session.screens.length ? 'Finish lesson' : 'Next screen'}</button></nav>
+    </> : <section><h2 ref={heading} tabIndex={-1}>End of lesson</h2><p>Your submitted responses and self-ratings have been saved. You can revisit any screen.</p><button disabled={busy} onClick={() => void navigate(0)}>Revisit lesson</button><button onClick={() => setSession(null)}>Back to lessons</button></section>}
   </main>;
 }
