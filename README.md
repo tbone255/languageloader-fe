@@ -282,3 +282,14 @@ silently converted into v3 lessons. New lessons use verified source annotation
 runs, not grammar-specific assembler templates or enrichment. Existing v2 lesson
 records remain stored, but are not listed on this v3 route. Automatic spaced review
 and audio are not implemented for v3 lessons.
+
+
+Verified lesson sessions render native text with optional per-item transliteration
+disclosures, including answer options and matching items. Recall/cloze companions
+arrive only after reveal. Continue appends sections so earlier explanations remain
+available. Existing legacy lesson payloads are still supported.
+
+Offline coverage includes `tests/source-lessons/renderer.cjs` and
+`tests/source-lessons/reader.cjs` (the latter uses Happy DOM; `HAPPY_DOM_PATH` may
+point to an external installation). The reader check exercises section
+accumulation, transliteration disclosure preservation and heading focus.

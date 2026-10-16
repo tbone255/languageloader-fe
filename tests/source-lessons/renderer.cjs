@@ -16,6 +16,9 @@ const fixtures=[
 ];
 for(const [i,c] of fixtures.entries()){const html=renderToStaticMarkup(React.createElement(mod.ComponentView,{component:{...c,id:'c'+i},sessionId:'session',onPending:()=>{}}));assert.ok(html.includes(c.prompt||c.text||c.caption||'alpha'));if(['recall','reveal','cloze'].includes(c.type))assert.ok(!html.includes('beta'));}
 const wrong=renderToStaticMarkup(React.createElement(mod.ComponentView,{component:{id:'wrong',type:'example',example:{...example,source:{...evidence,presentation:'explicit_error'}}},sessionId:'session',onPending:()=>{}}));assert.match(wrong,/Deliberately incorrect textbook example/);
+const native=renderToStaticMarkup(React.createElement(mod.ComponentView,{component:{id:'native',type:'selection',prompt:'Choose',options:[{id:'x',text:'Native form',transliteration:{text:'Attested pronunciation'}}]},sessionId:'session',onPending:()=>{}}));
+assert.match(native,/Native form/);assert.match(native,/<summary>Show transliteration<\/summary>/);assert.ok(native.indexOf('Native form')<native.indexOf('Attested pronunciation'));
+const revealed=renderToStaticMarkup(React.createElement(mod.ComponentView,{component:{id:'recalled',type:'recall',prompt:'Recall',response:{feedback:'Explanation',answer:'Native answer',answer_item:{text:'Native answer',transliteration:{text:'Supplied pronunciation'}}}},sessionId:'session',onPending:()=>{}}));assert.match(revealed,/Supplied pronunciation/);
 let handler;
 const gateway=compile('server/sourceLessons.ts',{'./auth.js':{isAuthenticated:()=>{},currentUserId:()=> 'trusted-user'}});
 gateway.registerSourceLessons({use:(_path,_auth,fn)=>{handler=fn;}});
