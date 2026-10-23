@@ -2,3 +2,8 @@
 .source-comparison{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1.5rem}.source-comparison>div{padding:1rem;border:1px solid #b8c5bc;border-radius:.35rem}.source-matching label{display:grid;grid-template-columns:1fr 1fr;gap:1rem;align-items:center}.source-matching select{width:100%;padding:.7rem;border:1px solid #6b8575;border-radius:.3rem;background:var(--color-base-100,#fff);color:inherit}.source-lessons small{opacity:.8}.source-lessons progress{width:100%;accent-color:#387459}.source-feedback{border-left:3px solid #6b8575;padding-left:1rem}.source-lessons .source-form{white-space:pre-wrap}.source-lessons button[aria-pressed=true]{outline:2px solid #387459}.source-lessons h3{font-size:1.1rem}.source-lessons nav{margin-top:1.5rem}.source-lessons button:disabled{cursor:default}@media(max-width:500px){.source-matching label{grid-template-columns:1fr}}
 
 .source-lessons .lesson-section{margin-block:2rem;padding-top:1rem;border-top:1px solid #b8c5bc}.source-lessons .lesson-section h2{scroll-margin-top:1rem}.source-lessons .source-options details{margin:.25rem 0 1rem}.source-lessons .source-options>div{margin-bottom:1rem}
+
+.source-lessons .source-form,.source-options button{line-height:2;letter-spacing:normal;unicode-bidi:plaintext}
+.source-lessons p,.source-lessons h1,.source-lessons h2{unicode-bidi:plaintext}
+.source-matching bdi{font-family:serif;font-size:1.4rem;line-height:1.9}
+.source-lessons details p{font-size:1rem;line-height:1.7}
