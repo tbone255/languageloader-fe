@@ -29,6 +29,10 @@ async function api<T>(path: string, body?: unknown): Promise<T> {
   if (!response.ok) throw new Error(result.detail || 'Could not load source lessons.');
   return result;
 }
+function tapExercise(element: HTMLElement) {
+  if (window.matchMedia?.('(prefers-reduced-motion: reduce)').matches) return;
+  element.animate?.([{transform:'scale(.985)'},{transform:'scale(1)'}], {duration:180,easing:'ease-out'});
+}
 function Transliteration({item}: {item: LanguageText}) { return item.transliteration ? <details><summary>Show transliteration</summary><p dir="auto">{item.transliteration.text}</p></details> : null; }
 function LanguageView({item}: {item: LanguageText}) { return <><p className="source-form" dir="auto">{item.text}</p><Transliteration item={item} />{item.translation && <p dir="auto">{item.translation.text}</p>}</>; }
 function SourceText({ evidence, large = false, provenance = false }: { evidence: Evidence; large?: boolean; provenance?: boolean }) {
@@ -41,6 +45,7 @@ function ExampleView({ example }: { example: Example }) {
 }
 function ComponentView({ component: c, sessionId, onPending }: { component: Component; sessionId: string; onPending: (delta: number) => void }) {
   const [response, setResponse] = useState<Response | undefined>('response' in c ? c.response : undefined);
+  const [celebrate, setCelebrate] = useState(false);
   const [matches, setMatches] = useState<Record<string, string>>({});
   const [busy, setBusy] = useState(false), [error, setError] = useState('');
   // Keep the same event ID on an ambiguous network failure; the server replays it safely.
@@ -49,7 +54,7 @@ function ComponentView({ component: c, sessionId, onPending }: { component: Comp
     setBusy(true); onPending(1); setError('');
     if (!pending.current) pending.current = { id: crypto.randomUUID(), action, value };
     const event = pending.current;
-    try { setResponse(await api<Response>(`sessions/${sessionId}/events`, { event_id: event.id, component_id: c.id, action: event.action, value: event.value })); pending.current = null; }
+    try { const result = await api<Response>(`sessions/${sessionId}/events`, { event_id: event.id, component_id: c.id, action: event.action, value: event.value }); setCelebrate(result.correct === true); setResponse(result); pending.current = null; }
     catch (err) { setError(err instanceof Error ? err.message : 'Could not save response'); }
     finally { setBusy(false); onPending(-1); }
   }
@@ -59,12 +64,12 @@ function ComponentView({ component: c, sessionId, onPending }: { component: Comp
   const locked = busy || Boolean(response) || Boolean(error);
   return <section data-kind={c.type} aria-label={c.prompt}><h3>{c.prompt}</h3>
     {c.type === 'cloze' && <p className="source-form" dir="auto">{c.before}<span aria-label="missing text"> […] </span>{c.after}</p>}
-    {c.type === 'selection' && <div className="source-options">{c.options.map(option => <div key={option.id}><button dir="auto" disabled={locked} onClick={() => void act('answer', option.id)} aria-pressed={response?.selected === option.id}>{option.text}</button><Transliteration item={option} /></div>)}</div>}
-    {c.type === 'matching' && <><div className="source-matching">{c.left.map(left => <label key={left.id}><span><bdi dir="auto">{left.text}</bdi></span><select value={matches[left.id] || ''} disabled={locked} onChange={event => setMatches({ ...matches, [left.id]: event.target.value })}>
+    {c.type === 'selection' && <div className="source-options">{c.options.map(option => <div key={option.id}><button dir="auto" disabled={locked} onClick={event => { tapExercise(event.currentTarget); void act('answer', option.id); }} aria-pressed={response?.selected === option.id}>{option.text}</button><Transliteration item={option} /></div>)}</div>}
+    {c.type === 'matching' && <><div className="source-matching">{c.left.map(left => <label key={left.id}><span><bdi dir="auto">{left.text}</bdi></span><select value={matches[left.id] || ''} disabled={locked} onChange={event => { tapExercise(event.currentTarget); setMatches({ ...matches, [left.id]: event.target.value }); }}>
       <option value="">Choose a match</option>{c.right.map(right => <option key={right.id} value={right.id}>{right.text}</option>)}</select></label>)}</div>{c.left.map(item=><div key={item.id}>{item.transliteration && <><span dir="auto">{item.text}</span><Transliteration item={item}/></>}</div>)}{c.right.map(item=><div key={item.id}>{item.transliteration && <><span dir="auto">{item.text}</span><Transliteration item={item}/></>}</div>)}<button disabled={locked || Object.keys(matches).length !== c.left.length || new Set(Object.values(matches)).size !== c.left.length || Object.values(matches).some(x => !x)} onClick={() => void act('answer', matches)}>Check matches</button></>}
     {['recall', 'reveal', 'cloze'].includes(c.type) && <>{c.type !== 'reveal' && <p>Try answering before revealing. You’ll rate your own recall.</p>}<button disabled={locked} onClick={() => void act('reveal')}>Reveal answer</button></>}
     {error && <p role="alert" className="source-error">{error} <button disabled={busy} onClick={() => void act(pending.current?.action || 'reveal')}>Retry saving response</button></p>}
-    {response && <div className="source-feedback" data-result={response.correct === false ? 'retry' : 'correct'} aria-live="polite">
+    {response && <div className={`source-feedback${celebrate ? ' exercise-success' : ''}`} data-result={response.correct === false ? 'retry' : 'correct'} aria-live="polite">
       {response.correct !== undefined && <strong>{response.correct ? 'Correct' : 'Compare with the supplied answer'}</strong>}
       {response.answer_item ? <LanguageView item={response.answer_item} /> : response.answer && <p className="source-form" dir="auto">{response.answer}</p>}{response.context_item && <LanguageView item={response.context_item} />}
       {c.type === 'matching' && response.answers && c.left.map(left => <p key={left.id} dir="auto">{left.text} ↔ {c.right.find(right => right.id === response.answers?.[left.id])?.text}</p>)}

@@ -12,3 +12,11 @@
 .source-lessons nav{display:flex;justify-content:space-between;flex-wrap:wrap;gap:.75rem;padding-top:.5rem}.source-lessons nav button{margin:0}.source-lessons nav button:first-child{background:var(--lesson-selected);color:var(--lesson-accent)}.source-table-wrap{overflow-x:auto}.source-lessons table{width:100%;border-collapse:collapse}.source-lessons th,.source-lessons td{padding:.7rem;text-align:start}
 @media(max-width:540px){.source-lessons{margin:0 auto;padding:1rem}.source-lessons .lesson-section{padding:1.4rem 1.1rem}.source-comparison{grid-template-columns:1fr}.source-matching label{grid-template-columns:1fr}.source-lessons .source-options button{padding:.75rem}.source-lessons nav button{flex:1}.source-lessons h1{font-size:1.8rem}}
 @media(prefers-reduced-motion:no-preference){.source-lessons button{transition:background-color .16s ease-out}.source-lessons button:active:not(:disabled){transform:translateY(1px)}}
+
+/* Short, event-driven feedback. No movement on load or restored answers. */
+@media(prefers-reduced-motion:no-preference){
+ .exercise-tap{animation:exercise-tap .18s ease-out}
+ .exercise-success{animation:exercise-success .44s cubic-bezier(.2,.75,.25,1)}
+ @keyframes exercise-tap{from{transform:scale(.985)}to{transform:scale(1)}}
+ @keyframes exercise-success{0%{transform:translateY(5px) scale(.98);opacity:.65}55%{transform:translateY(-2px) scale(1.012);opacity:1}100%{transform:translateY(0) scale(1);opacity:1}}
+}
