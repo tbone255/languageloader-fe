@@ -53,18 +53,18 @@ function ComponentView({ component: c, sessionId, onPending }: { component: Comp
     catch (err) { setError(err instanceof Error ? err.message : 'Could not save response'); }
     finally { setBusy(false); onPending(-1); }
   }
-  if (c.type === 'explanation') return <section><p>{c.text}</p><details><summary>Textbook evidence</summary>{c.citations.map((ref, i) => <SourceText key={i} evidence={ref} provenance />)}</details></section>;
-  if (c.type === 'example') return <section><ExampleView example={c.example} /></section>;
-  if (c.type === 'comparison') return <section><p>{c.caption}</p><div className="source-comparison">{c.items.map((item, i) => <div key={i}><h3>{item.label}</h3><ExampleView example={item.example} /></div>)}</div></section>;
+  if (c.type === 'explanation') return <section data-kind="explanation"><p>{c.text}</p><details><summary>Textbook evidence</summary>{c.citations.map((ref, i) => <SourceText key={i} evidence={ref} provenance />)}</details></section>;
+  if (c.type === 'example') return <section data-kind="example"><ExampleView example={c.example} /></section>;
+  if (c.type === 'comparison') return <section data-kind="comparison"><p>{c.caption}</p><div className="source-comparison">{c.items.map((item, i) => <div key={i}><h3>{item.label}</h3><ExampleView example={item.example} /></div>)}</div></section>;
   const locked = busy || Boolean(response) || Boolean(error);
-  return <section aria-label={c.prompt}><h3>{c.prompt}</h3>
+  return <section data-kind={c.type} aria-label={c.prompt}><h3>{c.prompt}</h3>
     {c.type === 'cloze' && <p className="source-form" dir="auto">{c.before}<span aria-label="missing text"> […] </span>{c.after}</p>}
     {c.type === 'selection' && <div className="source-options">{c.options.map(option => <div key={option.id}><button dir="auto" disabled={locked} onClick={() => void act('answer', option.id)} aria-pressed={response?.selected === option.id}>{option.text}</button><Transliteration item={option} /></div>)}</div>}
     {c.type === 'matching' && <><div className="source-matching">{c.left.map(left => <label key={left.id}><span><bdi dir="auto">{left.text}</bdi></span><select value={matches[left.id] || ''} disabled={locked} onChange={event => setMatches({ ...matches, [left.id]: event.target.value })}>
       <option value="">Choose a match</option>{c.right.map(right => <option key={right.id} value={right.id}>{right.text}</option>)}</select></label>)}</div>{c.left.map(item=><div key={item.id}>{item.transliteration && <><span dir="auto">{item.text}</span><Transliteration item={item}/></>}</div>)}{c.right.map(item=><div key={item.id}>{item.transliteration && <><span dir="auto">{item.text}</span><Transliteration item={item}/></>}</div>)}<button disabled={locked || Object.keys(matches).length !== c.left.length || new Set(Object.values(matches)).size !== c.left.length || Object.values(matches).some(x => !x)} onClick={() => void act('answer', matches)}>Check matches</button></>}
     {['recall', 'reveal', 'cloze'].includes(c.type) && <>{c.type !== 'reveal' && <p>Try answering before revealing. You’ll rate your own recall.</p>}<button disabled={locked} onClick={() => void act('reveal')}>Reveal answer</button></>}
     {error && <p role="alert" className="source-error">{error} <button disabled={busy} onClick={() => void act(pending.current?.action || 'reveal')}>Retry saving response</button></p>}
-    {response && <div className="source-feedback" aria-live="polite">
+    {response && <div className="source-feedback" data-result={response.correct === false ? 'retry' : 'correct'} aria-live="polite">
       {response.correct !== undefined && <strong>{response.correct ? 'Correct' : 'Compare with the supplied answer'}</strong>}
       {response.answer_item ? <LanguageView item={response.answer_item} /> : response.answer && <p className="source-form" dir="auto">{response.answer}</p>}{response.context_item && <LanguageView item={response.context_item} />}
       {c.type === 'matching' && response.answers && c.left.map(left => <p key={left.id} dir="auto">{left.text} ↔ {c.right.find(right => right.id === response.answers?.[left.id])?.text}</p>)}
